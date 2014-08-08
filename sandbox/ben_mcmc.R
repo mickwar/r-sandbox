@@ -1,0 +1,208 @@
+source("~/files/R/mcmc/bayes_functions.R")
+dat = read.table("../data/movie.txt", header=T)
+movies = dat[,2]
+dat = dat[,-2]
+
+dat = cbind(dat, "kids_I"=is.na(dat$kids_S)*1)
+for (i in 2:4)
+    dat[,i] = ifelse(is.na(dat[,i]), 0, dat[,i])
+dat = cbind(dat, "rot_I"=is.na(dat$rot_top)*1)
+for (i in 6:8)
+    dat[,i] = ifelse(is.na(dat[,i]), 0, dat[,i])
+
+# functions
+# if drop = TRUE, drop the last column
+mpaa.matrix = function(x){
+    level = c("PG13", "PG", "G")
+    # NR is the dropped level
+    n = length(x)
+    k = length(level)
+    out = matrix(0, n, k)
+    for (i in 1:k)
+        out[which(x == level[i]), i] = 1
+    return (out)
+    }
+
+# make the X matrix
+full.X = as.matrix(cbind(dat[,2:4], mpaa.matrix(dat[,5]),
+    dat[,6:12]))
+var.names = c(names(dat)[2:4], as.character(unique(dat[,5])[1:3]),
+    names(dat)[6:12])
+colnames(full.X) = var.names
+full.Y = dat[,1]
+
+# the model: y_i ~ bern(p_i)
+#            logit(p_i) = x_i * beta
+#            beta ~ n(0, sig^2 * g * (x'x)^(-1))             
+#            fix g = n
+#            sig^2 ~ gamma(a, b)
+# log multivariate normal density (kernel) (sig is the cholesky 
+# decomposition of the covariance matrix, i.e. sig = chol(sigma))
+dmvnorm = function(x, mu, sig)
+    -sum(log(diag(sig))) - 1/2*t(x-mu) %*% chol2inv(sig) %*% (x - mu)
+# function for log posterior
+calc.post = function(params){
+    p = 1 / (1 + exp(-X %*% params[ind.beta]))
+    # likelihood
+    out = sum(dbinom(Y, 1, p, log=TRUE))
+    # priors
+    # multivariate normal for betas
+    out = out + dmvnorm(params[ind.beta], mu, sig_chol)
+    # gamma for sigma^2
+    out = out + (sig.a-1)*log(params[ind.sig]) - params[ind.sig]/sig.b
+    return (out)
+    }
+
+ind.beta = 1:13
+ind.sig = max(ind.beta) + 1
+nparams = ind.sig
+
+n = nrow(full.X)
+train.obs = sort(sample(n, floor(n*1), replace=FALSE))
+X = full.X[train.obs,]
+#test.X = full.X[(1:n)[-train.obs],]
+test.X = full.X
+train.Y = Y[train.obs]
+#test.Y = Y[(1:n)[-train.obs]]
+test.Y = Y
+train.movies = movies[train.obs]
+#test.movies = movies[(1:n)[-train.obs]]
+test.movies = movies
+
+# fixed parameters
+g = nrow(X)
+mu = rep(0, ncol(X))
+sig.a = 2
+sig.b = 0.1
+
+lower = rep(-Inf, nparams)
+upper = rep(+Inf, nparams)
+lower[nparams] = 0
+
+window = 500
+nburn = 10000
+nmcmc = 50000
+
+params = matrix(0, nburn+nmcmc, nparams)
+params[1, ind.sig] = 80
+accept = matrix(0, nburn+nmcmc, nparams)
+sig_chol = chol(params[1, ind.sig] * g * solve(t(X) %*% X))
+#sigs = rep(1, nparams)
+sigs = c(0.4478, 0.1743, 0.3559, 1.0953, 1.4509, 1.4804, 0.0094,
+    0.0112, 0.0091, 0.8352, 0.0955, 2.1764, 4.3964, 0.1486)
+cand.param = params[1,]
+curr.post = calc.post(params[1,])
+
+# metropolis loop
+for (iter in 2:(nburn+nmcmc)){
+    # copy previous vector of parameters to current iteration
+    params[iter,] = params[iter-1,]
+    for (j in 1:nparams){
+        cand = rnorm(1, params[iter, j], sigs[j])
+        if (cand >= lower[j] && cand <= upper[j]){
+            cand.param[j] = cand
+            if (j == nparams)
+                sig_chol = sig_chol * sqrt(cand / params[iter, j])
+            cand.post = calc.post(cand.param)
+            # test for acceptance
+            if (log(runif(1)) < cand.post - curr.post){
+                accept[iter, j] = 1
+                params[iter, j] = cand
+                curr.post = cand.post
+            } else {
+                if (j == nparams)
+                    sig_chol = sig_chol * sqrt(params[iter, j] / cand)
+                cand.param[j] = params[iter, j]
+                }
+            }
+        # make adjustments to candidate sigmas
+        if (floor(iter/window) == iter/window  && iter <= nburn)
+            sigs[j] = sigs[j] * autotune(mean(accept[(iter-window+1):
+                iter, j]), k = max(window/50, 1.1))
+        }
+    }
+
+# burn-in
+bparams = params[(nburn+1):(nburn+nmcmc),]
+baccept = accept[(nburn+1):(nburn+nmcmc),]
+
+# acceptance rates
+apply(baccept, 2, mean)
+
+# trace plots
+for (j in 1:nparams){
+    plot(bparams[,j], type='l', main=var.names[j])
+#   readline()
+    }
+
+# posterior densities
+for (j in 1:nparams){
+    dens = density(bparams[,j])
+    hpd.int = hpd.mult(bparams[,j], dens)
+    dens.col = "gray80"
+    if (j == nparams){
+        plot(dens, main=var.names[j], ylab="Density",
+            xlab=expression(sigma^2))
+    } else {
+        plot(dens, main=var.names[j], ylab="Density",
+            xlab=expression(beta))
+        }
+    polygon(dens, col=dens.col)
+    shade = col.mult(dens.col, "cyan")
+    for (k in 1:(length(hpd.int)/2))
+        color.den(dens, hpd.int[2*k-1], hpd.int[2*k], shade)
+    lines(dens, lwd=1.5)
+    lines(range(dens$x), c(0, 0))
+    lines(rep(bound(0, dens), 2), c(0, bound(0,
+        dens, FALSE)), col='black', lwd=2, lty=2)
+#   readline()
+    }
+
+# posterior predictive
+# risk = X %*% t(bparams[,-14])
+# p = 1/(1+exp(-risk))
+# hist(p[2,])
+# apply(p, 1, function(x) calc.mode(density(x), "density"))
+
+risk = test.X %*% t(bparams[,-14])
+p = 1/(1+exp(-risk))
+point.p = matrix(rbinom(length(p), 1, p), nrow(p), ncol(p))
+
+pos.rate = double(ncol(point.p))
+neg.rate = double(ncol(point.p))
+error = double(ncol(point.p))
+for (i in 1:ncol(point.p)){
+    t.pos = sum(test.Y == 1 & point.p[,i] == 1)
+    t.neg = sum(test.Y == 0 & point.p[,i] == 0)
+    total.neg = length(test.Y)-sum(test.Y)
+    total.pos = sum(test.Y)
+
+    pos.rate[i] = 1-t.pos/total.pos
+    neg.rate[i] = 1-t.neg/total.neg
+    error[i] = mean(point.p[,i] != test.Y)
+    }
+
+hist(pos.rate, col='gray', breaks=50)
+hist(neg.rate, col='gray', breaks=50)
+hist(error, col='gray', breaks=50)
+
+c(mean(pos.rate), calc.mode(density(pos.rate)))
+c(mean(neg.rate), calc.mode(density(neg.rate)))
+c(mean(error), calc.mode(density(error)))
+
+# pred = read.table("../data/movie_pred.txt", header=T)
+# pred.movies = pred[,2]
+# pred = pred[,-2]
+# pred = cbind(pred, "kids_I"=is.na(pred$kids_S)*1)
+# for (i in 2:4)
+#     pred[,i] = ifelse(is.na(pred[,i]), 0, pred[,i])
+# pred = cbind(pred, "rot_I"=is.na(pred$rot_top)*1)
+# for (i in 6:8)
+#     pred[,i] = ifelse(is.na(pred[,i]), 0, pred[,i])
+# 
+# pred.x = as.matrix(cbind(pred[,2:4],mpaa.matrix(pred[,5]),pred[,6:12]))
+# colnames(pred.x)[c(4,5,6)] = c("PG13", "PG", "G")
+# pred.y = pred[,1]
+# 
+# pred.p = 1/(1+exp(- pred.x %*% t(bparams[,-14])))
+# calc.mode(density(pred.p), "density")

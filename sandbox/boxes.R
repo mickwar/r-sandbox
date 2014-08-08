@@ -1,0 +1,5 @@
+x = rbeta(1000, 5, 80)
+y = rbeta(1000, 6, 80)
+boxplot(cbind(x, y), pch=20, varwidth=T, notch=T)
+points(1:2, c(mean(x), mean(y)), pch=5, col="green", lwd=3)
+mtext(paste0("N = ",length(x)))
