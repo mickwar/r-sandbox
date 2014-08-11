@@ -1473,3 +1473,39 @@ plot(xx, yy, pch=20)
 ss = smooth(xx, yy)
 points(ss$x, ss$y, type='l')
 ##########
+
+##########
+# choleksy decomposition algorithm
+# from p.27 of rencher and christensen
+cov.func = function(x, y=x){
+    out = matrix(0, length(x), length(y))
+    for (i in 1:length(x))
+        out[i, ] = exp(-sqrt((x[i]-y)^2))
+    return (out)
+    }
+xx = seq(0, 1, length=6)
+A = cov.func(xx)
+B = chol(A)
+
+mw.chol = function(x){
+    n = nrow(x)
+    out = matrix(0, n, n)
+    out[1,1] = sqrt(x[1,1])
+    for (j in 2:n)
+        out[1,j] = x[1,j] / out[1,1]
+    for (i in 2:n){
+        for (j in i:n){
+            if (i == j){
+                out[i,i] = sqrt(x[i,i] - sum(out[1:(i-1),i]^2))
+            } else {
+                out[i,j] = (x[i,j] - sum(out[1:(i-1),i] * out[1:(i-1),j])) / out[i,i]
+                }
+            }
+        }
+    return (out)
+    }
+
+xx = seq(2, 5, length=6)
+A = cov.func(xx)
+(B = chol(A))
+mw.chol(A)
