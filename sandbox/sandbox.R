@@ -954,6 +954,8 @@ accept/nmcmc
 f = function(y, a, b)
     1/beta(a,b)*1/(1+exp(-y))^a*(exp(-y)/(1+exp(-y)))^b
 a <- b <- 2.234756201
+a = 5
+b = 2
 f(0, a, b) > dnorm(0)
 
 yy = seq(-4, 4, length=1000)
@@ -962,6 +964,16 @@ plot(yy, f(yy, a, b), type='l', ylim=c(0,0.4))
 points(yy, dnorm(yy), type='l', col='green')
 #points(yy, dcauchy(yy), type='l', col='blue')
 #
+
+for (a in c(0.1, 0.5, 1, 2, 5, 10, 50, 100)){
+    for (b in c(0.1, 0.5, 1, 2, 5, 10, 50, 100)){
+        yy = seq(-50, 50, length=1000)
+        plot(yy, f(yy, a, b), type='l', main=paste0("a=", a, " -- ",
+            "b=",b))
+#       points(yy, dcauchy(yy), type='l', col='blue')
+        readline()
+        }
+    }
 ##########
 
 
