@@ -1521,3 +1521,30 @@ xx = seq(2, 5, length=6)
 A = cov.func(xx)
 (B = chol(A))
 mw.chol(A)
+
+##########
+n = 2000
+d = 2000
+x = matrix(runif(n*d), n, d)
+j = rep(1, n)
+
+# overall sum
+system.time(sum(x))
+system.time(t(j) %*% x %*% j)
+# overall mean
+system.time(mean(x))
+system.time(t(j/n) %*% x %*% (j/n))
+
+# row sum
+system.time(x %*% j)
+system.time(apply(x, 1, sum))
+# row mean
+system.time(x %*% (j/n))
+system.time(apply(x, 1, mean))
+
+# column sum
+system.time(t(j) %*% x)
+system.time(apply(x, 2, sum))
+# column mean
+system.time(t(j/n) %*% x)
+system.time(apply(x, 2, mean))
