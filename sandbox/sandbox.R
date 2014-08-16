@@ -1548,3 +1548,22 @@ system.time(apply(x, 2, sum))
 # column mean
 system.time(t(j/n) %*% x)
 system.time(apply(x, 2, mean))
+
+
+##########
+# gamma regression? (epsilon distributed gamma(a, b))
+
+n = 1000
+true.beta = c(2, 0.5, -1)
+true.a = 0.6
+true.b = 2.5
+X = matrix(runif(n*2, -5, 10), n, 2)
+Y = cbind(1, X) %*% true.beta + rgamma(n, true.a, scale=true.b)
+
+mod = lm(Y ~ 1 + X)
+plot(fitted(mod), rstudent(mod), pch=20)
+
+coef(mod) # notice the intercept is estimated as the true intercept (2) plus true.a*true.b (1.5)
+# unfinished, need to try to get estimates without using lm (need to estimate a and b, if possible)
+
+##########
