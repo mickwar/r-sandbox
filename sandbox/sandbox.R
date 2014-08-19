@@ -1567,3 +1567,37 @@ coef(mod) # notice the intercept is estimated as the true intercept (2) plus tru
 # unfinished, need to try to get estimates without using lm (need to estimate a and b, if possible)
 
 ##########
+
+##########
+# logistic, sum to one
+cross = function(...){
+    vec = list(...)
+    d = length(vec)
+    N = double(d+2) + 1
+    for (i in 1:d)
+        N[i+1] = length(vec[[i]])
+    out = matrix(0, prod(N), d)
+    for (i in 1:d){
+        out[,i] = rep(vec[[i]], times=prod(N[1:i]),
+            each=prod(N[(i+2):(d+2)]))
+        }
+    return(out)
+    }
+logit = function(x)
+    log(x/(1-x))
+
+xx = seq(0.01, 0.99, by=0.01)
+yy.cross = cross(xx, xx)
+yy.sum = yy.cross
+for (i in 1:nrow(yy.sum))
+    yy.sum[i,] = yy.sum[i,] / sum(yy.sum[i,])
+
+zz.cross = logit(yy.cross)
+zz.sum = logit(yy.sum)
+
+plot(zz.cross[1:99,1], type='l', col='red', ylim=c(-5,5))
+points(zz.cross[1:99,2], type='l', col='blue')
+
+plot(zz.sum[1:99,1], type='l', col='red', ylim=c(-5,5))
+points(zz.sum[1:99,2], type='l', col='blue')
+##########
