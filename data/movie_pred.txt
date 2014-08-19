@@ -1,2 +1,0 @@
-ben title kids_S kids_V kids_P MPAA rot_all rot_top rot_aud live_action imdb
-1 super_8 2 6 5 PG13 82 81 75 1 7.1
