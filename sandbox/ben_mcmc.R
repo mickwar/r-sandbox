@@ -1,13 +1,10 @@
 source("~/files/R/mcmc/bayes_functions.R")
-dat = read.table("../data/movie.txt", header=T)
-movies = dat[,2]
-dat = dat[,-2]
+dat = read.table("../data/movie_data.txt", header=T)
+movies = dat[,1]
+dat = dat[,-1]
 
 dat = cbind(dat, "kids_I"=is.na(dat$kids_S)*1)
-for (i in 2:4)
-    dat[,i] = ifelse(is.na(dat[,i]), 0, dat[,i])
-dat = cbind(dat, "rot_I"=is.na(dat$rot_top)*1)
-for (i in 6:8)
+for (i in 1:3)
     dat[,i] = ifelse(is.na(dat[,i]), 0, dat[,i])
 
 # functions
@@ -24,8 +21,8 @@ mpaa.matrix = function(x){
     }
 
 # make the X matrix
-full.X = as.matrix(cbind(dat[,2:4], mpaa.matrix(dat[,5]),
-    dat[,6:12]))
+full.X = as.matrix(cbind(dat[,1:3], mpaa.matrix(dat$MPAA),
+    dat[,5:13]))
 var.names = c(names(dat)[2:4], as.character(unique(dat[,5])[1:3]),
     names(dat)[6:12])
 colnames(full.X) = var.names
