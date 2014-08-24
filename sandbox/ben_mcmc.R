@@ -1,10 +1,30 @@
 source("~/files/R/mcmc/bayes_functions.R")
-dat = read.table("../data/movie_data.txt", header=T)
-movies = dat[,1]
-dat = dat[,-1]
+movie.dat = read.table("../data/movie_data.txt", header=T)
+ben = read.table("../data/movie_ben.txt", header=T)
+ben[,1] = as.character(ben[,1])
+movies = ben[,1]
+
+
+movie.dat[,1] = as.character(movie.dat[,1])
+movie.dat$MPAA = as.character(movie.dat$MPAA)
+
+n.var = ncol(movie.dat) - 1
+dat = data.frame(matrix(0, nrow(ben), n.var + ncol(ben)))
+dat[,1:2] = ben[,2:1]
+not_found = NULL
+for (i in 1:nrow(ben)){
+    j = which(ben[i,1] == movie.dat[,1])
+    if (length(j) == 0){
+        not_found[length(not_found)+1] = ben[i,1]
+    } else {
+        dat[i,3:(2+n.var)] = movie.dat[j,2:(n.var+1)]
+        }
+    }
+
+names(dat) = c("ben", names(movie.dat))
 
 dat = cbind(dat, "kids_I"=is.na(dat$kids_S)*1)
-for (i in 1:3)
+for (i in 3:5)
     dat[,i] = ifelse(is.na(dat[,i]), 0, dat[,i])
 
 # functions
@@ -21,12 +41,21 @@ mpaa.matrix = function(x){
     }
 
 # make the X matrix
-full.X = as.matrix(cbind(dat[,1:3], mpaa.matrix(dat$MPAA),
-    dat[,5:13]))
-var.names = c(names(dat)[2:4], as.character(unique(dat[,5])[1:3]),
-    names(dat)[6:12])
-colnames(full.X) = var.names
-full.Y = dat[,1]
+Y = dat[,1]
+raw.X = as.matrix(cbind(dat[,3:5], mpaa.matrix(dat$MPAA),
+    dat[,7:15]))
+X = cbind(raw.X[,1:6], 100*(raw.X[,7]-raw.X[,9])/(raw.X[,7]+
+    raw.X[,8]-raw.X[,9]-raw.X[,10]), 100*raw.X[,9]/(raw.X[,9]+ 
+    raw.X[,10]), raw.X[,11:15])
+
+# top critic rotten tomatoes indicator
+X = cbind(X, "rot_I"=is.na(X[,8])*1)
+X[,8] = ifelse(is.na(X[,8]), 0, X[,8])
+
+var.names = c(names(dat)[3:5], as.character(unique(dat[,6])[1:3]),
+    "rot_crit", "rot_top", names(dat)[11:15], "rot_I")
+colnames(X) = var.names
+
 
 # the model: y_i ~ bern(p_i)
 #            logit(p_i) = x_i * beta
@@ -50,21 +79,21 @@ calc.post = function(params){
     return (out)
     }
 
-ind.beta = 1:13
+ind.beta = 1:length(var.names)
 ind.sig = max(ind.beta) + 1
 nparams = ind.sig
 
-n = nrow(full.X)
-train.obs = sort(sample(n, floor(n*1), replace=FALSE))
-X = full.X[train.obs,]
-#test.X = full.X[(1:n)[-train.obs],]
-test.X = full.X
-train.Y = Y[train.obs]
-#test.Y = Y[(1:n)[-train.obs]]
-test.Y = Y
-train.movies = movies[train.obs]
-#test.movies = movies[(1:n)[-train.obs]]
-test.movies = movies
+n = nrow(X)
+# train.obs = sort(sample(n, floor(n*1), replace=FALSE))
+# X = full.X[train.obs,]
+# #test.X = full.X[(1:n)[-train.obs],]
+# test.X = full.X
+# train.Y = Y[train.obs]
+# #test.Y = Y[(1:n)[-train.obs]]
+# test.Y = Y
+# train.movies = movies[train.obs]
+# #test.movies = movies[(1:n)[-train.obs]]
+# test.movies = movies
 
 # fixed parameters
 g = nrow(X)
@@ -84,9 +113,9 @@ params = matrix(0, nburn+nmcmc, nparams)
 params[1, ind.sig] = 80
 accept = matrix(0, nburn+nmcmc, nparams)
 sig_chol = chol(params[1, ind.sig] * g * solve(t(X) %*% X))
-#sigs = rep(1, nparams)
-sigs = c(0.4478, 0.1743, 0.3559, 1.0953, 1.4509, 1.4804, 0.0094,
-    0.0112, 0.0091, 0.8352, 0.0955, 2.1764, 4.3964, 0.1486)
+sigs = rep(1, nparams)
+#sigs = c(0.4478, 0.1743, 0.3559, 1.0953, 1.4509, 1.4804, 0.0094,
+#    0.0112, 0.0091, 0.8352, 0.0955, 2.1764, 4.3964, 0.1486)
 cand.param = params[1,]
 curr.post = calc.post(params[1,])
 
@@ -129,7 +158,7 @@ apply(baccept, 2, mean)
 # trace plots
 for (j in 1:nparams){
     plot(bparams[,j], type='l', main=var.names[j])
-#   readline()
+    readline()
     }
 
 # posterior densities
@@ -152,7 +181,7 @@ for (j in 1:nparams){
     lines(range(dens$x), c(0, 0))
     lines(rep(bound(0, dens), 2), c(0, bound(0,
         dens, FALSE)), col='black', lwd=2, lty=2)
-#   readline()
+    readline()
     }
 
 # posterior predictive
