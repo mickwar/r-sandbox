@@ -1561,6 +1561,7 @@ X = matrix(runif(n*2, -5, 10), n, 2)
 Y = cbind(1, X) %*% true.beta + rgamma(n, true.a, scale=true.b)
 
 mod = lm(Y ~ 1 + X)
+# try glm(..., family = gamma)?
 plot(fitted(mod), rstudent(mod), pch=20)
 
 coef(mod) # notice the intercept is estimated as the true intercept (2) plus true.a*true.b (1.5)
