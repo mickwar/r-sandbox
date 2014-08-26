@@ -1,4 +1,5 @@
 source("~/files/R/mcmc/bayes_functions.R")
+library(splines)
 movie.dat = read.table("../data/movie_data.txt", header=T)
 ben = read.table("../data/movie_ben.txt", header=T)
 ben[,1] = as.character(ben[,1])
@@ -39,6 +40,42 @@ mpaa.matrix = function(x){
         out[which(x == level[i]), i] = 1
     return (out)
     }
+mw.smooth = function(x, y, m, d){
+    # m = number of points to do the smoothing,
+    # should be greater than length(x) to look nice
+    if (missing(m))
+        m = max(100, 8*length(x))
+    if (missing(d))
+        d = diff(range(x)) / length(x)
+
+    # gaussian kernel, delta is the bandwidth parameter
+    kern = function(x, y)
+        exp(-1/(2*d^2)*(x-y)^2)
+
+    # go outside the range of the data by some
+    w = diff(range(x))*0.25
+
+    outx = seq(min(x) - w, max(x) + w, length=m)
+    outy = double(m)
+    # loop to compute the weighted value at each new x
+    for (i in 1:length(outy))
+        outy[i] = sum(y*kern(x, outx[i]))/
+            sum(kern(x, outx[i]))
+    return (list("x"=outx, "y"=outy))
+    }
+x.spline = function(x, var, at){
+    if (var == 1){
+        out = cbind(ns(x[,var], knots = at), x[,2:ncol(x)])
+    } else {
+        if (var == ncol(x) && var != 1){
+            out = cbind(x[,1:(ncol(x)-1)], ns(x[,var], knots = at))
+        } else {
+            out = cbind(x[,1:(var-1)], ns(x[,var], knots = at),
+                x[,(var+1):ncol(x)])
+            }
+        }
+    return (out)
+    }
 
 # make the X matrix
 Y = dat[,1]
@@ -55,6 +92,23 @@ X[,8] = ifelse(is.na(X[,8]), 0, X[,8])
 var.names = c(names(dat)[3:5], as.character(unique(dat[,6])[1:3]),
     "rot_crit", "rot_top", names(dat)[11:15], "rot_I")
 colnames(X) = var.names
+
+n = nrow(X)
+
+CC = X[,which(colnames(X) == "kids_P")]
+CC = X[,12]
+SS = sort(unique(CC))
+means = double(length(SS))
+for (i in 1:length(means))
+    means[i] = mean(Y[which(CC == SS[i])])
+smooth = mw.smooth(SS, means)
+plot(CC+rnorm(n,0,0.05),dat$ben+rnorm(n,0,0.010),pch=20,cex=0.5)
+lines(smooth$x, smooth$y, col='red')
+
+X2 = x.spline(X, 2, c(2, 6))
+X2 = x.spline(X2, 5, 3)
+
+X = X2
 
 
 # the model: y_i ~ bern(p_i)
@@ -79,7 +133,7 @@ calc.post = function(params){
     return (out)
     }
 
-ind.beta = 1:length(var.names)
+ind.beta = 1:ncol(X)
 ind.sig = max(ind.beta) + 1
 nparams = ind.sig
 
@@ -107,7 +161,7 @@ lower[nparams] = 0
 
 window = 500
 nburn = 10000
-nmcmc = 50000
+nmcmc = 1000000
 
 params = matrix(0, nburn+nmcmc, nparams)
 params[1, ind.sig] = 80
@@ -151,6 +205,11 @@ for (iter in 2:(nburn+nmcmc)){
 # burn-in
 bparams = params[(nburn+1):(nburn+nmcmc),]
 baccept = accept[(nburn+1):(nburn+nmcmc),]
+
+# thin
+thin = seq(1, nmcmc, by = 100)
+bparams = bparams[thin,]
+baccept = baccept[thin,]
 
 # acceptance rates
 apply(baccept, 2, mean)
