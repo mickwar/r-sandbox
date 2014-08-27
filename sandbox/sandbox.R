@@ -1602,3 +1602,33 @@ points(zz.cross[1:99,2], type='l', col='blue')
 plot(zz.sum[1:99,1], type='l', col='red', ylim=c(-5,5))
 points(zz.sum[1:99,2], type='l', col='blue')
 ##########
+
+##########
+# multiple tests
+# getting "significant" results when that is not true
+sed.seed(1)
+m = 1000
+alpha = double(m)
+
+for (i in 1:m){
+    n = 5000
+    d = 100
+    X = cbind(1, matrix(runif(n*(d-1)), n, d-1))
+    # Y is distribution XB + epsilon, B = 0 and
+    # epsilon ~ N(0, 1)
+    Y = rnorm(n)
+
+    beta = solve(t(X) %*% X) %*% t(X) %*% Y
+    s2 = as.vector(1/(n-d) * t(Y - X %*% beta) %*% (Y - X %*% beta))
+    stderr = sqrt(s2 * diag(solve(t(X) %*% X)))
+    t.stat = beta/stderr
+    p.vals = 2*pt(abs(t.stat), n-d, lower.tail=FALSE)
+
+    alpha[i] = mean(p.vals <= 0.05)
+    }
+alpha
+range(alpha)
+mean(alpha)
+hist(alpha)
+names(which.max(table(alpha)))
+###########
