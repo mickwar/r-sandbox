@@ -1553,19 +1553,35 @@ system.time(apply(x, 2, mean))
 ##########
 # gamma regression? (epsilon distributed gamma(a, b))
 
-n = 1000
+n = 100000
 true.beta = c(2, 0.5, -1)
-true.a = 0.6
+true.a = 1.2
 true.b = 2.5
 X = matrix(runif(n*2, -5, 10), n, 2)
-Y = cbind(1, X) %*% true.beta + rgamma(n, true.a, scale=true.b)
+Y = cbind(1, X) %*% true.beta + (rgamma(n, true.a, scale=true.b) - true.a * true.b)
+#Y = cbind(1, X) %*% true.beta + rnorm(n, 0, sqrt(true.a*true.b^2))
 
-mod = lm(Y ~ 1 + X)
+m = floor(n * 0.5)
+train = sort(sample(n, m))
+test = sort((1:n)[-train])
+
+dat = data.frame(cbind(Y, X))
+names(dat) = c("Y", "X1", "X2")
+
+mod = lm(Y ~ 1 + X1 + X2, data = dat[train,])
 # try glm(..., family = gamma)?
 plot(fitted(mod), rstudent(mod), pch=20)
 
-coef(mod) # notice the intercept is estimated as the true intercept (2) plus true.a*true.b (1.5)
-# unfinished, need to try to get estimates without using lm (need to estimate a and b, if possible)
+coef(mod) # the betas are estimated fine, but how to estimate a and b?
+preds = predict(mod, newdata = dat[test,], interval="prediction")
+
+mean(preds[,2] <= Y[test,]) # should be about 0.975 for both
+mean(Y[test,] <= preds[,3])
+
+mean(preds[,2] <= Y[test,] & Y[test,] <= preds[,3]) # should be about 0.95
+
+
+
 
 ##########
 
