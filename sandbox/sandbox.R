@@ -1606,9 +1606,11 @@ points(zz.sum[1:99,2], type='l', col='blue')
 ##########
 # multiple tests
 # getting "significant" results when that is not true
-sed.seed(1)
+set.seed(1)
 m = 1000
 alpha = double(m)
+minp = double(m)
+maxp = double(m)
 
 for (i in 1:m){
     n = 5000
@@ -1625,6 +1627,8 @@ for (i in 1:m){
     p.vals = 2*pt(abs(t.stat), n-d, lower.tail=FALSE)
 
     alpha[i] = mean(p.vals <= 0.05)
+    minp[i] = min(p.vals)
+    maxp[i] = max(p.vals)
     }
 alpha
 range(alpha)
