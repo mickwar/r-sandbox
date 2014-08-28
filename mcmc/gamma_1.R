@@ -1,62 +1,72 @@
 # example code using the bayes functions file
-# using bayesian regression
+
+# Modeling data with the gamma distribution, reparametrized
+# to estimate the mean and variance:
+# X ~ Gamma(a, b) is equivalent to Y ~ Gamma(mu^2/sig^2, sig^2/mu)
+# E(X) = ab, Var(X) = ab^2, E(Y) = mu, Var(Y) = sig^2
+# Define n-vector mu = exp(X %*% beta)
+# beta ~ Normal(m, v)
+# sig^2 ~ Gamma(a.sig, b.sig)
+
 source("./bayes_functions.R")
 
 # generate some data
 set.seed(1)
-n = 5000
-true.beta = c(2, 0.5, -1)
-true.a = 0.6
-true.b = 2.5
-dat.x = matrix(runif(n*2, -5, 10), n, 2)
+n = 80
+true.beta = c(2, 0.1, -0.3, 0)
+true.sig2 = 4
+true.params = c(true.beta, true.sig2)
+dat.x = matrix(runif(n*(length(true.beta)-1), -2, 4), n, length(true.beta)-1)
 X = cbind(1, dat.x)
-Y = X %*% true.beta + rgamma(n, true.a, scale=true.b)
+Y = rgamma(n, (exp(X %*% true.beta)^2)/true.sig2, scale = true.sig2/exp(X %*% true.beta))
+
+range(Y)
+plot(X[,2], Y, pch=20)
+plot(X[,3], Y, pch=20)
+plot(X[,4], Y, pch=20)
+pairs(cbind(Y, X))
+
+bad.mod = lm(Y ~ dat.x)
+plot(fitted(bad.mod), rstudent(bad.mod), pch=20)
 
 # calculatle log posterior
-ones = t(rep(1, n))
 calc.post = function(params){
     # log-likelihood
-    out = -n * lgamma(params[ind.a]) - params[ind.a] * n * log(params[ind.b]) +
-        (params[ind.a] - 1) * ones %*% log(Y + params[ind.a] * params[ind.b] -
-        X %*% params[ind.beta]) - 1/params[ind.b] * ones %*% (Y + params[ind.a] *
-        params[ind.b] - X %*% params[ind.beta])
+    mu = exp(X %*% params[ind.beta])
+    a = (mu^2) / params[ind.sig]
+    b = params[ind.sig] / mu
+    out = sum(-lgamma(a) - a*log(b) + (a-1)*log(Y) - Y/b)
     # priors
-    # gamma on a and b
-    out = out + (a.a-1)*log(params[ind.a])-params[ind.a]/b.a
-    out = out + (a.b-1)*log(params[ind.b])-params[ind.b]/b.b
+    # gamma on sig2
+    out = out + (a.sig-1)*log(params[ind.sig])-params[ind.sig]/b.sig
     # normal on beta
     out = out - sum(1/2*log(v.beta) - 1/(2*v.beta)*(params[ind.beta]-m.beta)^2)
     return (out)
     }
 
-ind.a = 1
-ind.b = 2
-ind.beta = 3:5
-nparams = 5
+ind.beta = 1:4
+ind.sig = 5
+nparams = ind.sig
 
 # support bounds for each parameter
 lower = double(nparams)-Inf
 upper = double(nparams)+Inf
-lower[c(ind.a, ind.b)] = 0
+lower[ind.sig] = 0
 
 # hyperparameter specifications
-# a
-a.a = 2
-b.a = 1
-# b
-a.b = 2
-b.b = 1
 # beta
-m.beta = c(0, 0.5, -1.0)
+m.beta = c(0, 0.5, -1.0, 0)
 v.beta = 10
+# sig
+a.sig = 1.5
+b.sig = 5
+curve(dgamma(x, a.sig, scale = b.sig), from = 0, to = 10)
 
-nburn = 10000
-nmcmc = 20000
+nburn = 50000
+nmcmc = 50000
 params = matrix(0, nburn+nmcmc, nparams)
 # starting values
-params[1, ind.a] = abs(min(Y))
-params[1, ind.b] = 1.1
-params[1, 3] = 0
+params[1, ind.sig] = 1
 sigs = rep(1, nparams)
 
 # if burn in has already been done (these should
@@ -70,16 +80,15 @@ cand.param = params[1,]
 
 # confidence intervals on acceptance rates?
 accept = matrix(0, nburn+nmcmc, nparams)
-window = 200
+window = 500
 
 # mcmc loop
 for (i in 2:(nburn+nmcmc)){
     params[i,] = params[i-1,]
-    for (j in c(1,2,4,5)){
+    for (j in 1:nparams){
         cand = rnorm(1, params[i,j], sigs[j])
         cand.param[j] = cand
-        if (cand >= lower[j] && cand <= upper[j] &&
-            all(Y + prod(cand.param[1:2]) - X %*% cand.param[3:5] > 0)){
+        if (cand >= lower[j] && cand <= upper[j]){
             cand.post = calc.post(cand.param)
             # check whether to accept draw or not
             if (log(runif(1)) < cand.post - post){
@@ -98,23 +107,26 @@ for (i in 2:(nburn+nmcmc)){
         sigs = sigs*autotune(apply(accept[(i-window+1):i,], 2,
             mean), k = max(window/50, 1.1))
     if (floor(i/window) == i/window)
-        cat(i, "\n")
+        cat(i, "/", nburn+nmcmc, "\n")
     }
 
+# remove burned-in
 params = params[(nburn+1):(nburn+nmcmc),]
 accept = accept[(nburn+1):(nburn+nmcmc),]
 
-plot(params[,1], type='l')
-plot(params[,2], type='l')
-plot(params[,3], type='l')
-plot(params[,4], type='l')
-plot(params[,5], type='l')
+for (i in 1:nparams){
+    plot(params[,i], type='l'); abline(h = true.params[i], col='red', lwd=2)
+    if (i < nparams)
+        readline()
+    }
 
+# check for optimal acceptance rates
 apply(accept, 2, mean)
+# calculate means of posterior draws
 apply(params, 2, mean)
 
 # loop the posterior density of each parameter
-names.VAR = c("a", "b", "int", "b1", "b2")
+names.VAR = c("b0", "b1", "b2", "b3", "sig2")
 for (i in 1:nparams){
     dens = density(params[,i], width=sd(params[,i]))
     # compute the hpd set
@@ -135,8 +147,11 @@ for (i in 1:nparams){
     at.x = 0
     lines(rep(bound(at.x, dens), 2), c(0, bound(at.x,
         dens, FALSE)), col='black', lwd=2, lty=2)
+    # make a line at true value
+    at.x = true.params[i]
+    lines(rep(bound(at.x, dens), 2), c(0, bound(at.x,
+        dens, FALSE)), col='red', lwd=2)
     # pause and wait for user input (hit enter)
     if (i < nparams)
         readline()
     }
-
