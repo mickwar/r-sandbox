@@ -593,7 +593,7 @@ for (i in 1:n){
 mean(mse.vec2)
 
 
-# polynomial fitting
+########## polynomial fitting
 design = seq(0, 2, length=12)
 y = design+rnorm(length(design), sd=0.25)
 plot(design, y, ylim=c(-1, 3))
@@ -614,6 +614,20 @@ for (i in 2:length(design)){
     pred = newX %*% mod$coef
     lines(xx, pred, lwd=2, col=i)
     }
+# another example with not really a polynomial
+x = seq(-5, 10, length=1000)
+y = x/2 + sin(2*x) + rnorm(length(x), sd=0.1)
+plot(x, y, pch=20)
+
+max.P = 20
+X = rep(1, length(x))
+for (i in 1:max.P){
+    readline(paste(i,"/",max.P))
+    X = cbind(X, x^i)
+    mod = lm(y ~ -1 + X)
+    lines(x, X %*% coef(mod), lwd=3, col=rainbow(max.P)[i])
+    }
+##########
 
 
 # kronecker product (o times)
