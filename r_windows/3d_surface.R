@@ -14,7 +14,7 @@ cross = function(...){
 	return(out)
 	}
 
-n=1000
+n=100
 
 f=function(x,y){x^2+y^2+x^2*y+4}
 

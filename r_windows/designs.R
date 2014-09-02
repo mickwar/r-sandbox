@@ -1,3 +1,5 @@
+# subject to untruths (sep 2014)
+
 ### Stratified Sampling
 
 require(akima)
@@ -118,7 +120,7 @@ abline(h=seq(min,max,(max-min)/size),col='gray')
 
 
 
-### Latin hypercude designs
+### Latin hypercube designs
 
 latin=function(size){
 	out=matrix(1,size,size)
