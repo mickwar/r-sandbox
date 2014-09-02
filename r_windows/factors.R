@@ -1,3 +1,4 @@
+# for integer n, return each prime factor
 factors=function(n){
 	n=abs(n)
 	out=NULL
@@ -19,19 +20,9 @@ factors=function(n){
 factors(223092870)
 factors(1073741824)
 
-start=776082
-end=1000000
-times=double(end-start+1)
-for (i in start:end){
-	times[i]=system.time(factors(i))[3]
-	}
-plot(start:end,times)
-
 primes=NULL
 upto=10000
 for (i in 2:upto){
 	if (factors(i)[1]==i)
 		primes[length(primes)+1]=i
 	}
-
-divisors=function(n){}
