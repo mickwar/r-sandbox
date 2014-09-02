@@ -2,30 +2,47 @@
 
 # Modeling data with a gamma and point mass mixture, where the
 # the gamma is reparametrized to estimate the mean and variance:
-# X ~ Gamma(a, b) is equivalent to Y ~ Gamma(mu^2/sig^2, sig^2/mu)
-# E(X) = ab, Var(X) = ab^2, E(Y) = mu, Var(Y) = sig^2
-# Define n-vector mu = exp(X %*% beta)
-# beta ~ Normal(m, v)
-# sig^2 ~ Gamma(a.sig, b.sig)
 
-# incomplete
+# f(y_i) = pi_i * I(y_i == 0) +
+#     (1 - pi_i) * Gamma(alpha_i, beta_i) * I(y_i > 0)
+# alpha_i = mu_i^2 / sig^2
+# beta_i = sig^2 / mu_i
+# mu_i = x_i' %*% delta
+# logit(pi_i) = x_i' %*% gamma
+# delta ~ Normal(m_d, v_d^2)
+# gamma ~ Normal(m_g, v_g^2)
+# sig^2 ~ Gamma(a_s, b_s)
+
+# getting issues with the sampler (massive autocorrelation)
 
 source("./bayes_functions.R")
 
-# generate some data
+logistic = function(x) 1/(1+exp(-x))
+
+# generate some data (note that the data is not generated
+# according to the model)
 set.seed(1)
 n = 1000
-true.beta = c(3, 0.1, -0.3, 0)
-true.sig2 = 4
-true.params = c(true.beta, true.sig2)
-dat.x = matrix(runif(n*(length(true.beta)-1), -1, 14), n, length(true.beta)-1)
-X = cbind(1, dat.x)
-Y = rgamma(n, (exp(X %*% true.beta)^2)/true.sig2, scale = true.sig2/exp(X %*% true.beta))
+true.delta = c(0, 2.1, -1.3, 0)
+true.gamma = 1
+true.sig2 = 2
+true.params = c(true.delta, true.gamma, true.sig2)
+dat.x = matrix(runif(n*2, 1, 3), n, 2)
+X = cbind(1, dat.x, dat.x[,1] * dat.x[,2])
+X.pi = matrix(1, n, 1)
+Y = double(n)
+for (i in 1:n){
+    if (runif(1) < logistic(X.pi[i,] %*% true.gamma))
+        Y[i] = rgamma(1, (exp(X[i,] %*% true.delta)^2)/true.sig2,
+            scale = true.sig2/exp(X[i,] %*% true.delta))
+    }
 
+hist(logistic(X.pi %*% true.gamma), col='gray')
 plot(density(Y))
 
-# make really small values 0
-Y = ifelse(Y < 0.01, 0, Y)
+# index sets
+A = which(Y == 0)
+B = which(Y > 0)
 
 range(Y)
 plot(X[,2], Y, pch=20)
@@ -42,20 +59,26 @@ plot(fitted(bad.mod), rstudent(bad.mod), pch=20)
 # calculatle log posterior
 calc.post = function(params){
     # log-likelihood
-    mu = exp(X %*% params[ind.beta])
+    prob = logistic(X.pi %*% params[ind.gamma])
+    mu = exp(X %*% params[ind.delta])[B]
     a = (mu^2) / params[ind.sig]
     b = params[ind.sig] / mu
-    out = sum(-lgamma(a) - a*log(b) + (a-1)*log(Y) - Y/b)
+    # point mass
+    out = sum(log(prob[A]))
+    # gamma part
+    out = out + sum(log(1-prob[B])) + sum(-lgamma(a) - a*log(b) + (a-1)*log(Y[B]) - Y[B]/b)
     # priors
     # gamma on sig2
     out = out + (a.sig-1)*log(params[ind.sig])-params[ind.sig]/b.sig
-    # normal on beta
-    out = out - sum(1/2*log(v.beta) - 1/(2*v.beta)*(params[ind.beta]-m.beta)^2)
+    # normal on delta and gamma
+    out = out - sum(1/2*log(v.d) - 1/(2*v.d)*(params[ind.delta]-m.d)^2)
+    out = out - sum(1/2*log(v.g) - 1/(2*v.g)*(params[ind.gamma]-m.g)^2)
     return (out)
     }
 
-ind.beta = 1:4
-ind.sig = 5
+ind.delta = 1:4
+ind.gamma = 1 + max(ind.delta)
+ind.sig = 1 + max(ind.gamma)
 nparams = ind.sig
 
 # support bounds for each parameter
@@ -64,16 +87,19 @@ upper = double(nparams)+Inf
 lower[ind.sig] = 0
 
 # hyperparameter specifications
-# beta
-m.beta = c(0, 0.5, -1.0, 0)
-v.beta = 10
+# delta (for the mean of the gamma part)
+m.d = true.delta #c(0, 0.5, -1.0, 0)
+v.d = 1
+# gamma (for the logistic part)
+m.g = true.gamma #c(0, 0, 0, 0)
+v.g = 1
 # sig
 a.sig = 1.5
 b.sig = 5
 curve(dgamma(x, a.sig, scale = b.sig), from = 0, to = 10)
 
-nburn = 50000
-nmcmc = 50000
+nburn = 10000
+nmcmc = 20000
 params = matrix(0, nburn+nmcmc, nparams)
 # starting values
 params[1, ind.sig] = 1
@@ -136,7 +162,7 @@ apply(accept, 2, mean)
 apply(params, 2, mean)
 
 # loop the posterior density of each parameter
-names.VAR = c("b0", "b1", "b2", "b3", "sig2")
+names.VAR = c("d0", "d1", "d2", "d3", "g0", "g1", "g2", "g3", "sig2")
 for (i in 1:nparams){
     dens = density(params[,i], width=sd(params[,i]))
     # compute the hpd set
@@ -158,9 +184,9 @@ for (i in 1:nparams){
     lines(rep(bound(at.x, dens), 2), c(0, bound(at.x,
         dens, FALSE)), col='black', lwd=2, lty=2)
     # make a line at true value
-    at.x = true.params[i]
-    lines(rep(bound(at.x, dens), 2), c(0, bound(at.x,
-        dens, FALSE)), col='red', lwd=2)
+#   at.x = true.params[i]
+#   lines(rep(bound(at.x, dens), 2), c(0, bound(at.x,
+#       dens, FALSE)), col='red', lwd=2)
     # pause and wait for user input (hit enter)
     if (i < nparams)
         readline()
