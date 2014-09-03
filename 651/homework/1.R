@@ -1,0 +1,102 @@
+### 1
+
+f = function(y, sig)
+    0.5 * dnorm(y, 66, sig) + 0.5 * dnorm(y, 70, sig)
+
+sig = 3
+xx = seq(66 - 3 * sig, 70 + 3 * sig, length=100)
+plot(xx, f(xx, sig), type='l', ylab="f(y)", xlab="y")
+
+dnorm(66, 66, sig) * 0.5 / f(66, sig)
+
+pos.1 = function(y, sig)
+    0.5 * dnorm(y, 66, sig) / f(y, sig)
+
+ss = seq(0.05, 7, length=100)
+plot(ss, pos.1(64, ss), type='l', ylim=c(0,1), xlab=expression(sigma),
+    ylab=expression(paste("p(",theta,"=1)")))
+lines(ss, pos.1(66, ss), type='l', col='red')
+lines(ss, pos.1(68, ss), type='l', col='blue')
+lines(ss, pos.1(70, ss), type='l', col='darkgreen')
+lines(ss, pos.1(72, ss), type='l', col='darkorange')
+legend(6, 1, col=c("black", "red", "blue", "darkgreen", "darkorange"),
+    legend=c(64, 66, 68, 70, 72), lty=1, title="Height")
+
+cross = function(...){
+    vec = list(...)
+    d = length(vec)
+    N = double(d+2) + 1
+    for (i in 1:d)
+        N[i+1] = length(vec[[i]])
+    out = matrix(0, prod(N), d)
+    for (i in 1:d){
+        out[,i] = rep(vec[[i]], times=prod(N[1:i]),
+            each=prod(N[(i+2):(d+2)]))
+        }
+    return(out)
+    }
+
+X = cross(xx, ss)
+
+Z = double(nrow(X))
+for (i in 1:nrow(X))
+    Z[i] = pos.1(X[i,1], X[i,2])
+
+library(rgl)
+plot3d(cbind(X, Z))
+
+### 2
+# bernoulli trials, follow binomial distribution, assuming
+# the null is true: p=0.5
+pbinom(13, 17, 0.5, lower.tail = FALSE) +
+    pbinom(17-13, 17, 0.5, lower.tail = TRUE)
+
+
+pbinom(29, 44, 0.5, lower.tail = FALSE) +
+    pbinom(15, 44, 0.5, lower.tail = TRUE)
+
+### 3
+set.seed(1)
+
+simulate = function(){
+    # arrivals (shouldn't be more than 100 patients to arrive
+    # before closing time)
+    x = rexp(100, 1/10)
+    x = cumsum(x[which(cumsum(x) <= 7*60)])
+
+    # length of doctor visit for each patient
+    visit = runif(length(x), 5, 20)
+    wait = double(length(x))
+    n.doc = 3
+
+    # compute wait time
+    # no matter what, the first n.doc patients won't have to wait
+    for (i in (n.doc+1):length(x)){
+        temp = Inf
+        for (j in 1:n.doc)
+            temp = min(temp, x[i-j] + visit[i-j])
+        wait[i] = max(temp - x[i], 0)
+        }
+
+    npatients = length(x)
+    nwait = sum(wait != 0)
+    meanwait = 0
+    if (nwait > 0)
+        meanwait = mean(wait[wait != 0])
+    # the clinic stays open at least until 4 p.m.
+    close = 420
+    for (i in 1:length(x))
+        close = max(close, x[i] + visit[i] + wait[i])
+    return (c(npatients, nwait, meanwait, close))
+    }
+
+simulate()
+
+nrep = 1000
+out = matrix(0, nrep, 4)
+
+for (i in 1:nrep)
+    out[i,] = simulate()
+
+apply(out, 2, median)
+apply(out, 2, quantile, c(0.1, 0.9))
