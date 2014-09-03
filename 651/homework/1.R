@@ -74,7 +74,7 @@ simulate = function(){
     for (i in (n.doc+1):length(x)){
         temp = Inf
         for (j in 1:n.doc)
-            temp = min(temp, x[i-j] + visit[i-j])
+            temp = min(temp, x[i-j] + visit[i-j] + wait[i-j])
         wait[i] = max(temp - x[i], 0)
         }
 
