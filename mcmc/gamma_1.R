@@ -8,6 +8,9 @@
 # beta ~ Normal(m, v)
 # sig^2 ~ Gamma(a.sig, b.sig)
 
+# what to do with extreme values of X %*% beta which may cause
+# exp() to explode. center and scale the x's?
+
 source("./bayes_functions.R")
 
 # generate some data
