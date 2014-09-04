@@ -56,7 +56,6 @@ pbinom(29, 44, 0.5, lower.tail = FALSE) +
     pbinom(15, 44, 0.5, lower.tail = TRUE)
 
 ### 3
-set.seed(1)
 
 simulate = function(){
     # arrivals (shouldn't be more than 1000 patients to arrive
@@ -68,21 +67,22 @@ simulate = function(){
     visit = runif(length(x), 5, 20)
     wait = double(length(x))
     n.doc = 3
+    j = 1:n.doc
 
     # compute wait time
     # no matter what, the first n.doc patients won't have to wait
     for (i in (n.doc+1):length(x)){
-        temp = Inf
-        for (j in 1:n.doc)
-            temp = min(temp, x[i-j] + visit[i-j] + wait[i-j])
-        wait[i] = max(temp - x[i], 0)
+        temp = x[j] + visit[j] + wait[j]
+        j[which.min(temp)] = i
+        wait[i] = max(min(temp) - x[i], 0)
         }
 
     npatients = length(x)
     nwait = sum(wait != 0)
-    meanwait = 0
-    if (nwait > 0)
-        meanwait = mean(wait[wait != 0])
+#   meanwait = 0
+#   if (nwait > 0)
+#       meanwait = mean(wait[wait != 0])
+    meanwait = mean(wait)
     # the clinic stays open at least until 4 p.m.
     close = 420
     for (i in 1:length(x))
@@ -90,11 +90,13 @@ simulate = function(){
     return (c(npatients, nwait, meanwait, close))
     }
 
+set.seed(1764)
 simulate()
 
-nrep = 5000
+nrep = 10000
 out = matrix(0, nrep, 4)
 
+set.seed(1)
 for (i in 1:nrep)
     out[i,] = simulate()
 
