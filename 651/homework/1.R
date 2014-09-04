@@ -59,9 +59,9 @@ pbinom(29, 44, 0.5, lower.tail = FALSE) +
 set.seed(1)
 
 simulate = function(){
-    # arrivals (shouldn't be more than 100 patients to arrive
+    # arrivals (shouldn't be more than 1000 patients to arrive
     # before closing time)
-    x = rexp(100, 1/10)
+    x = rexp(1000, 1/10)
     x = cumsum(x[which(cumsum(x) <= 7*60)])
 
     # length of doctor visit for each patient
@@ -92,11 +92,12 @@ simulate = function(){
 
 simulate()
 
-nrep = 1000
+nrep = 5000
 out = matrix(0, nrep, 4)
 
 for (i in 1:nrep)
     out[i,] = simulate()
 
-apply(out, 2, median)
-apply(out, 2, quantile, c(0.1, 0.9))
+nice = apply(out, 2, quantile, c(0.1, 0.5, 0.9))
+colnames(nice) = c("patients", "waited", "mean_wait", "closed")
+nice
