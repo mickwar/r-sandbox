@@ -48,19 +48,18 @@ plot3d(cbind(X, Z))
 ### 2
 # bernoulli trials, follow binomial distribution, assuming
 # the null is true: p=0.5
-pbinom(13, 17, 0.5, lower.tail = FALSE) +
+pbinom(12, 17, 0.5, lower.tail = FALSE) +
     pbinom(17-13, 17, 0.5, lower.tail = TRUE)
 
 
-pbinom(29, 44, 0.5, lower.tail = FALSE) +
+pbinom(28, 44, 0.5, lower.tail = FALSE) +
     pbinom(15, 44, 0.5, lower.tail = TRUE)
 
 ### 3
-
 simulate = function(){
-    # arrivals (shouldn't be more than 1000 patients to arrive
+    # arrivals (shouldn't be more than 100 patients to arrive
     # before closing time)
-    x = rexp(1000, 1/10)
+    x = rexp(100, 1/10)
     x = cumsum(x[which(cumsum(x) <= 7*60)])
 
     # length of doctor visit for each patient
@@ -79,10 +78,10 @@ simulate = function(){
 
     npatients = length(x)
     nwait = sum(wait != 0)
-#   meanwait = 0
-#   if (nwait > 0)
-#       meanwait = mean(wait[wait != 0])
-    meanwait = mean(wait)
+    meanwait = 0
+    if (nwait > 0)
+        meanwait = mean(wait[wait != 0])
+#   meanwait = mean(wait)
     # the clinic stays open at least until 4 p.m.
     close = 420
     for (i in 1:length(x))
@@ -90,7 +89,7 @@ simulate = function(){
     return (c(npatients, nwait, meanwait, close))
     }
 
-set.seed(1764)
+set.seed(1)
 simulate()
 
 nrep = 10000
@@ -98,8 +97,10 @@ out = matrix(0, nrep, 4)
 
 set.seed(1)
 for (i in 1:nrep)
-    out[i,] = simulate()
+    out[i,] = simulate(100)
 
 nice = apply(out, 2, quantile, c(0.1, 0.5, 0.9))
 colnames(nice) = c("patients", "waited", "mean_wait", "closed")
 nice
+
+plot(out[,2], out[,3], pch=20)

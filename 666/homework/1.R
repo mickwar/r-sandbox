@@ -45,3 +45,22 @@ dat = read.table("~/files/R/666/data/T3_9_GLUCOSE.DAT")
 names(dat) = c("y1", "y2", "y3", "x1", "x2", "x3")
 
 bar = apply(dat, 2, mean)
+
+bar
+cov(dat)
+
+### 4.1
+sig1 = matrix(c(14,8,3,8,5,2,3,2,1),3,3)
+sig2 = matrix(c(6,6,1,6,8,2,1,2,1),3,3)
+
+14*5*1 + 8*2*3 + 3*8*2 - 14*2*2 - 8*8*1 - 3*5*3
+det(sig1)
+
+6*8*1 + 6*2*1 + 1*6*2 - 6*2*2 - 6*6*1 -1*8*1
+det(sig2)
+
+d1 = diag(sqrt(diag(sig1)))
+d2 = diag(sqrt(diag(sig2)))
+
+solve(d1) %*% sig1 %*% solve(d1)
+solve(d2) %*% sig2 %*% solve(d2)
