@@ -64,3 +64,24 @@ d2 = diag(sqrt(diag(sig2)))
 
 solve(d1) %*% sig1 %*% solve(d1)
 solve(d2) %*% sig2 %*% solve(d2)
+
+### 4.10
+A = matrix(c(1,1,1,-1,1,2), 2,3)
+mu = matrix(c(3,1,4),3,1)
+sigma = matrix(c(6,1,-2,1,13,4,-2,4,4),3,3)
+
+A %*% mu
+A %*% sigma %*% t(A)
+
+D = matrix(c(1,0,0.5, 0, 0, 0.5, 0, 1, 0),3,3)
+D %*% mu
+D %*% sigma %*% t(D)
+
+### 4.17
+mu.y = matrix(c(3,-2),2,1)
+mu.x = matrix(c(4,-3,5),3,1)
+sig.yx = matrix(c(15,8,0,6,3,-2),2,3)
+sig.xx = matrix(c(50,8,5,8,4,0,5,0,1),3,3)
+
+sig.yx %*% solve(sig.xx)
+mu.y - sig.yx %*% solve(sig.xx) %*% mu.x
