@@ -5,22 +5,26 @@ f = function(y, sig)
 
 sig = 3
 xx = seq(66 - 3 * sig, 70 + 3 * sig, length=100)
-plot(xx, f(xx, sig), type='l', ylab="f(y)", xlab="y")
+pdf("fig1a.pdf")
+plot(xx, f(xx, sig), type='l', ylab="f(y)", xlab="y", main="1(a)")
+dev.off()
 
 dnorm(66, 66, sig) * 0.5 / f(66, sig)
 
 pos.1 = function(y, sig)
     0.5 * dnorm(y, 66, sig) / f(y, sig)
 
+pdf("fig1c.pdf")
 ss = seq(0.05, 7, length=100)
 plot(ss, pos.1(64, ss), type='l', ylim=c(0,1), xlab=expression(sigma),
-    ylab=expression(paste("p(",theta,"=1)")))
+    ylab=expression(paste("p(",theta,"=1)")), main = "1(c)")
 lines(ss, pos.1(66, ss), type='l', col='red')
 lines(ss, pos.1(68, ss), type='l', col='blue')
 lines(ss, pos.1(70, ss), type='l', col='darkgreen')
 lines(ss, pos.1(72, ss), type='l', col='darkorange')
 legend(6, 1, col=c("black", "red", "blue", "darkgreen", "darkorange"),
     legend=c(64, 66, 68, 70, 72), lty=1, title="Height")
+dev.off()
 
 cross = function(...){
     vec = list(...)
@@ -40,7 +44,7 @@ X = cross(xx, ss)
 
 Z = double(nrow(X))
 for (i in 1:nrow(X))
-    Z[i] = pos.1(X[i,1], X[i,2])
+j   Z[i] = pos.1(X[i,1], X[i,2])
 
 library(rgl)
 plot3d(cbind(X, Z))
@@ -51,9 +55,41 @@ plot3d(cbind(X, Z))
 pbinom(12, 17, 0.5, lower.tail = FALSE) +
     pbinom(17-13, 17, 0.5, lower.tail = TRUE)
 
-
 pbinom(28, 44, 0.5, lower.tail = FALSE) +
     pbinom(15, 44, 0.5, lower.tail = TRUE)
+
+X1 = 0:17
+X2 = 0:27
+
+X = cross(X1, X2)
+
+f = function(x){
+    x1 = x[1]
+    x2 = x[2]
+    dbinom(x1, 17, 0.5) * dbinom(x2, 27, 0.5)
+    }
+
+joint = apply(X, 1, f)
+
+Y = cbind(X, joint)
+
+calc = 0
+for (i in 1:nrow(Y)){
+    if (Y[i,1] + Y[i,2] <= 15)
+        calc = calc + Y[i,3]
+    if (Y[i,1] + Y[i,2] >= 29)
+        calc = calc + Y[i,3]
+    }
+
+p = pbinom(12, 17, 0.5, lower.tail = FALSE) +
+    pbinom(17-13, 17, 0.5, lower.tail = TRUE)
+
+p +    calc * (1-p)
+
+
+f = function(x1)
+    (1 - pbinom(28-x1, 27, 0.5) + pbinom(15-x1, 27, 0.5)) * dbinom(x1, 17, 0.5)
+p + sum(f(5:12))
 
 ### 3
 simulate = function(){
@@ -92,12 +128,12 @@ simulate = function(){
 set.seed(1)
 simulate()
 
-nrep = 10000
+nrep = 1000
 out = matrix(0, nrep, 4)
 
 set.seed(1)
 for (i in 1:nrep)
-    out[i,] = simulate(100)
+    out[i,] = simulate()
 
 nice = apply(out, 2, quantile, c(0.1, 0.5, 0.9))
 colnames(nice) = c("patients", "waited", "mean_wait", "closed")

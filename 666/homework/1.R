@@ -80,8 +80,29 @@ D %*% sigma %*% t(D)
 ### 4.17
 mu.y = matrix(c(3,-2),2,1)
 mu.x = matrix(c(4,-3,5),3,1)
+sig.yy = matrix(c(14,-8,-8,18),2,2)
 sig.yx = matrix(c(15,8,0,6,3,-2),2,3)
 sig.xx = matrix(c(50,8,5,8,4,0,5,0,1),3,3)
 
-sig.yx %*% solve(sig.xx)
+# E(y|x), unspecified x
 mu.y - sig.yx %*% solve(sig.xx) %*% mu.x
+sig.yx %*% solve(sig.xx)
+
+# cov(y|x)
+sig.yy - sig.yx %*% solve(sig.xx) %*% t(sig.yx)
+
+### last problem
+n = 11
+p = 5
+Y = matrix(runif(n*p), n, p)
+
+B = cov(Y[1:10,])
+B.inv = solve(B)
+S = solve(cov(Y))
+
+ccprime = cov(Y) - B
+
+scalar = seq(0.001, 1, length=1000)
+top = matrix(0, length(scalar), p)
+for (i in 1:length(scalar))
+    top[i,] = (S - (B.inv - (B.inv %*% ccprime %*% B.inv)/scalar[i]))[1,]
