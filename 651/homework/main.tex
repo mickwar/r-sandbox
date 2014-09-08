@@ -1,0 +1,58 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{changepage}
+
+\begin{document}
+
+\pagenumbering{gobble}
+
+\begin{center}
+
+\includegraphics[scale=0.6]{fig1a.pdf}
+
+\bigskip
+
+\includegraphics[scale=0.6]{fig1c.pdf}
+
+\end{center}
+
+\newpage
+\section*{Simulation R Code}
+\begin{verbatim}
+simulate = function(){
+    # arrivals (shouldn't be more than 100 patients to arrive
+    # before closing time)
+    x = rexp(100, 1/10)
+    x = cumsum(x[which(cumsum(x) <= 7*60)])
+
+    # length of doctor visit for each patient
+    visit = runif(length(x), 5, 20)
+    wait = double(length(x))
+    n.doc = 3
+    j = 1:n.doc
+
+    # compute wait time
+    # no matter what, the first n.doc patients won't have to wait
+    for (i in (n.doc+1):length(x)){
+        temp = x[j] + visit[j] + wait[j]
+        j[which.min(temp)] = i
+        wait[i] = max(min(temp) - x[i], 0)
+        }
+
+    npatients = length(x)
+    nwait = sum(wait != 0)
+    meanwait = 0
+    if (nwait > 0)
+        meanwait = mean(wait[wait != 0])
+#   meanwait = mean(wait)
+    # the clinic stays open at least until 4 p.m.
+    close = 420
+    for (i in 1:length(x))
+        close = max(close, x[i] + visit[i] + wait[i])
+    return (c(npatients, nwait, meanwait, close))
+    }
+\end{verbatim}
+
+\end{document}
