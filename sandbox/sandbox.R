@@ -1669,8 +1669,8 @@ names(which.max(table(alpha)))
 
 ###########
 set.seed(1)
-n = 8
-p = 3
+n = 10
+p = 5
 Y = matrix(rnorm((n+1)*p), n+1, p)
 
 X = Y[1:n,]
@@ -1686,6 +1686,8 @@ Y.inv = solve(Y.cov)
 
 # B + zz'
 z = sqrt(n+1)*(z - apply(Y, 2, mean)) / n
+
+(z - apply(Y, 2, mean))/d
 
 # a check, z should equal d, which produces correct result
 D = Y.cov - (n-1)/n*X.cov
