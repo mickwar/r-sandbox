@@ -92,43 +92,45 @@ sig.yx %*% solve(sig.xx)
 sig.yy - sig.yx %*% solve(sig.xx) %*% t(sig.yx)
 
 ### last problem
-n = 11
+set.seed(1)
+n = 10
 p = 5
-Y = matrix(runif(n*p), n, p)
+(Y = matrix(rnorm((n+1)*p), n+1, p))
+xtable(Y)
 
-D = matrix(sqrt(diag(t(Y) %*% Y - t(Y[1:10,]) %*% Y[1:10,])), p, 1)
+X = Y[1:n,]
+(z = matrix(Y[n+1,], p, 1))
 
-t(Y) %*% Y - t(Y[1:10,]) %*% Y[1:10,]
-D %*% t(D) 
+(X.cov = cov(X))
+# current inverse
+X.inv = solve(X.cov)
 
-t(Y[1:10,]) %*% Y[1:10,] + D %*% t(D)
-t(Y) %*% Y
+Y.cov = cov(Y)
+# target
+Y.inv = solve(Y.cov)
 
-Ybar.n = apply(Y, 2, mean)
-Ybar.10 = apply(Y[1:10,], 2, mean)
-
-# cov(Y)
-(t(Y) %*% Y - n * Ybar.n %*% t(Ybar.n))/(n-1)
-
-# given:
-n*Ybar.n%*%t(Ybar.n) - (n-1) * Ybar.10 %*% t(Ybar.10)
-
-H = (n-1)*Ybar.10 %*% t(Ybar.10)
-squig = matrix(sqrt(diag(H/n)), p, 1)
-(squig + D) %*% (t(squig + D)
- * ((n-1)^2)/(n^2)
-n * Ybar.n %*% t(Ybar.n)
+# B + zz'
+z = sqrt(n+1)*(z - apply(Y, 2, mean)) / n
 
 
-S = cov(Y)
-S.10 = cov(Y[1:10,])
+(n-1)/n*X.cov + z %*% t(z)
+Y.cov
 
-J = rep(1, n-1)
-1/(n-1) * (t(Y[1:10,]) %*% Y[1:10,] + D %*% t(D) - 1/n * (t(Y[1:10,]) %*% J + D) %*%
-    (t(J) %*% Y[1:10,] + t(D)))
+new.inv = n/(n-1)*X.inv
 
-(S.10 * (n-2) + D %*% t(D))/(n-1)
-S
+# should all be equal
+Updated = new.inv - (new.inv %*% z %*% t(z) %*% new.inv) / as.vector(1 + t(z) %*% new.inv %*% z)
+new.inv - (new.inv %*% d %*% t(d) %*% new.inv) / as.vector(1 + t(d) %*% new.inv %*% d)
+Y.inv
 
-t(Y[1:10,]) %*% J %*% t(D)
-t(D %*% t(J) %*% Y[1:10,])
+# add new data point
+Y = rbind(Y, rnorm(p))
+n = n + 1
+
+z = Y[n+1,]
+z = sqrt(n+1)*(z - apply(Y, 2, mean)) / n
+
+new.inv = n/(n-1)*Updated
+Updated = new.inv - (new.inv %*% z %*% t(z) %*% new.inv) / as.vector(1 + t(z) %*% new.inv %*% z)
+solve(cov(Y))
+###########
