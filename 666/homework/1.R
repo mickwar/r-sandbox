@@ -96,13 +96,39 @@ n = 11
 p = 5
 Y = matrix(runif(n*p), n, p)
 
-B = cov(Y[1:10,])
-B.inv = solve(B)
-S = solve(cov(Y))
+D = matrix(sqrt(diag(t(Y) %*% Y - t(Y[1:10,]) %*% Y[1:10,])), p, 1)
 
-ccprime = cov(Y) - B
+t(Y) %*% Y - t(Y[1:10,]) %*% Y[1:10,]
+D %*% t(D) 
 
-scalar = seq(0.001, 1, length=1000)
-top = matrix(0, length(scalar), p)
-for (i in 1:length(scalar))
-    top[i,] = (S - (B.inv - (B.inv %*% ccprime %*% B.inv)/scalar[i]))[1,]
+t(Y[1:10,]) %*% Y[1:10,] + D %*% t(D)
+t(Y) %*% Y
+
+Ybar.n = apply(Y, 2, mean)
+Ybar.10 = apply(Y[1:10,], 2, mean)
+
+# cov(Y)
+(t(Y) %*% Y - n * Ybar.n %*% t(Ybar.n))/(n-1)
+
+# given:
+n*Ybar.n%*%t(Ybar.n) - (n-1) * Ybar.10 %*% t(Ybar.10)
+
+H = (n-1)*Ybar.10 %*% t(Ybar.10)
+squig = matrix(sqrt(diag(H/n)), p, 1)
+(squig + D) %*% (t(squig + D)
+ * ((n-1)^2)/(n^2)
+n * Ybar.n %*% t(Ybar.n)
+
+
+S = cov(Y)
+S.10 = cov(Y[1:10,])
+
+J = rep(1, n-1)
+1/(n-1) * (t(Y[1:10,]) %*% Y[1:10,] + D %*% t(D) - 1/n * (t(Y[1:10,]) %*% J + D) %*%
+    (t(J) %*% Y[1:10,] + t(D)))
+
+(S.10 * (n-2) + D %*% t(D))/(n-1)
+S
+
+t(Y[1:10,]) %*% J %*% t(D)
+t(D %*% t(J) %*% Y[1:10,])
