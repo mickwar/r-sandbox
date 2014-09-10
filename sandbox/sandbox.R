@@ -1666,3 +1666,27 @@ mean(alpha)
 hist(alpha)
 names(which.max(table(alpha)))
 ###########
+
+###
+set.seed(2)
+n = 11
+p = 5
+Y = matrix(runif(n*p), n, p)
+Y = matrix(rnorm(n*p), n, p)
+
+X = Y[1:10,]
+z = matrix(Y[11,], p, 1)
+
+X.cov = cov(X)
+X.inv = solve(X.cov)
+Y.cov = cov(Y)
+Y.inv = solve(Y.cov)
+
+D = Y.cov - (n-2)/(n-1)*X.cov
+d = matrix(sqrt(diag(D)), p, 1) * sign(D[1,])
+(n-2)/(n-1)*X.cov + d %*% t(d)
+Y.cov
+
+Y.inv
+new.inv = (n-1)/(n-2)*X.inv
+new.inv - (new.inv %*% d %*% t(d) %*% new.inv) / as.vector(1 + t(d) %*% new.inv %*% d)
