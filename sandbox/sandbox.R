@@ -1667,26 +1667,49 @@ hist(alpha)
 names(which.max(table(alpha)))
 ###########
 
-###
-set.seed(2)
-n = 11
-p = 5
-Y = matrix(runif(n*p), n, p)
-Y = matrix(rnorm(n*p), n, p)
+###########
+set.seed(1)
+n = 8
+p = 3
+Y = matrix(rnorm((n+1)*p), n+1, p)
 
-X = Y[1:10,]
-z = matrix(Y[11,], p, 1)
+X = Y[1:n,]
+z = matrix(Y[n+1,], p, 1)
 
 X.cov = cov(X)
+# current inverse
 X.inv = solve(X.cov)
+
 Y.cov = cov(Y)
+# target
 Y.inv = solve(Y.cov)
 
-D = Y.cov - (n-2)/(n-1)*X.cov
+# B + zz'
+z = sqrt(n+1)*(z - apply(Y, 2, mean)) / n
+
+# a check, z should equal d, which produces correct result
+D = Y.cov - (n-1)/n*X.cov
 d = matrix(sqrt(diag(D)), p, 1) * sign(D[1,])
-(n-2)/(n-1)*X.cov + d %*% t(d)
+
+
+(n-1)/n*X.cov + d %*% t(d)
 Y.cov
 
-Y.inv
-new.inv = (n-1)/(n-2)*X.inv
+new.inv = n/(n-1)*X.inv
+
+# should all be equal
+Updated = new.inv - (new.inv %*% z %*% t(z) %*% new.inv) / as.vector(1 + t(z) %*% new.inv %*% z)
 new.inv - (new.inv %*% d %*% t(d) %*% new.inv) / as.vector(1 + t(d) %*% new.inv %*% d)
+Y.inv
+
+# add new data point
+Y = rbind(Y, rnorm(p))
+n = n + 1
+
+z = Y[n+1,]
+z = sqrt(n+1)*(z - apply(Y, 2, mean)) / n
+
+new.inv = n/(n-1)*Updated
+Updated = new.inv - (new.inv %*% z %*% t(z) %*% new.inv) / as.vector(1 + t(z) %*% new.inv %*% z)
+solve(cov(Y))
+###########
