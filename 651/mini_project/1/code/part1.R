@@ -2,9 +2,9 @@
 
 ### Binomial Likelihood with a Beta Prior
 
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/MP 1/"
+path="~/files/R/651/mini_project/1/"
 
-bonds=read.table(paste(path,"binomial2.dat",sep=""))
+bonds=read.table(paste(path,"data/binomial2.dat",sep=""))
 #V1 is date
 #V2 is number of at-bats in the game (n)
 #V3 is number of homeruns in the game (y)
@@ -24,7 +24,7 @@ y=sum(bonds$V3)
 postA=priorA+y
 postB=priorB+n-y
 
-png(paste(path,"1priorplot.png",sep=""),width=720,height=400)
+pdf(paste(path,"figs/1priorplot.pdf",sep=""), 9, 5)
 curve(dbeta(x,priorA,priorB),n=1001,ylim=c(0,25),
 	main="",
 	ylab="",xlab="")
@@ -33,7 +33,7 @@ polygon(x=seq(0,1,0.001),
 	col='lightgray',border='black')
 dev.off()
 
-png(paste(path,"1postplot.png",sep=""),width=720,height=400)
+pdf(paste(path,"figs/1postplot.pdf",sep=""), 9, 5)
 curve(dbeta(x,postA,postB),n=1001,main="",
 	ylab="",xlab="")
 polygon(x=seq(0,1,0.001),
@@ -69,7 +69,7 @@ for (i in 0:(n-1)){
 	ints[i+1,2]=qbeta(l+p,postA,postB)
 	}
 len=ints[,2]-ints[,1]
-png(paste(path,"1intervals.png",sep=""))
+pdf(paste(path,"figs/1intervals.pdf",sep=""), 9, 5)
 plot(seq(1,n,1)/n*(1-p),len[seq(1,n,1)],ylim=c(0,0.1),type='l',
 	main="",
 	ylab="Interval Length",
@@ -91,10 +91,12 @@ b2=45
 a3=10
 b3=90
 
-png(paste(path,"1otherpriors.png",sep=""),width=720,height=400)
-curve(dbeta(x,priorA,priorB),lwd=2,xlim=c(0,0.3),ylim=c(0,15),
+n=sum(bonds$V2)
+y=sum(bonds$V3)
+pdf(paste(path,"figs/1otherpriors.pdf",sep=""), 9, 5)
+curve(dbeta(x,priorA+y,priorB+n-y),lwd=2,xlim=c(0,.30),ylim=c(0,30),
 	main="",xlab="",ylab="")
-curve(dbeta(x,a1,b1),lwd=2,col='red',add=T)
-curve(dbeta(x,a2,b2),lwd=2,col='blue',add=T)
-curve(dbeta(x,a3,b3),lwd=3,col='green',add=T)
+curve(dbeta(x,a1+y,b1+n-y),lwd=2,col='red',add=T)
+curve(dbeta(x,a2+y,b2+n-y),lwd=2,col='blue',add=T)
+curve(dbeta(x,a3+y,b3+n-y),lwd=3,col='green',add=T)
 dev.off()
