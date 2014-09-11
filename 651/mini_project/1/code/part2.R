@@ -2,9 +2,9 @@
 
 ### Poisson with a Gamma prior
 
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/MP 1/"
+path="~/files/R/651/mini_project/1/"
 
-comps=read.table(paste(path,"poisson.dat",sep=""))
+comps=read.table(paste(path,"data/poisson.dat",sep=""))
 comps=t(comps)
 
 # The expert could only say that they thought there "ought" to be
@@ -27,7 +27,7 @@ priorB=3
 postA=priorA+sum(comps)
 postB=priorB+length(comps)
 
-png(paste(path,"2priorplot.png",sep=""),width=720,height=400)
+pdf(paste(path,"figs/2priorplot.pdf",sep=""),9,5)
 curve(dgamma(x,priorA,priorB),n=1001,xlim=c(0,12),
 	main="",ylab="",xlab="",ylim=c(0,1.2))
 polygon(x=seq(0,12,0.001),
@@ -35,7 +35,7 @@ polygon(x=seq(0,12,0.001),
 	col='lightgray',border='black')
 dev.off()
 
-png(paste(path,"2postplot.png",sep=""),width=720,height=400)
+pdf(paste(path,"figs/2postplot.pdf",sep=""),9,5)
 curve(dgamma(x,postA,postB),n=1001,xlim=c(0,12),
 	main="",ylab="",xlab="",ylim=c(0,1.2))
 polygon(x=seq(0,12,0.001),
@@ -71,7 +71,7 @@ for (i in 0:(n-1)){
 	ints[i+1,2]=qgamma(l+p,postA,postB)
 	}
 len=ints[,2]-ints[,1]
-png(paste(path,"2intervals.png",sep=""))
+pdf(paste(path,"figs/2intervals.pdf",sep=""))
 plot(seq(1,n,1)/n*(1-p),len[seq(1,n,1)],ylim=c(0.5,3),type='l',
 	main="",
 	ylab="Interval Length",
@@ -83,10 +83,10 @@ min(len)
 
 # Other priors
 
-png(paste(path,"2otherpriors.png",sep=""),width=720,height=400)
-curve(dgamma(x,16,4),add=FALSE,col='green',xlim=c(0,15),lwd=2,	# more confidence in experts (real likely less than 10)
+pdf(paste(path,"figs/2otherpriors.pdf",sep=""),9, 5)
+curve(dgamma(x,16+sum(comps),4+length(comps)),add=FALSE,col='green',xlim=c(0,15),lwd=2,	# more confidence in experts (real likely less than 10)
 	main="",xlab="",ylab="")
-curve(dgamma(x,8,2),n=1001,add=TRUE,col='blue',lwd=2)			# should have less than 10 failures per month
-curve(dgamma(x,8,1),n=1001,add=TRUE,col='red',lwd=2)			# feels experts were too shaky in their certainty of number of failures
-curve(dgamma(x,18,3),n=1001,add=TRUE,col='black',lwd=2)		# loosely accepts experts opinion
+curve(dgamma(x,8+sum(comps),2+length(comps)),n=1001,add=TRUE,col='blue',lwd=2)			# should have less than 10 failures per month
+curve(dgamma(x,8+sum(comps),1+length(comps)),n=1001,add=TRUE,col='red',lwd=2)			# feels experts were too shaky in their certainty of number of failures
+curve(dgamma(x,18+sum(comps),3+length(comps)),n=1001,add=TRUE,col='black',lwd=2)		# loosely accepts experts opinion
 dev.off()

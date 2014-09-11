@@ -2,9 +2,9 @@
 
 ### Normal (unknown variance) with an Inverse Gamma prior
 
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/MP 5/"
+path="~/files/R/651/mini_project/1/"
 
-examvar=read.table(paste(path,"normalvariance.dat",sep=""))
+examvar=read.table(paste(path,"data/normalvariance.dat",sep=""))
 examvar=t(examvar)
 
 igpdf=function(x,alpha,beta){

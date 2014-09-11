@@ -1,37 +1,25 @@
 \documentclass[12pt]{article}
 \usepackage{graphicx,float,units,breqn}
-\graphicspath{C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/MP 1/}
 
 \newcommand{\ybar}{\overline{y}}
 
 \begin{document}
 
-\begin{center}
-\begin{Huge}
-\sc Bayesic Stats
-\end{Huge}
-\\ [.5 cm]
-\end{center}
-
-\begin{center}
 \begin{Large}
-\sc Mickey Warner
+\noindent Mickey Warner
+\bigskip
+
+\noindent Stat 651
 \end{Large}
-\\ [1.5 cm]
-\end{center}
+\bigskip
 
-\begin{center}
-\begin{LARGE}
-\sc The 2001 Season for Barry Bonds
-\end{LARGE}
-\\ [.5 cm]
-\end{center}
+\section{The 2001 Season for Barry Bonds}
 
-\section*{Summary}
+\subsection{Summary}
 
 \noindent The following is a Bayesian analysis of home runs and at-bats for former baseball player Barry Bonds during his 2001 season with the San Francisco Giants.  We take a close look at his home run percentage and provide several estimates to better understand his performance that year.
 
-\section*{The Likelihood and Conjugate Prior}
+\subsection{The Likelihood and Conjugate Prior}
 
 The probability density function comes from the binomial distribution, where $y_i$ is the number of home runs and $n_i$ is the number of at-bats in game $i$.  The function is defined as:
 
@@ -69,7 +57,7 @@ f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^
 
 \noindent which is a Beta distribution with parameters $\alpha+\Sigma y_i$ and $\beta+\Sigma n_i-\Sigma y_i$.  Thus, we have a conjugate prior.
 
-\section*{Prior Parameters}
+\subsection{Prior Parameters}
 
 \noindent Values for the priors were chosen to be $\alpha=5$ and $\beta=45$.  When looking at Barry Bonds' record from the beginning of his career, we can see that his home run per at-bat percent has been gradually increasing from about 5\% in 1986 to about 10\% in 2000.  With the chosen priors we would have a mean of $\frac{5}{5+45}=10\%$.  Though we must be careful to have enough flexibility in these priors to adjust for the 2001 season, while still building off the previous years.
 \bigskip
@@ -78,13 +66,13 @@ f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^
 \bigskip
 
 
-\section*{Maximum Likelihood and Plots}
+\subsection{Maximum Likelihood and Plots}
 
 \noindent The plot for a Beta distribution with parameters $\alpha=5$ and $\beta=45$.
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{1priorplot.png}
+\includegraphics[scale=0.5]{figs/1priorplot.pdf}
 \caption{Prior Distribution}
 \end{center}
 \end{figure}
@@ -96,7 +84,7 @@ f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{1postplot.png}
+\includegraphics[scale=0.5]{figs/1postplot.pdf}
 \caption{Posterior Distribution}
 \end{center}
 \end{figure}
@@ -131,7 +119,7 @@ f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^
 
 
 
-\section*{Posterior Estimates}
+\subsection{Posterior Estimates}
 
 \begin{figure}[H]
 \begin{center}
@@ -148,13 +136,13 @@ Standard Deviation & $0.015480$ \\
 
 \noindent The highest posterior density interval is $(0.1184, 0.1789)$.
 
-\section*{Other Potential Priors}
+\subsection{Other Potential Priors}
 
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.4]{1otherpriors.png}
-\caption{Four Prior Distributions}
+\includegraphics[scale=0.5]{figs/1otherpriors.pdf}
+\caption{Four Posterior Distributions}
 \end{center}
 \end{figure}
 
@@ -166,25 +154,19 @@ Standard Deviation & $0.015480$ \\
 
 \noindent \textit{Green}. $\alpha=10$, $\beta=90$.  Uses only the 2000 season to select prior parameters.  New data affects posterior to a lesser degree than other priors.
 
-\section*{Conclusion}
+\subsection{Conclusion}
 
 In terms of home runs and at-bats, Barry Bonds did exceptionally well in 2001.  He averaged close to 15 home runs for every 100 at-bats.  The lower end of the 95\% credible interval suggests that with high probability Bonds played well enough to hit at least 11\% home runs.  There is also a good chance that he played well enough to hit up to 18\% home runs.  Considering only a handful of players have averaged more than 7\% home runs during their careers, Barry Bonds' 2001 season was indeed spectacular and significant.
 
 \newpage
 
-\begin{center}
-\begin{LARGE}
-\sc Failures of the Fastest Computer \\ [.3cm]
-\sc in the World
-\end{LARGE}
-\\ [.5 cm]
-\end{center}
+\section{Failures of the Fastest Computer in the World}
 
-\section*{Summary}
+\subsection{Summary}
 
 \noindent We will look at data for 15 months of failures of the Los Alamos National Laboratory ``fasted computer in the world."  Experts say that the computer should not fail any more than 10 times in a month.
 
-\section*{The Likelihood and Conjugate Prior}
+\subsection{The Likelihood and Conjugate Prior}
 
 The probability density function comes from the Poisson distribution, where $y_i$ is the number of failures in a month.  The function, for $i=1,2,\cdots,15$, is:
 
@@ -211,20 +193,20 @@ f(\lambda|y_i,\alpha,\beta) &=& \frac{\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\
 
 \noindent which is a Gamma distribution with parameters $\alpha+\Sigma y_i$ and $\beta+n$.  %Thus we have a conjugate prior.
 
-\section*{Prior Parameters}
+\subsection{Prior Parameters}
 
 \noindent For this analysis, we chose priors of $\alpha=18$ and $\beta=3$.  We consider the expert's statement that they thought there ``ought" to be no more than 10 failures in one month.  There appears to be some uncertainty, even lack of confidence, from the expert.  For the most part, the expert's statement was believed and used as the basis in selecting the priors.
 \bigskip
 
-\noindent Such a choice would result in a mean and variance of $\frac{18}{3}=6$ in estimating $\lambda$.  The priors suggest that there is some probability that the computer will fail more than 10 times in the month.  Though, sufficient amounts of data should be enough to have the posterior distribution conform appropriately to the true distribution of the parameter of interest.
+\noindent Such a choice would result in a mean and variance of $\frac{18}{3}=6$ in estimating $\lambda$.  The priors suggest that there is some probability ($0.39$) that the computer will fail more than 10 times in the month.  Though, sufficient amounts of data should be enough to have the posterior distribution conform appropriately to the true distribution of the parameter of interest.
 
-\section*{Maximum Likelihood and Plots}
+\subsection{Maximum Likelihood and Plots}
 
 \noindent The plot for a Gamma distribution with parameters $\alpha=18$ and $\beta=3$.
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{2priorplot.png}
+\includegraphics[scale=0.5]{figs/2priorplot.pdf}
 \caption{Prior Distribution}
 \end{center}
 \end{figure}
@@ -234,7 +216,7 @@ f(\lambda|y_i,\alpha,\beta) &=& \frac{\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{2postplot.png}
+\includegraphics[scale=0.5]{figs/2postplot.pdf}
 \caption{Posterior Distribution}
 \end{center}
 \end{figure}
@@ -263,32 +245,32 @@ n &=& \frac{\Sigma y_i}{\hat{\lambda}} \\
 &=& \ybar \\
 \end{eqnarray*}
 
-\section*{Posterior Estimates}
+\subsection{Posterior Estimates}
 
 \begin{figure}[H]
 \begin{center}
 \begin{tabular}{l|r}
 Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
-Mean & $2.888889$ \\
-Median & $2.870392$ \\
-Mode & $2.833333$ \\
-Variance & $0.160493$ \\
-Standard Deviation & $0.400616$ \\
+Mean               & $2.88$ \\
+Median             & $2.87$ \\
+Mode               & $2.83$ \\
+Variance           & $0.16$ \\
+Standard Deviation & $0.40$ \\
 \end{tabular}
 \end{center}
 \end{figure}
 
-\noindent The highest posterior density interval is $(2.124139, 3.685165)$.
+\noindent The highest posterior density interval is $(2.12, 3.68)$.
 
-\section*{Other Potential Priors}
+\subsection{Other Potential Priors}
 
-\noindent \textit{See Figure 6 for the plots of each selection of prior parameters.}
+\noindent \textit{See Figure 6 for the posterior plots of each selection of prior parameters.}
 \bigskip
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.5]{2otherpriors.png}
-\caption{Four Prior Distributions}
+\includegraphics[scale=0.5]{figs/2otherpriors.pdf}
+\caption{Four Posterior Distributions}
 \end{center}
 \end{figure}
 
@@ -301,7 +283,7 @@ Standard Deviation & $0.400616$ \\
 \noindent \textit{Green}. $\alpha=16$, $\beta=4$.  Has strong confidence in the experts.  Prior distribution has more weight in the posterior.
 
 
-\section*{Conclusion}
+\subsection{Conclusion}
 
 \noindent From our interval estimation we may say that there is a 95\% probability that $\lambda$ is not any less than 2.12 and no higher than 3.68.  Even at the higher end of the interval, having such a $\lambda$ would result in a minimal amount of months where the supercomputer failed 10 or more times.  Though there is still some chance of the computer failing that many times.
 \bigskip
@@ -310,18 +292,13 @@ Standard Deviation & $0.400616$ \\
 
 \newpage
 
-\begin{center}
-\begin{LARGE}
-\sc North American Rivers
-\end{LARGE}
-\\ [.5 cm]
-\end{center}
+\section{North American Rivers}
 
-\section*{Summary}
+\subsection{Summary}
 
 \noindent We analyze the lengths (in miles) of 141 major rivers in North America.  It is common knowledge that the Mississippi river is one of the world's largest rivers, but this of course isn't typical of most of the major rivers in North America.  So how do river lengths on this continent compare to those around the world?
 
-\section*{The Likelihood and Conjugate Prior}
+\subsection{The Likelihood and Conjugate Prior}
 
 \noindent We assume the data is exponentially distributed.  The probability density function is:
 
@@ -355,20 +332,20 @@ f(\lambda|y_i,\alpha,\beta) &=& \frac{\left(\frac{1}{\lambda}\right)^ne^{-\Sigma
 \noindent \textit{Note:} In this analysis we are estimating $\lambda$.  The p.d.f., though a function $\lambda$, is in terms of $1/\lambda$.  This will turn out to be very convenient for us.  The p.d.f is an exponential distribution which has a mean and standard deviation of $1/\lambda$.  Thus with this particular function the mean and standard deviation will simply be $\lambda$.  So when we look at estimates of $\lambda$, we can easily make the connection between the parameter and what we are really interested in, i.e. river lengths in North America.
 \end{scriptsize}
 
-\section*{Prior Parameters}
+\subsection{Prior Parameters}
 
 \noindent For our analysis we selected priors of $\alpha=5$ and $\beta=1600$.  With an Inverse Gamma distribution, this means we have a mean of $\frac{\beta}{\alpha-1}=400$ and standard deviation of $\sqrt{\frac{\beta^2}{(\alpha-1)^2(\alpha-2)}}=230.94$.
 \bigskip
 
 \noindent We want to choose priors that seem to match up with what we know about river lengths in North America (which is very little).  We are saying that the average length is about $400$ miles.  With a high standard deviation we have a higher chance of capturing the true mean in our analysis.  Since these priors are comparatively low, the posterior distribution will be more flexible to new data, which is what we want since we have little knowledge of anything about rivers.
 
-\section*{Maximum Likelihood and Plots}
+\subsection{Maximum Likelihood and Plots}
 
 The prior distribution with parameters $\alpha=5$ and $\beta=1600$. \\ [-.8cm]
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{3priorplot.png}
+\includegraphics[scale=0.5]{figs/3priorplot.pdf}
 \caption{Prior Distribution}
 \end{center}
 \end{figure}
@@ -379,7 +356,7 @@ The prior distribution with parameters $\alpha=5$ and $\beta=1600$. \\ [-.8cm]
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{3postplot.png}
+\includegraphics[scale=0.5]{figs/3postplot.pdf}
 \caption{Posterior Distribution}
 \end{center}
 \end{figure}
@@ -408,7 +385,7 @@ n\hat{\lambda} &=& \Sigma y_i \\
 &=& \ybar \\
 \end{eqnarray*}
 
-\section*{Posterior Estimates}
+\subsection{Posterior Estimates}
 
 \noindent Because there is no analytic solution to the median of an Inverse Gamma distribution, we took a large random sample and found the median of the sample.  Thus, our estimate for the median is an approximation and not exact.
 
@@ -416,22 +393,22 @@ n\hat{\lambda} &=& \Sigma y_i \\
 \begin{center}
 \begin{tabular}{l|r}
 Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
-Mean & $585.9103$ \\
-Median & $583.2195$ \\
-Mode & $577.9388$ \\
-Variance & $2838.965$ \\
-Standard Deviation & $48.82586$ \\
+Mean               & $585.9$ \\
+Median             & $583.2$ \\
+Mode               & $577.9$ \\
+Variance           & $2838.9$ \\
+Standard Deviation & $48.8$ \\
 \end{tabular}
 \end{center}
 \end{figure}
 
-\noindent The highest posterior density interval is $(493.5164, 683.5637)$.
+\noindent The highest posterior density interval is $(493.5, 683.5)$.
 
-\section*{Other Potential Priors}
+\subsection{Other Potential Priors}
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{3otherpriors.png}
+\includegraphics[scale=0.5]{figs/3otherpriors.pdf}
 \caption{Four Prior Distributions}
 \end{center}
 \end{figure}
@@ -447,7 +424,7 @@ Standard Deviation & $48.82586$ \\
 
 \noindent Due to the large amount of data, it turns out that each of these choices in priors resulted in roughly the same posterior distribution.
 
-\section*{Conclusion}
+\subsection{Conclusion}
 
 \noindent We found that the posterior distribution for our parameter of interest $\lambda$ resulted in a mean of 585.9103.  Credible interval bounds tells us that $\lambda$ has a 95\% probability of being within 493 and 683.  Now what we are interested in is what this tells us about river lengths in North America.  Conveniently enough, $\lambda$ corresponds with the mean length and standard deviation of rivers.  So the mean and standard deviation is $\lambda$.
 \bigskip
@@ -459,18 +436,13 @@ Standard Deviation & $48.82586$ \\
 
 \newpage
 
-\begin{center}
-\begin{LARGE}
-\sc Statistics 221 Honors Students - (1)
-\end{LARGE}
-\\ [.5 cm]
-\end{center}
+\section{Statistics 221 Honors Students - (1)}
 
-\section*{Summary}
+\subsection{Summary}
 
 \noindent We analyze the test scores from the first exam in an honors section of Statistics 221.  This is an introductory course and we are told that the exam is ``extremely easy."
 
-\section*{The Likelihood and Conjugate Prior}
+\subsection{The Likelihood and Conjugate Prior}
 
 \noindent We will assume the data is normally distribution with mean $\mu$ and $\sigma=9$.  The probability density function is
 
@@ -534,18 +506,18 @@ f(\mu|y_i,\psi,\tau^2) &=& \frac{exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)}{\int_{-\in
 
 \noindent So we have our desired conjugate prior.
 
-\section*{Prior Parameters}
+\subsection{Prior Parameters}
 
 \noindent Since $\sigma^2$ is given and $\mu\sim N(\mu_0,\sigma_0^2)$ we only need to choose prior values for $\mu_0$ and $\sigma_0^2$.  We are told that the exam is extremely easy.  Since 70\% is typically thought of to be the average grade on a test, we will interpret ``extremely easy" to mean that the average is about 85\%, with some room for error.  So we will go with priors of $\mu_0=85$ and $\sigma_0^2=4$.
 \bigskip
 
-\section*{Maximum Likelihood and Plots}
+\subsection{Maximum Likelihood and Plots}
 
 \noindent Parameters for the prior distribution are $\mu_0=85$ and $\sigma_0^2=4$. \\ [-.8cm]
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{4priorplot.png}
+\includegraphics[scale=0.5]{figs/4priorplot.pdf}
 \caption{Prior Distribution}
 \end{center}
 \end{figure}
@@ -555,7 +527,7 @@ f(\mu|y_i,\psi,\tau^2) &=& \frac{exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)}{\int_{-\in
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{4postplot.png}
+\includegraphics[scale=0.5]{figs/4postplot.pdf}
 \caption{Posterior Distribution}
 \end{center}
 \end{figure}
@@ -585,7 +557,7 @@ n\hat{\mu} &=& \Sigma y_i \\
 &=& \ybar \\
 \end{eqnarray*}
 
-\section*{Posterior Estimates}
+\subsection{Posterior Estimates}
 
 \begin{figure}[H]
 \begin{center}
@@ -603,11 +575,11 @@ Standard Deviation & $1.2824$ \\
 \noindent The highest probability density interval is $(83.11661, 89.56360)$.
 
 
-\section*{Other Potential Priors}
+\subsection{Other Potential Priors}
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{4otherpriors.png}
+\includegraphics[scale=0.5]{figs/4otherpriors.pdf}
 \caption{Four Prior Distributions}
 \end{center}
 \end{figure}
@@ -620,24 +592,19 @@ Standard Deviation & $1.2824$ \\
 
 \noindent \textit{Green}. $\mu_0=80$, $\sigma_0^2=16$.  Similar to that used in the analysis, but with more variability.  This is to take into account a range of higher scores.
 
-\section*{Conclusion}
+\subsection{Conclusion}
 
 The analysis showed that the there is a 95\% probability that the average on the test score is between 83.1 and 89.5.  We normally think that an average grade on an exam should be about 70\%.  We may be tempted to agree with the test's description of extremely easy, but we should not forget that an honors section took the test.  Therefore it will be hard for us to conclude that the exam in reality is easy.  However, we are safe in saying, with good certainty as per the credible interval, that the mean is about 86.3\%.
 
 \newpage
 
-\begin{center}
-\begin{LARGE}
-\sc Statistics 221 Honors Students - (2)
-\end{LARGE}
-\\ [.5 cm]
-\end{center}
+\section{Statistics 221 Honors Students - (2)}
 
-\section*{Summary}
+\subsection{Summary}
 
 \noindent We perform the same analysis as before, but this time we assume the data is distributed normally with parameters $\mu=87$ and unknown $\sigma$.  Therefore, we will be interested in estimating the variance.
 
-\section*{The Likelihood and Conjugate Prior}
+\subsection{The Likelihood and Conjugate Prior}
 
 \noindent The probability density function is
 
@@ -669,11 +636,11 @@ f(\theta|y_i,\eta,\delta) &=& \frac{\theta^{-\eta-1}exp(-\delta/\theta)}{\int_0^
 
 \noindent This is an Inverse Gamma with parameters $\eta=\alpha+\frac{n}{2}$ and $\delta=\left(\frac{\Sigma(y_i-\mu)^2}{2}+\beta\right)$
 
-\section*{Prior Parameters}
+\subsection{Prior Parameters}
 
 \noindent Since we are given that $\mu=87$, we know we don't want a $\sigma^2$ that is too high since the max score is 100 and we would prefer not to go beyond that.  It seems appropriate to let a prior on $\sigma^2$ that causes the standard deviation to be about 6 or 7.  This means that two standard deviations above the mean will catch the max score and still go low enough to get the lower scores.  And since we are assuming the exam is easy, we wouldn't expect to go to for below the mean.
 
-\section*{Maximum Likelihood and Plots}
+\subsection{Maximum Likelihood and Plots}
 
 \noindent \textit{Derivation of the maximum likelihood estimator.}  Let $\theta=\sigma^2$ to avoid confusion in the derivative.  The log likelihood function is
 
@@ -703,7 +670,7 @@ n\hat{\theta} &=& \Sigma(y_i-\mu)^2 \\
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{5priorplot.png}
+\includegraphics[scale=0.5]{figs/5priorplot.pdf}
 \caption{Prior Distribution}
 \end{center}
 \end{figure}
@@ -712,12 +679,12 @@ n\hat{\theta} &=& \Sigma(y_i-\mu)^2 \\
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{5postplot.png}
+\includegraphics[scale=0.5]{figs/5postplot.pdf}
 \caption{Posterior Distribution}
 \end{center}
 \end{figure}
 
-\section*{Posterior Estimates}
+\subsection{Posterior Estimates}
 
 \begin{figure}[H]
 \begin{center}
@@ -734,11 +701,11 @@ Standard Deviation & $19.2469$ \\
 
 The highest probability density interval is $(41.49334, 111.57435)$.
 
-\section*{Other Potential Priors}
+\subsection{Other Potential Priors}
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.5]{5otherpriors.png}
+\includegraphics[scale=0.5]{figs/5otherpriors.pdf}
 \caption{Four Prior Distributions}
 \end{center}
 \end{figure}
@@ -751,496 +718,496 @@ The highest probability density interval is $(41.49334, 111.57435)$.
 
 \noindent \textit{Green}. $\alpha=5$, $\beta=120$.  Considers variability to be in a higher range, thinking that ``extremely easy" doesn't apply to all who took the test.
 
-\section*{Conclusion}
+\subsection{Conclusion}
 
 Taking the square root of our estimates will be most helpful in analyzing the distribution of the data.  For an HPD interval, we get $(6.44, 10.56)$ and this gives us a good idea of how our data are distributed.  In comparison to what we might normally expect with exam grades (say about 10), these standard deviations are small.  This suggests that, as a whole, the class did well and scored pretty close together, without too many low scores.
 
-\newpage
-
-\section*{Appendix}
-
-\subsection*{Part 1 Code}
-\begin{scriptsize}
-\begin{verbatim}
-### Binomial with a Beta prior
-
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-bonds=read.table(paste(path,"binomial2.dat",sep=""))
-#V1 is date
-#V2 is number of at-bats in the game (n)
-#V3 is number of homeruns in the game (y)
-
-priorA=5
-priorB=45
-
-n=sum(bonds$V2)
-y=sum(bonds$V3)
-postA=priorA+y
-postB=priorB+n-y
-
-png(paste(path,"1priorplot.png",sep=""),width=720,height=400)
-curve(dbeta(x,priorA,priorB),n=1001,ylim=c(0,25),
-    main="",
-    ylab="",xlab="")
-polygon(x=seq(0,1,0.001),
-    y=dbeta(seq(0,1,0.001),priorA,priorB),
-    col='lightgray',border='black')
-dev.off()
-
-png(paste(path,"1postplot.png",sep=""),width=720,height=400)
-curve(dbeta(x,postA,postB),n=1001,main="",
-    ylab="",xlab="")
-polygon(x=seq(0,1,0.001),
-    y=dbeta(seq(0,1,0.001),postA,postB),
-    col='darkgray',border='black')
-dev.off()
-
-### Estimates
-#mean
-postA/(postA+postB)
-
-#median
-qbeta(0.5,postA,postB)
-
-#mode
-(postA-1)/(postA+postB-2)
-
-#variance
-(postA*postB)/((postA+postB)^2*(postA+postB+1))
-
-#standard deviation
-sqrt((postA*postB)/((postA+postB)^2*(postA+postB+1)))
-
-# minimum interval approximation (HPD)
-n=10000
-p=0.95
-ints=matrix(NA,n,2)
-for (i in 0:(n-1)){
-    l=(1-p)/(n-1)*i
-    ints[i+1,1]=qbeta(l,postA,postB)
-    ints[i+1,2]=qbeta(l+p,postA,postB)
-    }
-len=ints[,2]-ints[,1]
-ints[which.min(len),]	#this is the approximation of the narrowest interval
-min(len)
-
-### Other priors
-# mean closer to that of all previous seasons, lighter weights
-a1=1
-b1=14
-
-# only takes into account when bonds was with the giants 1993 - 2000, medium weights
-a2=4
-b2=45
-
-# only data from 2000 season used, stronger weights
-a3=10
-b3=90
-
-png(paste(path,"1otherpriors.png",sep=""),width=720,height=400)
-curve(dbeta(x,priorA,priorB),lwd=2,xlim=c(0,0.3),ylim=c(0,15),
-    main="",xlab="",ylab="")
-curve(dbeta(x,a1,b1),lwd=2,col='red',add=T)
-curve(dbeta(x,a2,b2),lwd=2,col='blue',add=T)
-curve(dbeta(x,a3,b3),lwd=3,col='green',add=T)
-dev.off()
-\end{verbatim}
-\end{scriptsize}
-
-\subsection*{Part 2 Code}
-\begin{scriptsize}
-\begin{verbatim}
-### Poisson with a Gamma prior
-
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-
-comps=read.table(paste(path,"poisson.dat",sep=""))
-comps=t(comps)
-
-priorA=18
-priorB=3
-
-postA=priorA+sum(comps)
-postB=priorB+length(comps)
-
-png(paste(path,"2priorplot.png",sep=""),width=720,height=400)
-curve(dgamma(x,priorA,priorB),n=1001,xlim=c(0,12),
-    main="",ylab="",xlab="",ylim=c(0,1.2))
-polygon(x=seq(0,12,0.001),
-    y=dgamma(seq(0,12,0.001),priorA,priorB),
-    col='lightgray',border='black')
-dev.off()
-
-png(paste(path,"2postplot.png",sep=""),width=720,height=400)
-curve(dgamma(x,postA,postB),n=1001,xlim=c(0,12),
-    main="",ylab="",xlab="",ylim=c(0,1.2))
-polygon(x=seq(0,12,0.001),
-    y=dgamma(seq(0,12,0.001),postA,postB),
-    col='lightgray',border='black')
-dev.off()
-
-### Estimates
-
-#mean
-postA/postB
-
-#median
-qgamma(0.5,postA,postB)
-
-#mode
-(postA-1)/postB
-
-#variance
-postA/postB^2
-
-#standard deviation
-sqrt(postA/postB^2)
-
-#highest posterior density interval
-
-n=10000
-p=0.95
-ints=matrix(NA,n,2)
-for (i in 0:(n-1)){
-    l=(1-p)/(n-1)*i
-    ints[i+1,1]=qgamma(l,postA,postB)
-    ints[i+1,2]=qgamma(l+p,postA,postB)
-    }
-len=ints[,2]-ints[,1]
-ints[which.min(len),]	#this is the approximation of the narrowest interval
-min(len)
-
-
-# Other priors
-
-png(paste(path,"2otherpriors.png",sep=""),width=720,height=400)
-curve(dgamma(x,16,4),add=FALSE,col='green',xlim=c(0,15),lwd=2,
-    main="",xlab="",ylab="")
-curve(dgamma(x,8,2),n=1001,add=TRUE,col='blue',lwd=2)
-curve(dgamma(x,8,1),n=1001,add=TRUE,col='red',lwd=2)
-curve(dgamma(x,18,3),n=1001,add=TRUE,col='black',lwd=2)
-dev.off()
-\end{verbatim}
-\end{scriptsize}
-
-\subsection*{Part 3 Code}
-\begin{scriptsize}
-\begin{verbatim}
-### Exponential with an Inverse Gamma prior
-
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-
-river=read.table(paste(path,"exponential.dat",sep=""))
-river=t(river)
-
-igpdf=function(x,alpha,beta){
-    ((beta^alpha)/(gamma(alpha)))*(1/x)^(alpha+1)*exp(-beta/x)
-}
-
-### since the data make the gamma function and the beta^alpha 
-### very large, we quickly reach to either 0 or infinity at any
-### value of x.  So "ig2pdf" takes all the multiplications in the pdf
-### separately, making the big numbers smaller and preventing
-### errors in reaching to 0 or infinity to quickly.
-ig2pdf=function(x,alpha,beta){
-    out=beta
-    toA=1
-    toB=0
-    for (a in 1:(alpha-1)){
-        out=out/(alpha-a)
-        if (toB<ceiling(1*beta/3)){
-            out=out*exp(-1/x)
-            toB=toB+1
-            }
-        if (toA<ceiling(1*alpha/3)){
-            out=out*beta
-            toA=toA+1
-            }
-        }
-    for (a in 1:(alpha+1)){
-        out=out*(1/x)
-        if (toB<ceiling(2*beta/3)){
-            out=out*exp(-1/x)
-            toB=toB+1
-            }
-        if (toA<ceiling(2*alpha/3)){
-            out=out*beta
-            toA=toA+1
-            }
-        }
-    for (ab in 1:max(alpha,beta)){
-        if (toB<ceiling(beta)){
-            out=out*exp(-1/x)
-            toB=toB+1
-            }
-        if (toA<ceiling(alpha)){
-            out=out*beta
-            toA=toA+1
-            }
-        }
-    return(out)
-    }
-
-
-### the gamma function gets too big so it freaks out,
-### try a metropolis sampler
-
-priorA=5
-priorB=1600
-
-postA=priorA+length(river)
-postB=priorB+sum(river)
-
-png(paste(path,"3priorplot.png",sep=""),width=720,height=400)
-xx=seq(0,1800,.1)
-plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,1500),
-    main="",ylab="",xlab="",ylim=c(0,0.005),type='l')
-polygon(x=xx,
-    y=igpdf(xx,priorA,priorB),
-    col='lightgray',border='black')
-dev.off()
-
-png(paste(path,"3postplot.png",sep=""),width=720,height=400)
-xx=seq(0,1000,1)
-plot(xx,ig2pdf(xx,postA,postB),xlim=c(0,1000),
-    main="",ylab="",xlab="",ylim=c(0,0.01),type='l')
-polygon(x=xx,
-    y=ig2pdf(xx,postA,postB),
-    col='lightgray',border='black')
-dev.off()
-
-### Estimates
-samp=1/rgamma(10000,postA,postB)
-
-#mean
-postB/(postA-1)
-
-#median
-quantile(samp,0.5)
-
-#mode
-postB/(postA+1)
-
-#variance
-(postB^2)/(((postA-1)^2)*(postA-2))
-
-#standard deviation
-sqrt((postB^2)/(((postA-1)^2)*(postA-2)))
-
-#highest posterior density interval
-
-n=5000
-p=0.95
-ints=matrix(NA,n,2)
-for (i in 0:(n-1)){
-    l=(1-p)/(n-1)*i
-    ints[i+1,1]=quantile(samp,l)
-    ints[i+1,2]=quantile(samp,l+p)
-    }
-len=ints[,2]-ints[,1]
-ints[which.min(len),]	#this is the approximation of the narrowest interval
-min(len)
-
-# Other priors
-
-png(paste(path,"3otherpriors.png",sep=""),width=720,height=400)
-xx=seq(0,1500,.1)
-plot(xx,igpdf(xx,5,1600),xlim=c(0,1500),
-    main="",ylab="",xlab="",ylim=c(0,0.005),type='l',lwd=2)
-lines(xx,igpdf(xx,2,1000),lwd=2,col='red')
-lines(xx,igpdf(xx,9,3000),lwd=2,col='blue')
-lines(xx,igpdf(xx,6,4000),lwd=2,col='green')
-dev.off()
-\end{verbatim}
-\end{scriptsize}
-
-\subsection*{Part 4 Code}
-\begin{scriptsize}
-\begin{verbatim}
-### Normal (unknown mean) with Normal prior
-
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-
-exammu=read.table(paste(path,"normalmean.dat",sep=""))
-exammu=t(exammu)
-
-priorA=85
-priorB=4
-sigma2=81
-
-n=length(exammu)
-ybar=mean(exammu)
-
-postA=(n*ybar*priorB+priorA*sigma2)/(n*priorB+sigma2)
-postB=(sigma2*priorB)/(n*priorB+sigma2)
-
-png(paste(path,"4priorplot.png",sep=""),width=720,height=400)
-xx=seq(0,100,.1)
-curve(dnorm(x,priorA,sqrt(priorB)),from=0,to=100,n=1000,main="",
-    xlab="",ylab="",ylim=c(0,0.4))
-polygon(x=xx,
-    y=dnorm(xx,priorA,sqrt(priorB)),
-    col='lightgray',border='black')
-dev.off()
-
-png(paste(path,"4postplot.png",sep=""),width=720,height=400)
-xx=seq(0,100,.1)
-curve(dnorm(x,postA,sqrt(postB)),from=0,to=100,n=1000,main="",
-    xlab="",ylab="",ylim=c(0,0.4))
-polygon(x=xx,
-    y=dnorm(xx,postA,sqrt(postB)),
-    col='lightgray',border='black')
-dev.off()
-
-#mean/median/mode
-postA
-
-#variance
-postB
-
-#standard deviation
-sqrt(postB)
-
-#highest posterior density interval
-qnorm(c(0.025,0.975),postA,postB)
-
-# Other priors
-
-png(paste(path,"4otherpriors.png",sep=""),width=720,height=400)
-curve(dnorm(x,85,sqrt(4)),xlim=c(0,100),n=1000,main="",ylab="",
-    ylim=c(0,0.4),type='l',lwd=2)
-curve(dnorm(x,90,sqrt(1)),type='l',col='red',add=T,lwd=2,n=1000)
-curve(dnorm(x,75,sqrt(25)),type='l',col='blue',add=T,lwd=2,n=1000)
-curve(dnorm(x,80,sqrt(16)),type='l',col='green',add=T,lwd=2,n=1000)
-dev.off()
-\end{verbatim}
-\end{scriptsize}
-
-\subsection*{Part 5 Code}
-\begin{scriptsize}
-\begin{verbatim}
-### Normal (unknown variance) with an Inverse Gamma prior
-
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-
-examvar=read.table(paste(path,"normalvariance.dat",sep=""))
-examvar=t(examvar)
-
-igpdf=function(x,alpha,beta){
-    ((beta^alpha)/(gamma(alpha)))*(1/x)^(alpha+1)*exp(-beta/x)
-}
-
-ig2pdf=function(x,alpha,beta){
-    out=beta
-    toA=1
-    toB=0
-    for (a in 1:(alpha-1)){
-        out=out/(alpha-a)
-        if (toB<ceiling(1*beta/3)){
-            out=out*exp(-1/x)
-            toB=toB+1
-            }
-        if (toA<ceiling(1*alpha/3)){
-            out=out*beta
-            toA=toA+1
-            }
-        }
-    for (a in 1:(alpha+1)){
-        out=out*(1/x)
-        if (toB<ceiling(2*beta/3)){
-            out=out*exp(-1/x)
-            toB=toB+1
-            }
-        if (toA<ceiling(2*alpha/3)){
-            out=out*beta
-            toA=toA+1
-            }
-        }
-    for (ab in 1:max(alpha,beta)){
-        if (toB<ceiling(beta)){
-            out=out*exp(-1/x)
-            toB=toB+1
-            }
-        if (toA<ceiling(alpha)){
-            out=out*beta
-            toA=toA+1
-            }
-        }
-    return(out)
-    }
-
-
-### the gamma function gets too big so it freaks out,
-### try a metropolis sampler
-
-priorA=2
-priorB=50
-mu=87
-
-postA=priorA+length(examvar)/2
-postB=priorB+0.5*sum((examvar-mu)^2)
-
-png(paste(path,"5priorplot.png",sep=""),width=720,height=400)
-xx=seq(0,300,.1)
-plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,300),
-    main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
-polygon(x=c(xx,300),
-    y=c(igpdf(xx,priorA,priorB),0),
-    col='lightgray',border='black')
-dev.off()
-
-png(paste(path,"5postplot.png",sep=""),width=720,height=400)
-xx=seq(0,300,.1)
-plot(xx,igpdf(xx,postA,postB),xlim=c(0,300),
-    main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
-polygon(x=c(xx,300),
-    y=c(igpdf(xx,postA,postB),0),
-    col='lightgray',border='black')
-dev.off()
-
-### Estimates
-samp=1/rgamma(10000,postA,postB)
-
-#mean
-postB/(postA-1)
-
-#median
-quantile(samp,0.5)
-
-#mode
-postB/(postA+1)
-
-#variance
-(postB^2)/(((postA-1)^2)*(postA-2))
-
-#standard deviation
-sqrt((postB^2)/(((postA-1)^2)*(postA-2)))
-
-#highest posterior density interval
-
-n=5000
-p=0.95
-ints=matrix(NA,n,2)
-for (i in 0:(n-1)){
-    l=(1-p)/(n-1)*i
-    ints[i+1,1]=quantile(samp,l)
-    ints[i+1,2]=quantile(samp,l+p)
-    }
-len=ints[,2]-ints[,1]
-ints[which.min(len),]
-min(len)
-
-# Other priors
-
-png(paste(path,"5otherpriors.png",sep=""),width=720,height=400)
-xx=seq(0,500,.1)
-plot(xx,igpdf(xx,2,50),xlim=c(0,200),
-    main="",ylab="",xlab="",ylim=c(0,0.06),type='l',lwd=2)
-lines(xx,igpdf(xx,2,150),lwd=2,col='red')
-lines(xx,igpdf(xx,4,60),lwd=2,col='blue')
-lines(xx,igpdf(xx,5,120),lwd=2,col='green')
-dev.off()
-\end{verbatim}
-\end{scriptsize}
+% \newpage
+% 
+% \section*{Appendix}
+% 
+% \subsection*{Part 1 Code}
+% \begin{scriptsize}
+% \begin{verbatim}
+% ### Binomial with a Beta prior
+% 
+% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
+% bonds=read.table(paste(path,"binomial2.dat",sep=""))
+% #V1 is date
+% #V2 is number of at-bats in the game (n)
+% #V3 is number of homeruns in the game (y)
+% 
+% priorA=5
+% priorB=45
+% 
+% n=sum(bonds$V2)
+% y=sum(bonds$V3)
+% postA=priorA+y
+% postB=priorB+n-y
+% 
+% pdf(paste(path,"1priorplot.pdf",sep=""),width=720,height=400)
+% curve(dbeta(x,priorA,priorB),n=1001,ylim=c(0,25),
+%     main="",
+%     ylab="",xlab="")
+% polygon(x=seq(0,1,0.001),
+%     y=dbeta(seq(0,1,0.001),priorA,priorB),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% pdf(paste(path,"1postplot.pdf",sep=""),width=720,height=400)
+% curve(dbeta(x,postA,postB),n=1001,main="",
+%     ylab="",xlab="")
+% polygon(x=seq(0,1,0.001),
+%     y=dbeta(seq(0,1,0.001),postA,postB),
+%     col='darkgray',border='black')
+% dev.off()
+% 
+% ### Estimates
+% #mean
+% postA/(postA+postB)
+% 
+% #median
+% qbeta(0.5,postA,postB)
+% 
+% #mode
+% (postA-1)/(postA+postB-2)
+% 
+% #variance
+% (postA*postB)/((postA+postB)^2*(postA+postB+1))
+% 
+% #standard deviation
+% sqrt((postA*postB)/((postA+postB)^2*(postA+postB+1)))
+% 
+% # minimum interval approximation (HPD)
+% n=10000
+% p=0.95
+% ints=matrix(NA,n,2)
+% for (i in 0:(n-1)){
+%     l=(1-p)/(n-1)*i
+%     ints[i+1,1]=qbeta(l,postA,postB)
+%     ints[i+1,2]=qbeta(l+p,postA,postB)
+%     }
+% len=ints[,2]-ints[,1]
+% ints[which.min(len),]	#this is the approximation of the narrowest interval
+% min(len)
+% 
+% ### Other priors
+% # mean closer to that of all previous seasons, lighter weights
+% a1=1
+% b1=14
+% 
+% # only takes into account when bonds was with the giants 1993 - 2000, medium weights
+% a2=4
+% b2=45
+% 
+% # only data from 2000 season used, stronger weights
+% a3=10
+% b3=90
+% 
+% pdf(paste(path,"1otherpriors.pdf",sep=""),width=720,height=400)
+% curve(dbeta(x,priorA,priorB),lwd=2,xlim=c(0,0.3),ylim=c(0,15),
+%     main="",xlab="",ylab="")
+% curve(dbeta(x,a1,b1),lwd=2,col='red',add=T)
+% curve(dbeta(x,a2,b2),lwd=2,col='blue',add=T)
+% curve(dbeta(x,a3,b3),lwd=3,col='green',add=T)
+% dev.off()
+% \end{verbatim}
+% \end{scriptsize}
+% 
+% \subsection*{Part 2 Code}
+% \begin{scriptsize}
+% \begin{verbatim}
+% ### Poisson with a Gamma prior
+% 
+% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
+% 
+% comps=read.table(paste(path,"poisson.dat",sep=""))
+% comps=t(comps)
+% 
+% priorA=18
+% priorB=3
+% 
+% postA=priorA+sum(comps)
+% postB=priorB+length(comps)
+% 
+% pdf(paste(path,"2priorplot.pdf",sep=""),width=720,height=400)
+% curve(dgamma(x,priorA,priorB),n=1001,xlim=c(0,12),
+%     main="",ylab="",xlab="",ylim=c(0,1.2))
+% polygon(x=seq(0,12,0.001),
+%     y=dgamma(seq(0,12,0.001),priorA,priorB),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% pdf(paste(path,"2postplot.pdf",sep=""),width=720,height=400)
+% curve(dgamma(x,postA,postB),n=1001,xlim=c(0,12),
+%     main="",ylab="",xlab="",ylim=c(0,1.2))
+% polygon(x=seq(0,12,0.001),
+%     y=dgamma(seq(0,12,0.001),postA,postB),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% ### Estimates
+% 
+% #mean
+% postA/postB
+% 
+% #median
+% qgamma(0.5,postA,postB)
+% 
+% #mode
+% (postA-1)/postB
+% 
+% #variance
+% postA/postB^2
+% 
+% #standard deviation
+% sqrt(postA/postB^2)
+% 
+% #highest posterior density interval
+% 
+% n=10000
+% p=0.95
+% ints=matrix(NA,n,2)
+% for (i in 0:(n-1)){
+%     l=(1-p)/(n-1)*i
+%     ints[i+1,1]=qgamma(l,postA,postB)
+%     ints[i+1,2]=qgamma(l+p,postA,postB)
+%     }
+% len=ints[,2]-ints[,1]
+% ints[which.min(len),]	#this is the approximation of the narrowest interval
+% min(len)
+% 
+% 
+% # Other priors
+% 
+% pdf(paste(path,"2otherpriors.pdf",sep=""),width=720,height=400)
+% curve(dgamma(x,16,4),add=FALSE,col='green',xlim=c(0,15),lwd=2,
+%     main="",xlab="",ylab="")
+% curve(dgamma(x,8,2),n=1001,add=TRUE,col='blue',lwd=2)
+% curve(dgamma(x,8,1),n=1001,add=TRUE,col='red',lwd=2)
+% curve(dgamma(x,18,3),n=1001,add=TRUE,col='black',lwd=2)
+% dev.off()
+% \end{verbatim}
+% \end{scriptsize}
+% 
+% \subsection*{Part 3 Code}
+% \begin{scriptsize}
+% \begin{verbatim}
+% ### Exponential with an Inverse Gamma prior
+% 
+% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
+% 
+% river=read.table(paste(path,"exponential.dat",sep=""))
+% river=t(river)
+% 
+% igpdf=function(x,alpha,beta){
+%     ((beta^alpha)/(gamma(alpha)))*(1/x)^(alpha+1)*exp(-beta/x)
+% }
+% 
+% ### since the data make the gamma function and the beta^alpha 
+% ### very large, we quickly reach to either 0 or infinity at any
+% ### value of x.  So "ig2pdf" takes all the multiplications in the pdf
+% ### separately, making the big numbers smaller and preventing
+% ### errors in reaching to 0 or infinity to quickly.
+% ig2pdf=function(x,alpha,beta){
+%     out=beta
+%     toA=1
+%     toB=0
+%     for (a in 1:(alpha-1)){
+%         out=out/(alpha-a)
+%         if (toB<ceiling(1*beta/3)){
+%             out=out*exp(-1/x)
+%             toB=toB+1
+%             }
+%         if (toA<ceiling(1*alpha/3)){
+%             out=out*beta
+%             toA=toA+1
+%             }
+%         }
+%     for (a in 1:(alpha+1)){
+%         out=out*(1/x)
+%         if (toB<ceiling(2*beta/3)){
+%             out=out*exp(-1/x)
+%             toB=toB+1
+%             }
+%         if (toA<ceiling(2*alpha/3)){
+%             out=out*beta
+%             toA=toA+1
+%             }
+%         }
+%     for (ab in 1:max(alpha,beta)){
+%         if (toB<ceiling(beta)){
+%             out=out*exp(-1/x)
+%             toB=toB+1
+%             }
+%         if (toA<ceiling(alpha)){
+%             out=out*beta
+%             toA=toA+1
+%             }
+%         }
+%     return(out)
+%     }
+% 
+% 
+% ### the gamma function gets too big so it freaks out,
+% ### try a metropolis sampler
+% 
+% priorA=5
+% priorB=1600
+% 
+% postA=priorA+length(river)
+% postB=priorB+sum(river)
+% 
+% pdf(paste(path,"3priorplot.pdf",sep=""),width=720,height=400)
+% xx=seq(0,1800,.1)
+% plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,1500),
+%     main="",ylab="",xlab="",ylim=c(0,0.005),type='l')
+% polygon(x=xx,
+%     y=igpdf(xx,priorA,priorB),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% pdf(paste(path,"3postplot.pdf",sep=""),width=720,height=400)
+% xx=seq(0,1000,1)
+% plot(xx,ig2pdf(xx,postA,postB),xlim=c(0,1000),
+%     main="",ylab="",xlab="",ylim=c(0,0.01),type='l')
+% polygon(x=xx,
+%     y=ig2pdf(xx,postA,postB),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% ### Estimates
+% samp=1/rgamma(10000,postA,postB)
+% 
+% #mean
+% postB/(postA-1)
+% 
+% #median
+% quantile(samp,0.5)
+% 
+% #mode
+% postB/(postA+1)
+% 
+% #variance
+% (postB^2)/(((postA-1)^2)*(postA-2))
+% 
+% #standard deviation
+% sqrt((postB^2)/(((postA-1)^2)*(postA-2)))
+% 
+% #highest posterior density interval
+% 
+% n=5000
+% p=0.95
+% ints=matrix(NA,n,2)
+% for (i in 0:(n-1)){
+%     l=(1-p)/(n-1)*i
+%     ints[i+1,1]=quantile(samp,l)
+%     ints[i+1,2]=quantile(samp,l+p)
+%     }
+% len=ints[,2]-ints[,1]
+% ints[which.min(len),]	#this is the approximation of the narrowest interval
+% min(len)
+% 
+% # Other priors
+% 
+% pdf(paste(path,"3otherpriors.pdf",sep=""),width=720,height=400)
+% xx=seq(0,1500,.1)
+% plot(xx,igpdf(xx,5,1600),xlim=c(0,1500),
+%     main="",ylab="",xlab="",ylim=c(0,0.005),type='l',lwd=2)
+% lines(xx,igpdf(xx,2,1000),lwd=2,col='red')
+% lines(xx,igpdf(xx,9,3000),lwd=2,col='blue')
+% lines(xx,igpdf(xx,6,4000),lwd=2,col='green')
+% dev.off()
+% \end{verbatim}
+% \end{scriptsize}
+% 
+% \subsection*{Part 4 Code}
+% \begin{scriptsize}
+% \begin{verbatim}
+% ### Normal (unknown mean) with Normal prior
+% 
+% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
+% 
+% exammu=read.table(paste(path,"normalmean.dat",sep=""))
+% exammu=t(exammu)
+% 
+% priorA=85
+% priorB=4
+% sigma2=81
+% 
+% n=length(exammu)
+% ybar=mean(exammu)
+% 
+% postA=(n*ybar*priorB+priorA*sigma2)/(n*priorB+sigma2)
+% postB=(sigma2*priorB)/(n*priorB+sigma2)
+% 
+% pdf(paste(path,"4priorplot.pdf",sep=""),width=720,height=400)
+% xx=seq(0,100,.1)
+% curve(dnorm(x,priorA,sqrt(priorB)),from=0,to=100,n=1000,main="",
+%     xlab="",ylab="",ylim=c(0,0.4))
+% polygon(x=xx,
+%     y=dnorm(xx,priorA,sqrt(priorB)),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% pdf(paste(path,"4postplot.pdf",sep=""),width=720,height=400)
+% xx=seq(0,100,.1)
+% curve(dnorm(x,postA,sqrt(postB)),from=0,to=100,n=1000,main="",
+%     xlab="",ylab="",ylim=c(0,0.4))
+% polygon(x=xx,
+%     y=dnorm(xx,postA,sqrt(postB)),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% #mean/median/mode
+% postA
+% 
+% #variance
+% postB
+% 
+% #standard deviation
+% sqrt(postB)
+% 
+% #highest posterior density interval
+% qnorm(c(0.025,0.975),postA,postB)
+% 
+% # Other priors
+% 
+% pdf(paste(path,"4otherpriors.pdf",sep=""),width=720,height=400)
+% curve(dnorm(x,85,sqrt(4)),xlim=c(0,100),n=1000,main="",ylab="",
+%     ylim=c(0,0.4),type='l',lwd=2)
+% curve(dnorm(x,90,sqrt(1)),type='l',col='red',add=T,lwd=2,n=1000)
+% curve(dnorm(x,75,sqrt(25)),type='l',col='blue',add=T,lwd=2,n=1000)
+% curve(dnorm(x,80,sqrt(16)),type='l',col='green',add=T,lwd=2,n=1000)
+% dev.off()
+% \end{verbatim}
+% \end{scriptsize}
+% 
+% \subsection*{Part 5 Code}
+% \begin{scriptsize}
+% \begin{verbatim}
+% ### Normal (unknown variance) with an Inverse Gamma prior
+% 
+% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
+% 
+% examvar=read.table(paste(path,"normalvariance.dat",sep=""))
+% examvar=t(examvar)
+% 
+% igpdf=function(x,alpha,beta){
+%     ((beta^alpha)/(gamma(alpha)))*(1/x)^(alpha+1)*exp(-beta/x)
+% }
+% 
+% ig2pdf=function(x,alpha,beta){
+%     out=beta
+%     toA=1
+%     toB=0
+%     for (a in 1:(alpha-1)){
+%         out=out/(alpha-a)
+%         if (toB<ceiling(1*beta/3)){
+%             out=out*exp(-1/x)
+%             toB=toB+1
+%             }
+%         if (toA<ceiling(1*alpha/3)){
+%             out=out*beta
+%             toA=toA+1
+%             }
+%         }
+%     for (a in 1:(alpha+1)){
+%         out=out*(1/x)
+%         if (toB<ceiling(2*beta/3)){
+%             out=out*exp(-1/x)
+%             toB=toB+1
+%             }
+%         if (toA<ceiling(2*alpha/3)){
+%             out=out*beta
+%             toA=toA+1
+%             }
+%         }
+%     for (ab in 1:max(alpha,beta)){
+%         if (toB<ceiling(beta)){
+%             out=out*exp(-1/x)
+%             toB=toB+1
+%             }
+%         if (toA<ceiling(alpha)){
+%             out=out*beta
+%             toA=toA+1
+%             }
+%         }
+%     return(out)
+%     }
+% 
+% 
+% ### the gamma function gets too big so it freaks out,
+% ### try a metropolis sampler
+% 
+% priorA=2
+% priorB=50
+% mu=87
+% 
+% postA=priorA+length(examvar)/2
+% postB=priorB+0.5*sum((examvar-mu)^2)
+% 
+% pdf(paste(path,"5priorplot.pdf",sep=""),width=720,height=400)
+% xx=seq(0,300,.1)
+% plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,300),
+%     main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
+% polygon(x=c(xx,300),
+%     y=c(igpdf(xx,priorA,priorB),0),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% pdf(paste(path,"5postplot.pdf",sep=""),width=720,height=400)
+% xx=seq(0,300,.1)
+% plot(xx,igpdf(xx,postA,postB),xlim=c(0,300),
+%     main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
+% polygon(x=c(xx,300),
+%     y=c(igpdf(xx,postA,postB),0),
+%     col='lightgray',border='black')
+% dev.off()
+% 
+% ### Estimates
+% samp=1/rgamma(10000,postA,postB)
+% 
+% #mean
+% postB/(postA-1)
+% 
+% #median
+% quantile(samp,0.5)
+% 
+% #mode
+% postB/(postA+1)
+% 
+% #variance
+% (postB^2)/(((postA-1)^2)*(postA-2))
+% 
+% #standard deviation
+% sqrt((postB^2)/(((postA-1)^2)*(postA-2)))
+% 
+% #highest posterior density interval
+% 
+% n=5000
+% p=0.95
+% ints=matrix(NA,n,2)
+% for (i in 0:(n-1)){
+%     l=(1-p)/(n-1)*i
+%     ints[i+1,1]=quantile(samp,l)
+%     ints[i+1,2]=quantile(samp,l+p)
+%     }
+% len=ints[,2]-ints[,1]
+% ints[which.min(len),]
+% min(len)
+% 
+% # Other priors
+% 
+% pdf(paste(path,"5otherpriors.pdf",sep=""),width=720,height=400)
+% xx=seq(0,500,.1)
+% plot(xx,igpdf(xx,2,50),xlim=c(0,200),
+%     main="",ylab="",xlab="",ylim=c(0,0.06),type='l',lwd=2)
+% lines(xx,igpdf(xx,2,150),lwd=2,col='red')
+% lines(xx,igpdf(xx,4,60),lwd=2,col='blue')
+% lines(xx,igpdf(xx,5,120),lwd=2,col='green')
+% dev.off()
+% \end{verbatim}
+% \end{scriptsize}
 
 \end{document}

@@ -2,9 +2,9 @@
 
 ### Exponential with an Inverse Gamma prior
 
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/MP 1/"
+path="~/files/R/651/mini_project/1/"
 
-river=read.table(paste(path,"exponential.dat",sep=""))
+river=read.table(paste(path,"data/exponential.dat",sep=""))
 river=t(river)
 
 igpdf=function(x,alpha,beta){
@@ -65,7 +65,7 @@ priorB=1600
 postA=priorA+length(river)
 postB=priorB+sum(river)
 
-png(paste(path,"3priorplot.png",sep=""),width=720,height=400)
+pdf(paste(path,"figs/3priorplot.pdf",sep=""),9,5)
 xx=seq(0,1800,.1)
 plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,1500),
 	main="",ylab="",xlab="",ylim=c(0,0.005),type='l')
@@ -74,7 +74,7 @@ polygon(x=xx,
 	col='lightgray',border='black')
 dev.off()
 
-png(paste(path,"3postplot.png",sep=""),width=720,height=400)
+pdf(paste(path,"figs/3postplot.pdf",sep=""),9,5)
 xx=seq(0,1000,1)
 plot(xx,ig2pdf(xx,postA,postB),xlim=c(0,1000),
 	main="",ylab="",xlab="",ylim=c(0,0.01),type='l')
@@ -112,7 +112,7 @@ for (i in 0:(n-1)){
 	ints[i+1,2]=quantile(samp,l+p)
 	}
 len=ints[,2]-ints[,1]
-png(paste(path,"3intervals.png",sep=""))
+pdf(paste(path,"figs/3intervals.pdf",sep=""),9,5)
 plot(seq(1,n,1)/n*(1-p),len[seq(1,n,1)],ylim=c(189,200),type='l',
 	main="",
 	ylab="Interval Length",
@@ -123,11 +123,11 @@ min(len)
 
 # Other priors
 
-png(paste(path,"3otherpriors.png",sep=""),width=720,height=400)
-xx=seq(0,1500,.1)
-plot(xx,igpdf(xx,5,1600),xlim=c(0,1500),		#relatively confident that average length is about 200 miles
-	main="",ylab="",xlab="",ylim=c(0,0.005),type='l',lwd=2)
-lines(xx,igpdf(xx,2,1000),lwd=2,col='red')	#unsure of what lengths could be, thinks could be higher
-lines(xx,igpdf(xx,9,3000),lwd=2,col='blue')
-lines(xx,igpdf(xx,6,4000),lwd=2,col='green')
+pdf(paste(path,"figs/3otherpriors.pdf",sep=""),9,5)
+xx=seq(400,1000,length=200)
+plot(xx,ig2pdf(xx,5+length(river),1600+sum(river)),xlim=c(400,1000),		#relatively confident that average length is about 200 miles
+	main="",ylab="",xlab="",ylim=c(0,0.01),type='l',lwd=2)
+lines(xx,ig2pdf(xx,2+length(river),1000+sum(river)),lwd=2,col='red')	#unsure of what lengths could be, thinks could be higher
+lines(xx,ig2pdf(xx,9+length(river),3000+sum(river)),lwd=2,col='blue')
+lines(xx,ig2pdf(xx,6+length(river),4000+sum(river)),lwd=2,col='green')
 dev.off()

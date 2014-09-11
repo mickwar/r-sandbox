@@ -2,9 +2,9 @@
 
 ### Normal (unknown mean) with Normal prior
 
-path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/MP 4/"
+path="~/files/R/651/mini_project/1/"
 
-exammu=read.table(paste(path,"normalmean.dat",sep=""))
+exammu=read.table(paste(path,"data/normalmean.dat",sep=""))
 exammu=t(exammu)
 
 priorA=85
