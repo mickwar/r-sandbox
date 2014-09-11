@@ -91,37 +91,46 @@ sig.yx %*% solve(sig.xx)
 # cov(y|x)
 sig.yy - sig.yx %*% solve(sig.xx) %*% t(sig.yx)
 
+
+
+
 ### last problem
-set.seed(1)
+set.seed(2)
 n = 10
 p = 5
+# total data matrix
 (Y = matrix(rnorm((n+1)*p), n+1, p))
-xtable(Y)
 
+# yesterday's data matrix
 X = Y[1:n,]
+# new observation
 (z = matrix(Y[n+1,], p, 1))
 
+# current covariance matrix
 (X.cov = cov(X))
 # current inverse
-X.inv = solve(X.cov)
+(X.inv = solve(X.cov))
 
 Y.cov = cov(Y)
 # target
-Y.inv = solve(Y.cov)
+(Y.inv = solve(Y.cov))
 
-# B + zz'
-z = sqrt(n+1)*(z - apply(Y, 2, mean)) / n
+# calcule the c in B + cc'
+(c = sqrt(n+1)*(z - apply(Y, 2, mean)) / n)
 
-
-(n-1)/n*X.cov + z %*% t(z)
+# note the equality
+(n-1)/n*X.cov + c %*% t(c)
 Y.cov
 
-new.inv = n/(n-1)*X.inv
+B.inv = n/(n-1)*X.inv
 
-# should all be equal
-Updated = new.inv - (new.inv %*% z %*% t(z) %*% new.inv) / as.vector(1 + t(z) %*% new.inv %*% z)
-new.inv - (new.inv %*% d %*% t(d) %*% new.inv) / as.vector(1 + t(d) %*% new.inv %*% d)
+# special case of sherman-morrison-woodbury
+B.inv - (B.inv %*% c %*% t(c) %*% B.inv) / as.vector(1 + t(c) %*% B.inv %*% c)
+# is equal to todays inverse (used a check)
 Y.inv
+
+
+
 
 # add new data point
 Y = rbind(Y, rnorm(p))
