@@ -14,21 +14,26 @@ sigma2=81
 n=length(exammu)
 ybar=mean(exammu)
 
-postA=(n*ybar*priorB+priorA*sigma2)/(n*priorB+sigma2)
-postB=(sigma2*priorB)/(n*priorB+sigma2)
+calc.postA = function(priorA, priorB)
+    (n*ybar*priorB+priorA*sigma2)/(n*priorB+sigma2)
+calc.postB = function(priorB)
+    (sigma2*priorB)/(n*priorB+sigma2)
 
-png(paste(path,"4priorplot.png",sep=""),width=720,height=400)
+postA = calc.postA(priorA, priorB)
+postB = calc.postB(priorB)
+
+pdf(paste(path,"figs/4priorplot.pdf",sep=""),9,5)
 xx=seq(0,100,.1)
-curve(dnorm(x,priorA,sqrt(priorB)),from=0,to=100,n=1000,main="",
+curve(dnorm(x,priorA,sqrt(priorB)),from=70,to=100,n=1000,main="",
 	xlab="",ylab="",ylim=c(0,0.4))
 polygon(x=xx,
 	y=dnorm(xx,priorA,sqrt(priorB)),
 	col='lightgray',border='black')
 dev.off()
 
-png(paste(path,"4postplot.png",sep=""),width=720,height=400)
+pdf(paste(path,"figs/4postplot.pdf",sep=""),9,5)
 xx=seq(0,100,.1)
-curve(dnorm(x,postA,sqrt(postB)),from=0,to=100,n=1000,main="",
+curve(dnorm(x,postA,sqrt(postB)),from=70,to=100,n=1000,main="",
 	xlab="",ylab="",ylim=c(0,0.4))
 polygon(x=xx,
 	y=dnorm(xx,postA,sqrt(postB)),
@@ -48,11 +53,18 @@ sqrt(postB)
 qnorm(c(0.025,0.975),postA,postB)
 
 # Other priors
-
-png(paste(path,"4otherpriors.png",sep=""),width=720,height=400)
-curve(dnorm(x,85,sqrt(4)),xlim=c(0,100),n=1000,main="",ylab="",
-	ylim=c(0,0.4),type='l',lwd=2)
-curve(dnorm(x,90,sqrt(1)),type='l',col='red',add=T,lwd=2,n=1000)
-curve(dnorm(x,75,sqrt(25)),type='l',col='blue',add=T,lwd=2,n=1000)
-curve(dnorm(x,80,sqrt(16)),type='l',col='green',add=T,lwd=2,n=1000)
+pdf(paste(path,"figs/4otherpriors.pdf",sep=""),9,5)
+pa = calc.postA(85, 4)
+pb = calc.postB(4)
+curve(dnorm(x,pa,sqrt(pb)),xlim=c(70,100),n=1000,main="",ylab="",
+	ylim=c(0,0.5),type='l',lwd=2)
+pa = calc.postA(90, 1)
+pb = calc.postB(1)
+curve(dnorm(x,pa,sqrt(pb)),type='l',col='red',add=T,lwd=2,n=1000)
+pa = calc.postA(75, 25)
+pb = calc.postB(25)
+curve(dnorm(x,pa,sqrt(pb)),type='l',col='blue',add=T,lwd=2,n=1000)
+pa = calc.postA(80, 16)
+pb = calc.postB(16)
+curve(dnorm(x,pa,sqrt(pb)),type='l',col='green',add=T,lwd=2,n=1000)
 dev.off()

@@ -115,7 +115,7 @@ f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^
 \end{eqnarray*}
 
 \noindent When putting in the values obtained from the data we get
-\[\hat{\theta}=\frac{73}{476}=0.1533613.\]
+\[\hat{\theta}=\frac{73}{476}=0.153.\]
 
 
 
@@ -125,16 +125,16 @@ f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^
 \begin{center}
 \begin{tabular}{l|r}
 Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
-Mean & $0.148289$ \\
-Median & $0.147843$ \\
-Mode & $0.146946$ \\
-Variance & $0.000239$ \\
-Standard Deviation & $0.015480$ \\
+Mean               & $0.1482$ \\
+Median             & $0.1478$ \\
+Mode               & $0.1469$ \\
+Variance           & $0.0002$ \\
+Standard Deviation & $0.0154$ \\
 \end{tabular}
 \end{center}
 \end{figure}
 
-\noindent The highest posterior density interval is $(0.1184, 0.1789)$.
+\noindent The highest posterior density interval is $(0.118, 0.178)$.
 
 \subsection{Other Potential Priors}
 
@@ -146,11 +146,11 @@ Standard Deviation & $0.015480$ \\
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\alpha=5$ and $\beta=45$. \\ [-0.3cm]
+\noindent \textit{Black}.  The priors used in the analysis $\alpha=5$ and $\beta=45$.
 
-\noindent \textit{Red}. $\alpha=1$, $\beta=14$.  Based off all home runs and at-bats in seasons previous to 2001.  Very flexible to new data. \\ [-0.3cm]
+\noindent \textit{Red}. $\alpha=1$, $\beta=14$.  Based off all home runs and at-bats in seasons previous to 2001.  Very flexible to new data.
 
-\noindent \textit{Blue}. $\alpha=4$, $\beta=45$.  Looks only at the time Bonds was with the Giants before 2001.  Moderately flexible to new data. \\ [-0.3cm]
+\noindent \textit{Blue}. $\alpha=4$, $\beta=45$.  Looks only at the time Bonds was with the Giants before 2001.  Moderately flexible to new data.
 
 \noindent \textit{Green}. $\alpha=10$, $\beta=90$.  Uses only the 2000 season to select prior parameters.  New data affects posterior to a lesser degree than other priors.
 
@@ -180,7 +180,7 @@ The probability density function comes from the Poisson distribution, where $y_i
 
 %\[f(\lambda)=\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}\]
 
-\noindent Using the Gamma distribution for our prior, we derive the posterior distribution \\ [-1.cm]
+\noindent Using the Gamma distribution for our prior, we derive the posterior distribution
 
 \begin{eqnarray*}
 f(\lambda|y_i,\alpha,\beta) &=& \frac{\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}}{\int_0^\infty\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}d\lambda} \\
@@ -210,7 +210,6 @@ f(\lambda|y_i,\alpha,\beta) &=& \frac{\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\
 \caption{Prior Distribution}
 \end{center}
 \end{figure}
-\ \\ [2cm]
 
 \noindent \textit{Parameters of the posterior distribution.}  From the data collected, there were a total of 34 failures in the 15 months.  So this means we have for posterior parameters $\alpha_1=18+34=52$ and $\beta_1=3+15=18$.
 
@@ -274,11 +273,11 @@ Standard Deviation & $0.40$ \\
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\alpha=18$ and $\beta=3$. \\ [-0.3cm]
+\noindent \textit{Black}.  The priors used in the analysis $\alpha=18$ and $\beta=3$.
 
-\noindent \textit{Red}. $\alpha=8$, $\beta=1$.  Not confident in experts response that the computer ``ought" not to fail more than 10 times a month.  Believes a value of 10 or higher is somewhat likely.  \\ [-0.3cm]
+\noindent \textit{Red}. $\alpha=8$, $\beta=1$.  Not confident in experts response that the computer ``ought" not to fail more than 10 times a month.  Believes a value of 10 or higher is somewhat likely.
 
-\noindent \textit{Blue}. $\alpha=8$, $\beta=2$.  Most flexible to the data, but leans towards higher probability in lower amounts of failures.  \\ [-0.3cm]
+\noindent \textit{Blue}. $\alpha=8$, $\beta=2$.  Most flexible to the data, but leans towards higher probability in lower amounts of failures.
 
 \noindent \textit{Green}. $\alpha=16$, $\beta=4$.  Has strong confidence in the experts.  Prior distribution has more weight in the posterior.
 
@@ -341,7 +340,7 @@ f(\lambda|y_i,\alpha,\beta) &=& \frac{\left(\frac{1}{\lambda}\right)^ne^{-\Sigma
 
 \subsection{Maximum Likelihood and Plots}
 
-The prior distribution with parameters $\alpha=5$ and $\beta=1600$. \\ [-.8cm]
+The prior distribution with parameters $\alpha=5$ and $\beta=1600$.
 
 \begin{figure}[H]
 \begin{center}
@@ -350,9 +349,7 @@ The prior distribution with parameters $\alpha=5$ and $\beta=1600$. \\ [-.8cm]
 \end{center}
 \end{figure}
 
-\ \\ [-1.55cm]
-
-\noindent With $n=141$ rivers and $\Sigma y_i=83357$, for the posterior distribution we have parameters $\alpha_1=5+141=146$ and $\beta_1=1600+83357=84957$. \\ [-.85cm]
+\noindent With $n=141$ rivers and $\Sigma y_i=83357$, for the posterior distribution we have parameters $\alpha_1=5+141=146$ and $\beta_1=1600+83357=84957$.
 
 \begin{figure}[H]
 \begin{center}
@@ -409,15 +406,15 @@ Standard Deviation & $48.8$ \\
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.5]{figs/3otherpriors.pdf}
-\caption{Four Prior Distributions}
+\caption{Four Posterior Distributions}
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\alpha=5$ and $\beta=1600$. \\ [-0.3cm]
+\noindent \textit{Black}.  The priors used in the analysis $\alpha=5$ and $\beta=1600$.
 
-\noindent \textit{Red}. $\alpha=2$, $\beta=1000$.  Most flexible to new data.  This was intended as the priors were chosen because of knowing little about North American rivers. \\ [-0.3cm]
+\noindent \textit{Red}. $\alpha=2$, $\beta=1000$.  Most flexible to new data.  This was intended as the priors were chosen because of knowing little about North American rivers.
 
-\noindent \textit{Blue}. $\alpha=9$, $\beta=3000$.  Attempts to agree with the lengths of the rivers in North America.  A brief internet search, independent of the data set, was used to get a rough estimate of the rivers. \\ [-0.3cm]
+\noindent \textit{Blue}. $\alpha=9$, $\beta=3000$.  Attempts to agree with the lengths of the rivers in North America.  A brief internet search, independent of the data set, was used to get a rough estimate of the rivers.
 
 \noindent \textit{Green}. $\alpha=6$, $\beta=4000$.  Priors based off a quick look at top river lengths throughout the world.  These parameters attempt to roughly match the mean from rivers worldwide.
 \bigskip
@@ -426,7 +423,7 @@ Standard Deviation & $48.8$ \\
 
 \subsection{Conclusion}
 
-\noindent We found that the posterior distribution for our parameter of interest $\lambda$ resulted in a mean of 585.9103.  Credible interval bounds tells us that $\lambda$ has a 95\% probability of being within 493 and 683.  Now what we are interested in is what this tells us about river lengths in North America.  Conveniently enough, $\lambda$ corresponds with the mean length and standard deviation of rivers.  So the mean and standard deviation is $\lambda$.
+\noindent We found that the posterior distribution for our parameter of interest $\lambda$ resulted in a mean of 585.  Credible interval bounds tells us that $\lambda$ has a 95\% probability of being within 493 and 683.  Now what we are interested in is what this tells us about river lengths in North America.  Conveniently enough, $\lambda$ corresponds with the mean length and standard deviation of rivers.  So the mean and standard deviation is $\lambda$.
 \bigskip
 
 \noindent The mode posterior distribution indicates to us that the most likely that $\lambda$ could be is 577.  That is, in North America, the average river length is 577.  Now these rivers follow an exponential distribution which has a very long tail, so we aren't surprised when rivers such as the Mississippi or Missouri show up in our data.  But most our river lengths will be around 600 miles or shorter.
@@ -513,7 +510,7 @@ f(\mu|y_i,\psi,\tau^2) &=& \frac{exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)}{\int_{-\in
 
 \subsection{Maximum Likelihood and Plots}
 
-\noindent Parameters for the prior distribution are $\mu_0=85$ and $\sigma_0^2=4$. \\ [-.8cm]
+\noindent Parameters for the prior distribution are $\mu_0=85$ and $\sigma_0^2=4$.
 
 \begin{figure}[H]
 \begin{center}
@@ -521,9 +518,8 @@ f(\mu|y_i,\psi,\tau^2) &=& \frac{exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)}{\int_{-\in
 \caption{Prior Distribution}
 \end{center}
 \end{figure}
-\ \\ [-1.5cm]
 
-\noindent Posterior distribution parameters: $\mu_1=86.3401$ and $\sigma_1^2=1.64467$. \\ [-.8cm]
+\noindent Posterior distribution parameters: $\mu_1=86.34$ and $\sigma_1^2=1.64$.
 
 \begin{figure}[H]
 \begin{center}
@@ -563,16 +559,16 @@ n\hat{\mu} &=& \Sigma y_i \\
 \begin{center}
 \begin{tabular}{l|r}
 Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
-Mean & $86.3401$ \\
-Median & $86.3401$ \\
-Mode & $86.3401$ \\
-Variance & $1.6446$ \\
-Standard Deviation & $1.2824$ \\
+Mean               & $86.34$ \\
+Median             & $86.34$ \\
+Mode               & $86.34$ \\
+Variance           & $1.64$ \\
+Standard Deviation & $1.28$ \\
 \end{tabular}
 \end{center}
 \end{figure}
 
-\noindent The highest probability density interval is $(83.11661, 89.56360)$.
+\noindent The highest probability density interval is $(83.11, 89.56)$.
 
 
 \subsection{Other Potential Priors}
@@ -580,15 +576,15 @@ Standard Deviation & $1.2824$ \\
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.5]{figs/4otherpriors.pdf}
-\caption{Four Prior Distributions}
+\caption{Four Posterior Distributions}
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\mu_0=85$ and $\sigma_0^2=4$. \\ [-0.3cm]
+\noindent \textit{Black}.  The priors used in the analysis $\mu_0=85$ and $\sigma_0^2=4$.
 
-\noindent \textit{Red}. $\mu_0=90$, $\sigma_0^2=1$.  The justification of these priors comes from another interpretation of ``extremely easy" suggesting that the average test score is quite high. \\ [-0.3cm]
+\noindent \textit{Red}. $\mu_0=90$, $\sigma_0^2=1$.  The justification of these priors comes from another interpretation of ``extremely easy" suggesting that the average test score is quite high.
 
-\noindent \textit{Blue}. $\mu_0=75$, $\sigma_0^2=25$.  Higher variability in what the mean could be, but considers the average score to center around 75\%. \\ [-0.3cm]
+\noindent \textit{Blue}. $\mu_0=75$, $\sigma_0^2=25$.  Higher variability in what the mean could be, but considers the average score to center around 75\%.
 
 \noindent \textit{Green}. $\mu_0=80$, $\sigma_0^2=16$.  Similar to that used in the analysis, but with more variability.  This is to take into account a range of higher scores.
 
@@ -690,31 +686,31 @@ n\hat{\theta} &=& \Sigma(y_i-\mu)^2 \\
 \begin{center}
 \begin{tabular}{l|r}
 Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
-Mean & $73.2903$ \\
-Median & $70.1839$ \\
-Mode & $64.9142$ \\
-Variance & $370.4463$ \\
-Standard Deviation & $19.2469$ \\
+Mean               & $73.2$ \\
+Median             & $70.1$ \\
+Mode               & $64.9$ \\
+Variance           & $370.4$ \\
+Standard Deviation & $19.2$ \\
 \end{tabular}
 \end{center}
 \end{figure}
 
-The highest probability density interval is $(41.49334, 111.57435)$.
+The highest probability density interval is $(41.4, 111.5)$.
 
 \subsection{Other Potential Priors}
 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.5]{figs/5otherpriors.pdf}
-\caption{Four Prior Distributions}
+\caption{Four Posterior Distributions}
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\alpha=2$ and $\beta=50$. \\ [-0.3cm]
+\noindent \textit{Black}.  The priors used in the analysis $\alpha=2$ and $\beta=50$.
 
-\noindent \textit{Red}. $\alpha=2$, $\beta=150$.  Variability is rather uncertain, so let it spread out further and be more flexible to new data. \\ [-0.3cm]
+\noindent \textit{Red}. $\alpha=2$, $\beta=150$.  Variability is rather uncertain, so let it spread out further and be more flexible to new data.
 
-\noindent \textit{Blue}. $\alpha=4$, $\beta=60$.  Presumes to be rather confident in choice of $\sigma^2$.  Priors have more weight, less flexible to new data. \\ [-0.3cm]
+\noindent \textit{Blue}. $\alpha=4$, $\beta=60$.  Presumes to be rather confident in choice of $\sigma^2$.  Priors have more weight, less flexible to new data.
 
 \noindent \textit{Green}. $\alpha=5$, $\beta=120$.  Considers variability to be in a higher range, thinking that ``extremely easy" doesn't apply to all who took the test.
 
