@@ -1715,3 +1715,103 @@ new.inv = n/(n-1)*Updated
 Updated = new.inv - (new.inv %*% z %*% t(z) %*% new.inv) / as.vector(1 + t(z) %*% new.inv %*% z)
 solve(cov(Y))
 ###########
+
+###########
+# normal mixture model
+source("~/files/R/mcmc/bayes_functions.R")
+rho = 0.7
+mu1 = 2
+mu2 = 6
+sig1 = 0.8
+sig2 = 1
+
+gen = function(n){
+    r = runif(n)
+    l = sum(r < rho)
+    out = double(n)
+    out[r < rho] = rnorm(l, mu1, sig1)
+    out[r >= rho] = rnorm(n-l, mu2, sig2)
+    return (out)
+    }
+
+calc.post = function(params){
+    rho = params[1]
+    mu1 = params[2]
+    mu2 = params[3]
+    sig1 = params[4]
+    sig2 = params[5]
+    out = 0
+    # likelihood
+    out = sum(log(rho*dnorm(y, mu1, sig1) +
+        (1-rho)*dnorm(y, mu2, sig2)))
+    # priors
+    out = out + dbeta(rho, 7, 3, log = TRUE)
+    out = out + dnorm(mu1, 3, 10, log = TRUE)
+    out = out + dnorm(mu2, 3, 10, log = TRUE)
+    out = out + dgamma(sig1, 1.5, 0.5, log = TRUE)
+    out = out + dgamma(sig2, 1.5, 0.5, log = TRUE)
+    return (out)
+    }
+
+y = gen(500)
+plot(density(y))
+
+nparams = 5
+sigs = rep(1, nparams)
+nburn = 10000
+nmcmc = 25000
+upper = c(1, Inf, Inf, Inf, Inf)
+lower = c(0, -Inf, -Inf, 0, 0)
+window = 500
+
+params = matrix(0, nburn + nmcmc, nparams)
+params[1,] = c(0.5, 0, 0, 1, 1)
+cand.param = params[1,]
+accept = matrix(0, nburn + nmcmc, nparams)
+
+post = calc.post(params[1,])
+cand.post = post
+
+for (i in 2:(nburn+nmcmc)){
+    params[i,] = params[i-1,]
+    for (j in 1:nparams){
+        cand = rnorm(1, params[i,j], sigs[j])
+        if (cand >= lower[j] && cand <= upper[j]){
+            cand.param[j] = cand
+            cand.post = calc.post(cand.param)
+            # check whether to accept draw or not
+            if (log(runif(1)) < cand.post - post){
+                post = cand.post
+                params[i,j] = cand
+                accept[i,j] = 1
+            } else {
+                cand.param[j] = params[i,j]
+                }
+        } else {
+            cand.param[j] = params[i,j]
+            }
+        }
+        # adjust the candidate sigma
+    if (floor(i/window) == i/window && i <= nburn)
+        sigs = sigs*autotune(apply(accept[(i-window+1):i,], 2,
+            mean), k = max(window/50, 1.1))
+    if (floor(i/window) == i/window)
+        cat(i, "/", nburn+nmcmc, "\n")
+    }
+
+params = params[(nburn+1):(nburn+nmcmc),]
+accept = accept[(nburn+1):(nburn+nmcmc),]
+
+for (i in 1:nparams){
+    plot(params[,i], type='l')
+    if (i != nparams)
+        readline()
+    }
+
+apply(params, 2, mean)
+apply(accept, 2, mean)
+# it's okay to estimate rho as 1-rho, just make the
+# changes with the other parameters and it all
+# works out
+
+##########
