@@ -1,0 +1,7 @@
+time route direction tod
+9:49.7 south to morning
+
+# south route is going up big hill
+# east route is going up 9th east passed wilk
+# to direction is to work
+# from is from work
