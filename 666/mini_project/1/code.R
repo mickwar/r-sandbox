@@ -1,5 +1,6 @@
 dat = read.table("~/files/R/666/data/oliver3b.txt", head=TRUE)
 dat = as.matrix(dat)
+dat = dat[-c(40,191,67),]
 n = nrow(dat)
 p = ncol(dat)
 
@@ -44,6 +45,7 @@ for (i in 1:length(D))
 plot(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D),
     pch = 20)
 abline(0,1)
+order(D, decreasing = TRUE)
 
 ### box-cox
 # do the transformation
@@ -108,9 +110,9 @@ mw.pairs(dat)
 mw.pairs(lam.func(dat, mult.lam))
 
 # tri-variate plots
-#col = rep("black", n)
-#col[1] = "blue"
-#col[40] = "red"
+col = rep("black", n)
+col[1] = "blue"
+col[40] = "red"
 #for (i in 1:(p-2)){
 #    for (j in (i+1):(p-1)){
 #        for (k in (j+1):p){
@@ -139,7 +141,7 @@ for (i in 1:length(D))
         (new.dat[i,]-x.bar))
 
 plot(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D),
-    pch = 20)
+    pch = 20, col=col, ylim=c(0, 0.12))
 identify(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D))
 abline(0,1)
 
