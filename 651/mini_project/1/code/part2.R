@@ -27,13 +27,11 @@ priorB=3
 postA=priorA+sum(comps)
 postB=priorB+length(comps)
 
-pdf(paste(path,"figs/2priorplot.pdf",sep=""),9,5)
-curve(dgamma(x,priorA,priorB),n=1001,xlim=c(0,12),
-	main="",ylab="",xlab="",ylim=c(0,1.2))
-polygon(x=seq(0,12,0.001),
-	y=dgamma(seq(0,12,0.001),priorA,priorB),
-	col='lightgray',border='black')
-dev.off()
+#pdf(paste(path,"figs/2priorplot.pdf",sep=""),9,5)
+#polygon(x=seq(0,12,0.001),
+#	y=dgamma(seq(0,12,0.001),priorA,priorB),
+#	col='lightgray',border='black')
+#dev.off()
 
 pdf(paste(path,"figs/2postplot.pdf",sep=""),9,5)
 curve(dgamma(x,postA,postB),n=1001,xlim=c(0,12),
@@ -41,6 +39,10 @@ curve(dgamma(x,postA,postB),n=1001,xlim=c(0,12),
 polygon(x=seq(0,12,0.001),
 	y=dgamma(seq(0,12,0.001),postA,postB),
 	col='lightgray',border='black')
+curve(dgamma(x,priorA,priorB),n=1001, lty=2,
+	main="",ylab="",xlab="", add=TRUE)
+abline(v=mean(comps), col='red')
+legend(8, 1.1, c("Prior", "Posterior", "MLE"), lty=c(2,1,1), col=c("black","black","red"), cex=1.5)
 dev.off()
 
 ### Estimates
@@ -61,6 +63,7 @@ postA/postB^2
 sqrt(postA/postB^2)
 
 #highest posterior density interval
+qgamma(c(0.025, 0.975), postA, postB)
 
 n=10000
 p=0.95

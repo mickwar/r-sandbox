@@ -1,5 +1,7 @@
 \documentclass[12pt]{article}
+
 \usepackage{graphicx,float,units,breqn}
+\usepackage[font=footnotesize]{caption}
 
 \newcommand{\ybar}{\overline{y}}
 
@@ -23,73 +25,72 @@
 
 The probability density function comes from the binomial distribution, where $y_i$ is the number of home runs and $n_i$ is the number of at-bats in game $i$.  The function is defined as:
 
-\[f_*(y_i|\theta)={n_i \choose y_i}\theta^{y_i}(1-\theta)^{n_i-y_i},\ \ \ \ \ \ i=1,\cdots,159\]
+%\[f_*(y_i|\theta)={n_i \choose y_i}\theta^{y_i}(1-\theta)^{n_i-y_i}, 0<\theta<1, n_i=0,1,\cdots, y_i=0,1,\cdots,n_i\]
+
+\begin{eqnarray*}
+f_*(y_i|\theta)={n_i \choose y_i}\theta^{y_i}(1-\theta)^{n_i-y_i}; && 0\leq\theta\leq1; \\
+&& n_i=0,1,\cdots; \\
+&& y_i=0,1,\cdots,n_i \\
+\end{eqnarray*}
 
 \noindent The likelihood function is:
 
 \begin{eqnarray*}
-L(y_i|\theta) &=& \prod_{i=1}^n\left[{n_i \choose y_i}\theta^{y_i}(1-\theta)^{n_i-y_i}\right] \\
+L(\mathbf{y}|\theta) &=& \prod_{i=1}^n\left[{n_i \choose y_i}\theta^{y_i}(1-\theta)^{n_i-y_i}\right] \\
 &=& \left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i} \\
 \end{eqnarray*}
 
-\noindent For the prior we will use a beta distribution with parameters $\alpha$ and $\beta$.  Solving for the posterior distribution will show that we have a conjugate prior.  This is accomplished by multiplying the likelihood and the prior together and diving by the integral of that product.
+\noindent For the prior we will use a beta distribution with parameters $a$ and $b$, which has the pdf
+\[\pi(\theta)=\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\theta^{a-1}(1-\theta)^{b-1}\ \ \ \ \ 0<\theta<1;\ a>0;\ b>0 \]
+
+\noindent Solving for the posterior distribution will show that we have a conjugate prior.  This is accomplished by multiplying the likelihood and the prior together and diving by the integral of that product.
 
 \begin{eqnarray*}
-f(\theta|y_i,\alpha,\beta) &=& \frac{\left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\theta^{\alpha-1}(1-\theta)^{\beta-1}}{\int_0^1\left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\theta^{\alpha-1}(1-\theta)^{\beta-1}d\theta}  \\
+\pi(\theta|\mathbf{y}) &=& \frac{\left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\theta^{a-1}(1-\theta)^{b-1}}{\int_0^1\left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\theta^{a-1}(1-\theta)^{b-1}d\theta}  \\
 \\
-&=& \frac{\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\theta^{\alpha-1}(1-\theta)^{\beta-1}}{\int_0^1\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\theta^{\alpha-1}(1-\theta)^{\beta-1}d\theta} \\
+&=& \frac{\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\theta^{a-1}(1-\theta)^{b-1}}{\int_0^1\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\theta^{a-1}(1-\theta)^{b-1}d\theta} \\
 \\
-&=& \frac{\theta^{\alpha+\Sigma y_i-1}(1-\theta)^{\beta+\Sigma n_i-\Sigma y_i-1}}{\int_0^1\theta^{\alpha+\Sigma y_i-1}(1-\theta)^{\beta+\Sigma n_i-\Sigma y_i-1}d\theta} \\
+&=& \frac{\theta^{a+\Sigma y_i-1}(1-\theta)^{b+\Sigma n_i-\Sigma y_i-1}}{\int_0^1\theta^{a+\Sigma y_i-1}(1-\theta)^{b+\Sigma n_i-\Sigma y_i-1}d\theta} \\
 \end{eqnarray*}
 
-\noindent Let $\tau=\alpha+\Sigma y_i$ and $\psi=\beta+\Sigma n_i-\Sigma y_i$, then
+\noindent Let $a^*=a+\Sigma y_i$ and $b^*=b+\Sigma n_i-\Sigma y_i$, then
 
 \begin{eqnarray*}
-f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^1\theta^{\tau-1}(1-\theta)^{\psi-1}d\theta} \\
-&=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\frac{\Gamma(\tau)\Gamma(\psi)}{\Gamma(\tau+\psi)}\int_0^1\frac{\Gamma(\tau+\psi)}{\Gamma(\tau)\Gamma(\psi)}\theta^{\tau-1}(1-\theta)^{\psi-1}d\theta} \\
-&=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\frac{\Gamma(\tau)\Gamma(\psi)}{\Gamma(\tau+\psi)}} \\
-&=& \frac{\Gamma(\tau+\psi)}{\Gamma(\tau)\Gamma(\psi)}\theta^{\tau-1}(1-\theta)^{\psi-1} \\
+\pi(\theta|\mathbf{y}) &=& \frac{\theta^{a^*-1}(1-\theta)^{b^*-1}}{\int_0^1\theta^{a^*-1}(1-\theta)^{b^*-1}d\theta} \\
+&=& \frac{\theta^{a^*-1}(1-\theta)^{b^*-1}}{\frac{\Gamma(a^*)\Gamma(b^*)}{\Gamma(a^*+b^*)}\int_0^1\frac{\Gamma(a^*+b^*)}{\Gamma(a^*)\Gamma(b^*)}\theta^{a^*-1}(1-\theta)^{b^*-1}d\theta} \\
+&=& \frac{\theta^{a^*-1}(1-\theta)^{b^*-1}}{\frac{\Gamma(a^*)\Gamma(b^*)}{\Gamma(a^*+b^*)}} \\
+&=& \frac{\Gamma(a^*+b^*)}{\Gamma(a^*)\Gamma(b^*)}\theta^{a^*-1}(1-\theta)^{b^*-1} \\
 \end{eqnarray*}
 
-\noindent Replacing the function in terms of $\alpha$ and $\beta$ we get
-
-\[f(\theta|y_i,\alpha,\beta)=\frac{\Gamma(\alpha+\beta+\Sigma n_i)}{\Gamma(\alpha+\Sigma y_i)\Gamma(\beta+\Sigma n_i-\Sigma y_i)}\theta^{\alpha+\Sigma y_i-1}(1-\theta)^{\beta+\Sigma n_i-\Sigma y_i-1}\]
-
-\noindent which is a Beta distribution with parameters $\alpha+\Sigma y_i$ and $\beta+\Sigma n_i-\Sigma y_i$.  Thus, we have a conjugate prior.
+\noindent which is a beta distribution with parameters $a^*=a+\Sigma y_i$ and $b^*=b+\Sigma n_i-\Sigma y_i$.  Thus, we have a conjugate prior.
 
 \subsection{Prior Parameters}
 
-\noindent Values for the priors were chosen to be $\alpha=5$ and $\beta=45$.  When looking at Barry Bonds' record from the beginning of his career, we can see that his home run per at-bat percent has been gradually increasing from about 5\% in 1986 to about 10\% in 2000.  With the chosen priors we would have a mean of $\frac{5}{5+45}=10\%$.  Though we must be careful to have enough flexibility in these priors to adjust for the 2001 season, while still building off the previous years.
+\noindent Values for the priors were chosen to be $a=5$ and $b=45$.  When looking at Barry Bonds' record from the beginning of his career, we can see that his home run per at-bat percent has been gradually increasing from about 5\% in 1986 to about 10\% in 2000.  With the chosen priors we would have a mean of $\frac{5}{5+45}=10\%$.  Though we must be careful to have enough flexibility in these priors to adjust for the 2001 season, while still building off the previous years.
 \bigskip
 
-\noindent With a relatively high standard deviation of $\sqrt{\frac{(5)(45)}{(5+45)^2(5+45+1)}}=0.042$ we are more likely to take into account his performance in earlier years.  However, since his record has been improving, we do not want too much weight into these priors.  Having too high of priors could pull down our estimate calculated from the posterior distribution.  Thus values such as $\alpha=10$ and $\beta=90$ were not selected, even though that distribution has a mean of $10\%$.  So $\alpha=5$ and $\beta=45$ seem to be an appropriate choice.
+\noindent With a relatively high standard deviation of $\sqrt{\frac{(5)(45)}{(5+45)^2(5+45+1)}}=0.042$ we are more likely to take into account his performance in earlier years.  However, since his record has been improving, we do not want too much weight into these priors.  Having too high of priors could pull down our estimate calculated from the posterior distribution.  Thus values such as $a=10$ and $b=90$ were not selected, even though that distribution has a mean of $10\%$.  So $a=5$ and $b=45$ seem to be an appropriate choice.
 \bigskip
 
 
 \subsection{Maximum Likelihood and Plots}
 
-\noindent The plot for a Beta distribution with parameters $\alpha=5$ and $\beta=45$.
+%\noindent The plot for a Beta distribution with parameters $\alpha=5$ and $\beta=45$.
 
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/1priorplot.pdf}
-\caption{Prior Distribution}
-\end{center}
-\end{figure}
+%\begin{figure}[H]
+%\begin{center}
+%\includegraphics[scale=0.5]{figs/1priorplot.pdf}
+%\caption{Prior distribution}
+%\end{center}
+%\end{figure}
+%\bigskip
+%\bigskip
+%\bigskip
+
+\noindent \textit{Parameters of the posterior distribution.}  In 2001, Barry Bonds was at-bat 476 times and hit 73 home runs.  Using this data to update our priors, we get posterior parameters of $a^*=5+73=78$ and $b^*=45+476-73=448$.
 \bigskip
-\bigskip
-\bigskip
 
-\noindent \textit{Parameters of the posterior distribution.}  In 2001, Barry Bonds was at-bat 476 times and hit 73 home runs.  Using this data in connection with our priors, we get posterior parameters of $\alpha_1=5+73=78$ and $\beta_1=45+476-73=448$.
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/1postplot.pdf}
-\caption{Posterior Distribution}
-\end{center}
-\end{figure}
-
-\noindent \textit{Derivation of the maximum likelihood estimator.}  This will give us the mode of the posterior distribution.  First, take the logarithm of the likelihood.
+\noindent \textit{Derivation of the maximum likelihood estimator.}  First, take the logarithm of the likelihood.
 
 \begin{eqnarray*}
 \mathrm{log}L(y_i|\theta)&=& \mathrm{log}\left(\left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\right) \\
@@ -114,9 +115,15 @@ f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^
 \hat{\theta} &=& \frac{\Sigma y_i}{\Sigma n_i} \\
 \end{eqnarray*}
 
-\noindent When putting in the values obtained from the data we get
+\noindent The MLE is calculated to be
 \[\hat{\theta}=\frac{73}{476}=0.153.\]
 
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{figs/1postplot.pdf}
+\caption{Plots of the prior (dashed), posterior (solid), and MLE (red).}
+\end{center}
+\end{figure}
 
 
 \subsection{Posterior Estimates}
@@ -124,7 +131,7 @@ f(\theta|y_i,\alpha,\beta) &=& \frac{\theta^{\tau-1}(1-\theta)^{\psi-1}}{\int_0^
 \begin{figure}[H]
 \begin{center}
 \begin{tabular}{l|r}
-Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
+Estimate & \multicolumn{1}{l}{Value} \\ \hline \hline
 Mean               & $0.1482$ \\
 Median             & $0.1478$ \\
 Mode               & $0.1469$ \\
@@ -134,7 +141,7 @@ Standard Deviation & $0.0154$ \\
 \end{center}
 \end{figure}
 
-\noindent The highest posterior density interval is $(0.118, 0.178)$.
+\noindent The 95\% central credible interval is $(0.119, 0.179)$.
 
 \subsection{Other Potential Priors}
 
@@ -146,17 +153,17 @@ Standard Deviation & $0.0154$ \\
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\alpha=5$ and $\beta=45$.
+\noindent \textit{Black}.  The priors used in the analysis $a=5$ and $b=45$.
 
-\noindent \textit{Red}. $\alpha=1$, $\beta=14$.  Based off all home runs and at-bats in seasons previous to 2001.  Very flexible to new data.
+\noindent \textit{Red}. $a=1$, $b=14$.  Based off all home runs and at-bats in seasons previous to 2001.  Very flexible to new data.
 
-\noindent \textit{Blue}. $\alpha=4$, $\beta=45$.  Looks only at the time Bonds was with the Giants before 2001.  Moderately flexible to new data.
+\noindent \textit{Blue}. $a=4$, $b=45$.  Looks only at the time Bonds was with the Giants before 2001.  Moderately flexible to new data.
 
-\noindent \textit{Green}. $\alpha=10$, $\beta=90$.  Uses only the 2000 season to select prior parameters.  New data affects posterior to a lesser degree than other priors.
+\noindent \textit{Green}. $a=10$, $b=90$.  Uses only the 2000 season to select prior parameters.  New data affects posterior to a lesser degree than other priors.
 
-\subsection{Conclusion}
-
-In terms of home runs and at-bats, Barry Bonds did exceptionally well in 2001.  He averaged close to 15 home runs for every 100 at-bats.  The lower end of the 95\% credible interval suggests that with high probability Bonds played well enough to hit at least 11\% home runs.  There is also a good chance that he played well enough to hit up to 18\% home runs.  Considering only a handful of players have averaged more than 7\% home runs during their careers, Barry Bonds' 2001 season was indeed spectacular and significant.
+%\subsection{Conclusion}
+%
+%In terms of home runs and at-bats, Barry Bonds did exceptionally well in 2001.  He averaged close to 15 home runs for every 100 at-bats.  The lower end of the 95\% credible interval suggests that with high probability Bonds played well enough to hit at least 11\% home runs.  There is also a good chance that he played well enough to hit up to 18\% home runs.  Considering only a handful of players have averaged more than 7\% home runs during their careers, Barry Bonds' 2001 season was indeed spectacular and significant.
 
 \newpage
 
@@ -164,61 +171,59 @@ In terms of home runs and at-bats, Barry Bonds did exceptionally well in 2001.  
 
 \subsection{Summary}
 
-\noindent We will look at data for 15 months of failures of the Los Alamos National Laboratory ``fasted computer in the world."  Experts say that the computer should not fail any more than 10 times in a month.
+\noindent We will look at data for 15 months of failures of the Los Alamos National Laboratory ``fasted computer in the world.''  Experts say that the computer should not fail any more than 10 times in a month.
 
 \subsection{The Likelihood and Conjugate Prior}
 
 The probability density function comes from the Poisson distribution, where $y_i$ is the number of failures in a month.  The function, for $i=1,2,\cdots,15$, is:
 
-\[f_*(y_i|\lambda)=\frac{\lambda^{y_i}e^{-\lambda}}{y_i!} \]
+\[f_*(y_i|\lambda)=\frac{\lambda^{y_i}e^{-\lambda}}{y_i!};\ \ \ \ \ \lambda\geq 0;\ y_i=0,1,\cdots \]
 
 \noindent The likelihood function is:
 
-\[L(y_i|\lambda) = \prod_{i=1}^n\left(\frac{\lambda^{y_i}e^{-\lambda}}{y_i!}\right) = \frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\]
+\[L(\mathbf{y}|\lambda) = \prod_{i=1}^n\left(\frac{\lambda^{y_i}e^{-\lambda}}{y_i!}\right) = \frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\]
 
 %\noindent The conjugate prior, as we shall see, is the Gamma distribution, which is:
 
 %\[f(\lambda)=\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}\]
 
-\noindent Using the Gamma distribution for our prior, we derive the posterior distribution
+\noindent Using the gamma distribution (with the rate parametrization)
+
+\[\pi(\lambda)=\frac{b^a}{\Gamma(a)}\lambda^{a-1}e^{-b\lambda};\ \ \ \ \ \lambda\geq 0;\ a,b>0\]
+
+\noindent for our prior, we derive the posterior distribution
 
 \begin{eqnarray*}
-f(\lambda|y_i,\alpha,\beta) &=& \frac{\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}}{\int_0^\infty\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}d\lambda} \\
+\pi(\lambda|\mathbf{y}) &=& \frac{\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\frac{b^a}{\Gamma(a)}\lambda^{a-1}e^{-b\lambda}}{\int_0^\infty\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\frac{b^a}{\Gamma(a)}\lambda^{a-1}e^{-b\lambda}d\lambda} \\
 %&=& \frac{\lambda^{\Sigma y_i}e^{-n\lambda}\lambda^{\alpha-1}e^{-\beta\lambda}}{\int_0^\infty\lambda^{\Sigma y_i}e^{-n\lambda}\lambda^{\alpha-1}e^{-\beta\lambda}d\lambda} \\
-&=& \frac{\lambda^{\alpha+\Sigma y_i-1}e^{-\lambda(\beta+n)}}{\int_0^\infty\lambda^{\alpha+\Sigma y_i-1}e^{-\lambda(\beta+n)}d\lambda} \\
-&=& \frac{\lambda^{\alpha+\Sigma y_i-1}e^{-\lambda(\beta+n)}}{\frac{\Gamma(\alpha+\Sigma y_i)}{(\beta+n)^{\alpha+\Sigma y_i}}\int_0^\infty\frac{(\beta+n)^{\alpha+\Sigma y_i}}{\Gamma(\alpha+\Sigma y_i)}\lambda^{\alpha+\Sigma y_i-1}e^{-\lambda(\beta+n)}d\lambda} \\
-&=& \frac{\lambda^{\alpha+\Sigma y_i-1}e^{-\lambda(\beta+n)}}{\frac{\Gamma(\alpha+\Sigma y_i)}{(\beta+n)^{\alpha+\Sigma y_i}}} \\
-&=& \frac{(\beta+n)^{\alpha+\Sigma y_i}}{\Gamma(\alpha+\Sigma y_i)}\lambda^{\alpha+\Sigma y_i-1}e^{-\lambda(\beta+n)} \\
+&=& \frac{\lambda^{a+\Sigma y_i-1}e^{-\lambda(b+n)}}{\int_0^\infty\lambda^{a+\Sigma y_i-1}e^{-\lambda(b+n)}d\lambda} \\
+&=& \frac{\lambda^{a+\Sigma y_i-1}e^{-\lambda(b+n)}}{\frac{\Gamma(a+\Sigma y_i)}{(b+n)^{a+\Sigma y_i}}\int_0^\infty\frac{(b+n)^{a+\Sigma y_i}}{\Gamma(a+\Sigma y_i)}\lambda^{a+\Sigma y_i-1}e^{-\lambda(b+n)}d\lambda} \\
+&=& \frac{\lambda^{a+\Sigma y_i-1}e^{-\lambda(b+n)}}{\frac{\Gamma(a+\Sigma y_i)}{(b+n)^{a+\Sigma y_i}}} \\
+&=& \frac{(b+n)^{a+\Sigma y_i}}{\Gamma(a+\Sigma y_i)}\lambda^{a+\Sigma y_i-1}e^{-\lambda(b+n)} \\
 \end{eqnarray*}
 
-\noindent which is a Gamma distribution with parameters $\alpha+\Sigma y_i$ and $\beta+n$.  %Thus we have a conjugate prior.
+\noindent which is a gamma distribution with parameters $a+\Sigma y_i$ and $b+n$.  %Thus we have a conjugate prior.
 
 \subsection{Prior Parameters}
 
-\noindent For this analysis, we chose priors of $\alpha=18$ and $\beta=3$.  We consider the expert's statement that they thought there ``ought" to be no more than 10 failures in one month.  There appears to be some uncertainty, even lack of confidence, from the expert.  For the most part, the expert's statement was believed and used as the basis in selecting the priors.
+\noindent For this analysis, we chose priors of $a=18$ and $b=3$.  We consider the expert's statement that they thought there ``ought'' to be no more than 10 failures in one month.  There appears to be some uncertainty, even lack of confidence, from the expert.  For the most part, the expert's statement was believed and used as the basis in selecting the priors.
 \bigskip
 
-\noindent Such a choice would result in a mean and variance of $\frac{18}{3}=6$ in estimating $\lambda$.  The priors suggest that there is some probability ($0.39$) that the computer will fail more than 10 times in the month.  Though, sufficient amounts of data should be enough to have the posterior distribution conform appropriately to the true distribution of the parameter of interest.
+\noindent Such a choice would result in a mean and variance of $\frac{18}{3}=6$ in estimating $\lambda$.  The priors suggest that there is some probability ($0.39$) that the computer will fail more than 10 times in the month, but for the most part should agree with the expert's opinion.
 
 \subsection{Maximum Likelihood and Plots}
 
-\noindent The plot for a Gamma distribution with parameters $\alpha=18$ and $\beta=3$.
+%\noindent The plot for a Gamma distribution with parameters $\alpha=18$ and $\beta=3$.
+%
+%\begin{figure}[H]
+%\begin{center}
+%\includegraphics[scale=0.5]{figs/2priorplot.pdf}
+%\caption{Prior Distribution}
+%\end{center}
+%\end{figure}
 
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/2priorplot.pdf}
-\caption{Prior Distribution}
-\end{center}
-\end{figure}
-
-\noindent \textit{Parameters of the posterior distribution.}  From the data collected, there were a total of 34 failures in the 15 months.  So this means we have for posterior parameters $\alpha_1=18+34=52$ and $\beta_1=3+15=18$.
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/2postplot.pdf}
-\caption{Posterior Distribution}
-\end{center}
-\end{figure}
+\noindent \textit{Parameters of the posterior distribution.}  From the data collected, there were a total of 34 failures in the 15 months.  So this means we have for posterior parameters $a^*=18+34=52$ and $b^*=3+15=18$.
+\bigskip
 
 \noindent \textit{Derivation of the maximum likelihood estimator.}  Take the logarithm of the likelihood function.
 
@@ -235,14 +240,23 @@ f(\lambda|y_i,\alpha,\beta) &=& \frac{\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\
 &=& \frac{\Sigma y_i}{\lambda}-n \\
 \end{eqnarray*}
 
-\noindent Set this equal to 0 and solve for $\hat{\lambda}$.
+\noindent Set equal to 0 and solve for $\hat{\lambda}$.
 
 \begin{eqnarray*}
 0 &=& \frac{\Sigma y_i}{\hat{\lambda}}-n \\
-n &=& \frac{\Sigma y_i}{\hat{\lambda}} \\
+%n &=& \frac{\Sigma y_i}{\hat{\lambda}} \\
 \hat{\lambda} &=& \frac{\Sigma y_i}{n} \\
 &=& \ybar \\
 \end{eqnarray*}
+
+\noindent which is evaluted to be $\hat{\lambda}=2.26$.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{figs/2postplot.pdf}
+\caption{Plots of the prior (dashed), posterior (solid), and MLE (red).}
+\end{center}
+\end{figure}
 
 \subsection{Posterior Estimates}
 
@@ -259,35 +273,32 @@ Standard Deviation & $0.40$ \\
 \end{center}
 \end{figure}
 
-\noindent The highest posterior density interval is $(2.12, 3.68)$.
+\noindent The 95\% central credible interval is $(2.15, 3.72)$.
 
 \subsection{Other Potential Priors}
 
-\noindent \textit{See Figure 6 for the posterior plots of each selection of prior parameters.}
-\bigskip
-
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.5]{figs/2otherpriors.pdf}
 \caption{Four Posterior Distributions}
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\alpha=18$ and $\beta=3$.
+\noindent \textit{Black}.  The priors used in the analysis $a=18$ and $b=3$.
 
-\noindent \textit{Red}. $\alpha=8$, $\beta=1$.  Not confident in experts response that the computer ``ought" not to fail more than 10 times a month.  Believes a value of 10 or higher is somewhat likely.
+\noindent \textit{Red}. $a=8$, $b=1$.  Not confident in experts response that the computer ``ought" not to fail more than 10 times a month.  Believes a value of 10 or higher is somewhat likely.
 
-\noindent \textit{Blue}. $\alpha=8$, $\beta=2$.  Most flexible to the data, but leans towards higher probability in lower amounts of failures.
+\noindent \textit{Blue}. $a=8$, $b=2$.  Most flexible to the data, but leans towards higher probability in lower amounts of failures.
 
-\noindent \textit{Green}. $\alpha=16$, $\beta=4$.  Has strong confidence in the experts.  Prior distribution has more weight in the posterior.
+\noindent \textit{Green}. $a=16$, $b=4$.  Has strong confidence in the experts.  Prior distribution has more weight in the posterior.
 
 
-\subsection{Conclusion}
-
-\noindent From our interval estimation we may say that there is a 95\% probability that $\lambda$ is not any less than 2.12 and no higher than 3.68.  Even at the higher end of the interval, having such a $\lambda$ would result in a minimal amount of months where the supercomputer failed 10 or more times.  Though there is still some chance of the computer failing that many times.
-\bigskip
-
-\noindent However, despite the possible occurrence of a high number of failures, using the estimates gathered from the posterior distribution we would realistically expect between 1 and 7 failures in any given month.  Collecting more data will allow us to construct narrower intervals and estimate $\lambda$ with greater accuracy.
+%\subsection{Conclusion}
+%
+%\noindent From our interval estimation we may say that there is a 95\% probability that $\lambda$ is not any less than 2.12 and no higher than 3.68.  Even at the higher end of the interval, having such a $\lambda$ would result in a minimal amount of months where the supercomputer failed 10 or more times.  Though there is still some chance of the computer failing that many times.
+%\bigskip
+%
+%\noindent However, despite the possible occurrence of a high number of failures, using the estimates gathered from the posterior distribution we would realistically expect between 1 and 7 failures in any given month.  Collecting more data will allow us to construct narrower intervals and estimate $\lambda$ with greater accuracy.
 
 \newpage
 
@@ -310,21 +321,21 @@ L(y_i|\lambda) &=& \prod\left[\frac{1}{\lambda}e^{-y_i/\lambda}\right] \\
 &=& \left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda} \\
 \end{eqnarray*}
 
-\noindent We will use an Inverse Gamma distribution for the prior, which is:
+\noindent We will use an Inverse Gamma distribution for the prior, which has pdf:
 
-\[f(\lambda|\alpha,\beta)=\frac{\beta^\alpha}{\Gamma(\alpha)}\left(\frac{1}{\lambda}\right)^{\alpha+1}e^{-\beta/\lambda}\]
+\[f(\lambda|a,b)=\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}\]
 
 \noindent Multiplying the likelihood with the prior and dividing by the integral of that same product will give us the posterior distribution.  So we have
 
 \begin{eqnarray*}
-f(\lambda|y_i,\alpha,\beta) &=& \frac{\left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{\beta^\alpha}{\Gamma(\alpha)}\left(\frac{1}{\lambda}\right)^{\alpha+1}e^{-\beta/\lambda}}{\int_o^\infty \left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{\beta^\alpha}{\Gamma(\alpha)}\left(\frac{1}{\lambda}\right)^{\alpha+1}e^{-\beta/\lambda}d\lambda} \\
-&=& \frac{\left(\frac{1}{\lambda}\right)^{(\alpha+n)+1}e^{-(\beta+\Sigma y_i)/\lambda}}{\int_0^\infty \left(\frac{1}{\lambda}\right)^{(\alpha+n)+1}e^{-(\beta+\Sigma y_i)/\lambda}d\lambda} \\
-&=& \frac{\left(\frac{1}{\lambda}\right)^{(\alpha+n)+1}e^{-(\beta+\Sigma y_i)/\lambda}}{\frac{\Gamma(\alpha+n)}{(\beta+\Sigma y_i)^{\alpha+n}}\int_0^\infty \frac{(\beta+\Sigma y_i)^{\alpha+n}}{\Gamma(\alpha+n)}\left(\frac{1}{\lambda}\right)^{(\alpha+n)+1}e^{-(\beta+\Sigma y_i)/\lambda}d\lambda} \\
-&=& \frac{\left(\frac{1}{\lambda}\right)^{(\alpha+n)+1}e^{-(\beta+\Sigma y_i)/\lambda}}{\frac{\Gamma(\alpha+n)}{(\beta+\Sigma y_i)^{\alpha+n}}} \\
-&=& \frac{(\beta+\Sigma y_i)^{\alpha+n}}{\Gamma(\alpha+n)}\left(\frac{1}{\lambda}\right)^{(\alpha+n)+1}e^{-(\beta+\Sigma y_i)/\lambda} \\
+f(\lambda|y_i,a,b) &=& \frac{\left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}}{\int_o^\infty \left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}d\lambda} \\
+&=& \frac{\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}}{\int_0^\infty \left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}d\lambda} \\
+&=& \frac{\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}}{\frac{\Gamma(a+n)}{(b+\Sigma y_i)^{a+n}}\int_0^\infty \frac{(b+\Sigma y_i)^{a+n}}{\Gamma(a+n)}\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}d\lambda} \\
+&=& \frac{\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}}{\frac{\Gamma(a+n)}{(b+\Sigma y_i)^{a+n}}} \\
+&=& \frac{(b+\Sigma y_i)^{a+n}}{\Gamma(a+n)}\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda} \\
 \end{eqnarray*}
 
-\noindent which is an Inverse Gamma distribution with parameters $\alpha_1=\alpha+n$ and $\beta_1=\beta+\Sigma y_i$.  Therefore, the Inverse Gamma is the conjugate prior to the probability density function.
+\noindent which is an Inverse Gamma distribution with parameters $a^*=a+n$ and $b^*=b+\Sigma y_i$.  Therefore, the Inverse Gamma is the conjugate prior to the probability density function.
 \bigskip
 
 \begin{scriptsize}
@@ -333,7 +344,7 @@ f(\lambda|y_i,\alpha,\beta) &=& \frac{\left(\frac{1}{\lambda}\right)^ne^{-\Sigma
 
 \subsection{Prior Parameters}
 
-\noindent For our analysis we selected priors of $\alpha=5$ and $\beta=1600$.  With an Inverse Gamma distribution, this means we have a mean of $\frac{\beta}{\alpha-1}=400$ and standard deviation of $\sqrt{\frac{\beta^2}{(\alpha-1)^2(\alpha-2)}}=230.94$.
+\noindent For our analysis we selected priors of $a=5$ and $b=1600$.  With an Inverse Gamma distribution, this means we have a mean of $\frac{b}{a-1}=400$ and standard deviation of $\sqrt{\frac{b^2}{(a-1)^2(a-2)}}=230.94$.
 \bigskip
 
 \noindent We want to choose priors that seem to match up with what we know about river lengths in North America (which is very little).  We are saying that the average length is about $400$ miles.  With a high standard deviation we have a higher chance of capturing the true mean in our analysis.  Since these priors are comparatively low, the posterior distribution will be more flexible to new data, which is what we want since we have little knowledge of anything about rivers.
@@ -421,15 +432,15 @@ Standard Deviation & $48.8$ \\
 
 \noindent Due to the large amount of data, it turns out that each of these choices in priors resulted in roughly the same posterior distribution.
 
-\subsection{Conclusion}
-
-\noindent We found that the posterior distribution for our parameter of interest $\lambda$ resulted in a mean of 585.  Credible interval bounds tells us that $\lambda$ has a 95\% probability of being within 493 and 683.  Now what we are interested in is what this tells us about river lengths in North America.  Conveniently enough, $\lambda$ corresponds with the mean length and standard deviation of rivers.  So the mean and standard deviation is $\lambda$.
-\bigskip
-
-\noindent The mode posterior distribution indicates to us that the most likely that $\lambda$ could be is 577.  That is, in North America, the average river length is 577.  Now these rivers follow an exponential distribution which has a very long tail, so we aren't surprised when rivers such as the Mississippi or Missouri show up in our data.  But most our river lengths will be around 600 miles or shorter.
-\bigskip
-
-\noindent Since this data came from North America's major rivers we would like to see how this compares to the world's major rivers.  Keep in mind that most rivers in North America will about no more than 600 or 650 miles long.  When considering the world's longest rivers, the river ranked 175th sits at about 645 miles.  So if we were to do an analysis on the world rivers, we would expect $\lambda$ to be somewhere close to 1000.  Not much of a competition for North America.
+%\subsection{Conclusion}
+%
+%\noindent We found that the posterior distribution for our parameter of interest $\lambda$ resulted in a mean of 585.  Credible interval bounds tells us that $\lambda$ has a 95\% probability of being within 493 and 683.  Now what we are interested in is what this tells us about river lengths in North America.  Conveniently enough, $\lambda$ corresponds with the mean length and standard deviation of rivers.  So the mean and standard deviation is $\lambda$.
+%\bigskip
+%
+%\noindent The mode posterior distribution indicates to us that the most likely that $\lambda$ could be is 577.  That is, in North America, the average river length is 577.  Now these rivers follow an exponential distribution which has a very long tail, so we aren't surprised when rivers such as the Mississippi or Missouri show up in our data.  But most our river lengths will be around 600 miles or shorter.
+%\bigskip
+%
+%\noindent Since this data came from North America's major rivers we would like to see how this compares to the world's major rivers.  Keep in mind that most rivers in North America will about no more than 600 or 650 miles long.  When considering the world's longest rivers, the river ranked 175th sits at about 645 miles.  So if we were to do an analysis on the world rivers, we would expect $\lambda$ to be somewhere close to 1000.  Not much of a competition for North America.
 
 \newpage
 
@@ -588,9 +599,9 @@ Standard Deviation & $1.28$ \\
 
 \noindent \textit{Green}. $\mu_0=80$, $\sigma_0^2=16$.  Similar to that used in the analysis, but with more variability.  This is to take into account a range of higher scores.
 
-\subsection{Conclusion}
-
-The analysis showed that the there is a 95\% probability that the average on the test score is between 83.1 and 89.5.  We normally think that an average grade on an exam should be about 70\%.  We may be tempted to agree with the test's description of extremely easy, but we should not forget that an honors section took the test.  Therefore it will be hard for us to conclude that the exam in reality is easy.  However, we are safe in saying, with good certainty as per the credible interval, that the mean is about 86.3\%.
+%\subsection{Conclusion}
+%
+%The analysis showed that the there is a 95\% probability that the average on the test score is between 83.1 and 89.5.  We normally think that an average grade on an exam should be about 70\%.  We may be tempted to agree with the test's description of extremely easy, but we should not forget that an honors section took the test.  Therefore it will be hard for us to conclude that the exam in reality is easy.  However, we are safe in saying, with good certainty as per the credible interval, that the mean is about 86.3\%.
 
 \newpage
 
@@ -714,9 +725,9 @@ The highest probability density interval is $(41.4, 111.5)$.
 
 \noindent \textit{Green}. $\alpha=5$, $\beta=120$.  Considers variability to be in a higher range, thinking that ``extremely easy" doesn't apply to all who took the test.
 
-\subsection{Conclusion}
-
-Taking the square root of our estimates will be most helpful in analyzing the distribution of the data.  For an HPD interval, we get $(6.44, 10.56)$ and this gives us a good idea of how our data are distributed.  In comparison to what we might normally expect with exam grades (say about 10), these standard deviations are small.  This suggests that, as a whole, the class did well and scored pretty close together, without too many low scores.
+%\subsection{Conclusion}
+%
+%Taking the square root of our estimates will be most helpful in analyzing the distribution of the data.  For an HPD interval, we get $(6.44, 10.56)$ and this gives us a good idea of how our data are distributed.  In comparison to what we might normally expect with exam grades (say about 10), these standard deviations are small.  This suggests that, as a whole, the class did well and scored pretty close together, without too many low scores.
 
 % \newpage
 % 

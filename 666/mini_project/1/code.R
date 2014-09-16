@@ -22,6 +22,7 @@ mw.pairs = function(x){
                 } else {
                     plot(x[,j], x[,i], pch=20, axes = FALSE)
                     points(x[40,j], x[40,i], pch=20, col='red')
+                    points(x[1,j], x[1,i], pch=20, col='blue')
                     }
                 }
             box()
@@ -96,17 +97,29 @@ max.loop = function(x, lambda, niter = 1000, temperature = 0.99, width, print = 
     return (lam)
     }
 
-start.lam = double(p)
-for (i in 1:p)
-    start.lam[i] = max.loop(dat[,i], print = TRUE)
-mult.lam = max.loop(dat, lam = start.lam, print = TRUE)
+#start.lam = double(p)
+#for (i in 1:p)
+#    start.lam[i] = max.loop(dat[,i], print = TRUE)
+#mult.lam = max.loop(dat, lam = start.lam, print = TRUE)
+#mw.pairs(lam.func(dat, start.lam))
 
-max.func(dat, start.lam)
-max.func(dat, mult.lam)
-
+mult.lam = max.loop(dat, print = TRUE)
 mw.pairs(dat)
-mw.pairs(lam.func(dat, start.lam))
 mw.pairs(lam.func(dat, mult.lam))
+
+# tri-variate plots
+#col = rep("black", n)
+#col[1] = "blue"
+#col[40] = "red"
+#for (i in 1:(p-2)){
+#    for (j in (i+1):(p-1)){
+#        for (k in (j+1):p){
+#            plot3d(dat[,i], dat[,j], dat[,k], size=5, col=col)
+#            cat(i,j,k)
+#            readline()
+#            }
+#        }
+#    }
 
 plot(dat[,4], dat[,1], pch=20)
 #identify(dat[,4], dat[,1])
