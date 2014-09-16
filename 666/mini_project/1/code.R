@@ -4,6 +4,7 @@ n = nrow(dat)
 p = ncol(dat)
 
 mw.pairs = function(x){
+    require(MASS)
     par(mfrow=rep(ncol(x), 2), mar=rep(0, 4))
     for (i in 1:ncol(x)){
         for (j in 1:ncol(x)){
@@ -12,7 +13,15 @@ mw.pairs = function(x){
                 #plot(density(x[,i]), axes = FALSE, main = "")
                 legend("topright", legend = i, box.lty = 0, cex = 1.5)
             } else {
-                plot(x[,j], x[,i], pch=20, axes = FALSE)
+                if (i > j){
+                    z = kde2d(x[,j], x[,i])
+                    plot(NA, xlim = range(z$x), ylim = range(z$y), axes = FALSE)
+                    .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
+                        col=gray(seq(0.0, 1.0, length=20)))
+#                   points(dat[,4], dat[,1], pch=20)
+                } else {
+                    plot(x[,j], x[,i], pch=20, axes = FALSE)
+                    }
                 }
             box()
             }
@@ -53,33 +62,56 @@ max.func = function(x, lam){
     -n/2*determinant((n-1)/n*cov(y))$modulus[1] +
         sum(apply(log(x), 2, sum) * (lam-1))
     }
-
-# do it
-lam = runif(p, -2, 2)
-width = rep(2, p)
-temp = 0.99
-niter = 10000
-
-current = max.func(dat, lam)
-for (i in 1:niter){
-    cand.lam = lam
-    for (j in 1:p){
-        cand.lam[j] = runif(1, lam[j]-width[j], lam[j]+width[j])
-        candidate = max.func(dat, cand.lam)
-        if (candidate > current){
-            current = candidate
-            lam[j] = cand.lam[j]
-        } else {
-            width[j] = width[j] * temp
-            }
+# R function to do the random walk maximization
+max.loop = function(x, lambda, niter = 1000, temperature = 0.99, width, print = FALSE){
+    x = as.matrix(x)
+    n = nrow(x)
+    p = ncol(x)
+    if (missing(lambda)){
+        lam = runif(p, -2 ,2)
+    } else {
+        lam = lambda
         }
-    if (floor(i/500) == i/500)
-        cat(i,"/",niter, "\n")
+    if (missing(width))
+        width = rep(1, p)
+    temp = temperature
+    current = max.func(x, lam)
+    window = round(niter/20)
+    for (i in 1:niter){
+        cand.lam = lam
+        for (j in 1:p){
+            cand.lam[j] = runif(1, lam[j]-width[j], lam[j]+width[j])
+            candidate = max.func(x, cand.lam)
+            if (candidate > current){
+                current = candidate
+                lam[j] = cand.lam[j]
+            } else {
+                width[j] = width[j] * temp
+                }
+            }
+        if (floor(i/window) == i/window && print)
+            cat(i,"/",niter, "\n")
+        }
+    return (lam)
     }
 
-new.dat = lam.func(dat, lam)
-mw.pairs(new.dat)
+start.lam = double(p)
+for (i in 1:p)
+    start.lam[i] = max.loop(dat[,i], print = TRUE)
+mult.lam = max.loop(dat, lam = start.lam, print = TRUE)
 
+max.func(dat, start.lam)
+max.func(dat, mult.lam)
+
+mw.pairs(dat)
+mw.pairs(lam.func(dat, start.lam))
+mw.pairs(lam.func(dat, mult.lam))
+
+plot(dat[,4], dat[,1], pch=20)
+#identify(dat[,4], dat[,1])
+# observation 40 looks to be an outlier
+
+new.dat = lam.func(dat, mult.lam)
 x.bar = apply(new.dat, 2, mean)
 S = var(new.dat)
 S.inv = solve(S)
@@ -93,3 +125,5 @@ for (i in 1:length(D))
 plot(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D),
     pch = 20)
 abline(0,1)
+
+### kurtosis and skewness
