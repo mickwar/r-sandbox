@@ -24,21 +24,17 @@ y=sum(bonds$V3)
 postA=priorA+y
 postB=priorB+n-y
 
-pdf(paste(path,"figs/1priorplot.pdf",sep=""), 9, 5)
-curve(dbeta(x,priorA,priorB),n=1001,ylim=c(0,25),
-	main="",
-	ylab="",xlab="")
-polygon(x=seq(0,1,0.001),
-	y=dbeta(seq(0,1,0.001),priorA,priorB),
-	col='lightgray',border='black')
-dev.off()
-
 pdf(paste(path,"figs/1postplot.pdf",sep=""), 9, 5)
 curve(dbeta(x,postA,postB),n=1001,main="",
-	ylab="",xlab="")
-polygon(x=seq(0,1,0.001),
-	y=dbeta(seq(0,1,0.001),postA,postB),
+	ylab="",xlab="", from=0, to=0.4)
+polygon(x=seq(0,0.4,0.001),
+	y=dbeta(seq(0,0.4,0.001),postA,postB),
 	col='darkgray',border='black')
+curve(dbeta(x,priorA,priorB),n=1001,ylim=c(0,25),
+	main="", add=TRUE,
+	ylab="",xlab="", lty=2)
+abline(v=y/n, col='red')
+legend(0.3, 25, c("Prior", "Posterior", "MLE"), lty=c(2,1,1), col=c("black","black","red"), cex=1.5)
 dev.off()
 
 ### Estimates
@@ -58,8 +54,10 @@ qbeta(0.5,postA,postB)
 #standard deviation
 sqrt((postA*postB)/((postA+postB)^2*(postA+postB+1)))
 
-# minimum interval approximation (HPD)
+# central 95% interval
+qbeta(c(0.025, 0.975), postA, postB)
 
+# minimum interval approximation (HPD)
 n=10000
 p=0.95
 ints=matrix(NA,n,2)
