@@ -14,13 +14,14 @@ mw.pairs = function(x){
                 legend("topright", legend = i, box.lty = 0, cex = 1.5)
             } else {
                 if (i > j){
-                    z = kde2d(x[,j], x[,i])
+                    z = kde2d(x[,i], x[,j])
                     plot(NA, xlim = range(z$x), ylim = range(z$y), axes = FALSE)
                     .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
                         col=gray(seq(0.0, 1.0, length=20)))
 #                   points(dat[,4], dat[,1], pch=20)
                 } else {
                     plot(x[,j], x[,i], pch=20, axes = FALSE)
+                    points(x[40,j], x[40,i], pch=20, col='red')
                     }
                 }
             box()
@@ -111,6 +112,8 @@ plot(dat[,4], dat[,1], pch=20)
 #identify(dat[,4], dat[,1])
 # observation 40 looks to be an outlier
 
+plot(dat[,1], type='l')
+
 new.dat = lam.func(dat, mult.lam)
 x.bar = apply(new.dat, 2, mean)
 S = var(new.dat)
@@ -124,6 +127,7 @@ for (i in 1:length(D))
 
 plot(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D),
     pch = 20)
+identify(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D))
 abline(0,1)
 
 ### kurtosis and skewness
