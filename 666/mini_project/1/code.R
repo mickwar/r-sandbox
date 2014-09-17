@@ -1,6 +1,6 @@
 dat = read.table("~/files/R/666/data/oliver3b.txt", head=TRUE)
 dat = as.matrix(dat)
-dat = dat[-c(40,191,67),]
+#dat = dat[-c(40,191,67),]
 n = nrow(dat)
 p = ncol(dat)
 
