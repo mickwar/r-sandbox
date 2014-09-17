@@ -65,22 +65,26 @@ priorB=1600
 postA=priorA+length(river)
 postB=priorB+sum(river)
 
-pdf(paste(path,"figs/3priorplot.pdf",sep=""),9,5)
-xx=seq(0,1800,.1)
-plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,1500),
-	main="",ylab="",xlab="",ylim=c(0,0.005),type='l')
-polygon(x=xx,
-	y=igpdf(xx,priorA,priorB),
-	col='lightgray',border='black')
-dev.off()
+#pdf(paste(path,"figs/3priorplot.pdf",sep=""),9,5)
+#xx=seq(0,1800,.1)
+#plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,1500),
+#	main="",ylab="",xlab="",ylim=c(0,0.005),type='l')
+#polygon(x=xx,
+#	y=igpdf(xx,priorA,priorB),
+#	col='lightgray',border='black')
+#dev.off()
 
 pdf(paste(path,"figs/3postplot.pdf",sep=""),9,5)
 xx=seq(0,1000,1)
 plot(xx,ig2pdf(xx,postA,postB),xlim=c(0,1000),
-	main="",ylab="",xlab="",ylim=c(0,0.01),type='l')
+	main="",ylab="",xlab="",ylim=c(0,0.0085),type='l')
 polygon(x=xx,
 	y=ig2pdf(xx,postA,postB),
 	col='lightgray',border='black')
+points(xx,igpdf(xx,priorA,priorB),
+	main="",ylab="",xlab="",ylim=c(0,0.005),type='l', lty=2)
+abline(v=mean(river), col='red')
+legend(750, 0.0085, c("Prior", "Posterior", "MLE"), lty=c(2,1,1), col=c("black","black","red"), cex=1.5)
 dev.off()
 
 ### Estimates
@@ -102,6 +106,7 @@ postB/(postA+1)
 sqrt((postB^2)/(((postA-1)^2)*(postA-2)))
 
 #highest posterior density interval
+quantile(samp, c(0.025, 0.975))
 
 n=5000
 p=0.95
