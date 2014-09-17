@@ -1714,6 +1714,25 @@ z = sqrt(n+1)*(z - apply(Y, 2, mean)) / n
 new.inv = n/(n-1)*Updated
 Updated = new.inv - (new.inv %*% z %*% t(z) %*% new.inv) / as.vector(1 + t(z) %*% new.inv %*% z)
 solve(cov(Y))
+
+### speed test
+set.seed(1)
+n = 10000
+p = 2000
+Y = matrix(rnorm((n+1)*p), n+1, p)
+
+i = 5000
+A.cov = cov(Y[1:i,])
+A.inv = solve(A.cov)
+
+system.time({z <- Y[i+1,];
+z <- sqrt(i+1)*(z - apply(Y[1:(i+1),], 2, mean)) / i;
+
+A.inv <- i/(i-1) * A.inv;
+A.inv <- A.inv - (A.inv %*% z %*% t(z) %*% A.inv) / as.vector(1 + t(z) %*% A.inv %*% z)})
+
+system.time(solve(cov(Y[1:(i+1),])))
+
 ###########
 
 ###########
