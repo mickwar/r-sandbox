@@ -93,14 +93,14 @@ L(\mathbf{y}|\theta) &=& \prod_{i=1}^n\left[{n_i \choose y_i}\theta^{y_i}(1-\the
 \noindent \textit{Derivation of the maximum likelihood estimator.}  First, take the logarithm of the likelihood.
 
 \begin{eqnarray*}
-\mathrm{log}L(y_i|\theta)&=& \mathrm{log}\left(\left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\right) \\
+\mathrm{log}L(\mathbf{y}|\theta)&=& \mathrm{log}\left(\left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\right) \\
 &=& \mathrm{log}\left[\prod_{i=1}^n{n_i \choose y_i}\right]+\Sigma y_i\mathrm{log}\theta+(\Sigma n_i-\Sigma y_i)\mathrm{log}(1-\theta) \\
 \end{eqnarray*}
 
 \noindent Then take the derivative.  
 
 \begin{eqnarray*}
-\frac{d}{d\theta}\left[\mathrm{log}L(y_i|\theta)\right] &=& 0 + \frac{\Sigma y_i}{\theta} - \frac{\Sigma n_i-\Sigma y_i}{1-\theta} \\
+\frac{d}{d\theta}\left[\mathrm{log}L(\mathbf{y}|\theta)\right] &=& 0 + \frac{\Sigma y_i}{\theta} - \frac{\Sigma n_i-\Sigma y_i}{1-\theta} \\
 &=& \frac{\Sigma y_i}{\theta} - \frac{\Sigma n_i-\Sigma y_i}{1-\theta} \\
 \end{eqnarray*}
 
@@ -228,14 +228,14 @@ The probability density function comes from the Poisson distribution, where $y_i
 \noindent \textit{Derivation of the maximum likelihood estimator.}  Take the logarithm of the likelihood function.
 
 \begin{eqnarray*}
-\mathrm{log}L(y_i|\lambda) &=& \mathrm{log}\left[\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\right] \\
+\mathrm{log}L(\mathbf{y}|\lambda) &=& \mathrm{log}\left[\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\right] \\
 &=& \Sigma y_i\mathrm{log}\lambda-n\lambda-\mathrm{log}\prod (y_i!) \\
 \end{eqnarray*}
 
 \noindent Find the derivative of this with respect to $\lambda$.
 
 \begin{eqnarray*}
-\frac{d}{d\lambda}\left[\mathrm{log}L(y_i|\lambda)\right] &=& \frac{d}{d\lambda}\left[\Sigma y_i\mathrm{log}\lambda-n\lambda-\mathrm{log}\prod (y_i!)\right] \\
+\frac{d}{d\lambda}\left[\mathrm{log}L(\mathbf{y}|\lambda)\right] &=& \frac{d}{d\lambda}\left[\Sigma y_i\mathrm{log}\lambda-n\lambda-\mathrm{log}\prod (y_i!)\right] \\
 &=& \frac{\Sigma y_i}{\lambda}-n+0 \\
 &=& \frac{\Sigma y_i}{\lambda}-n \\
 \end{eqnarray*}
@@ -312,74 +312,62 @@ Standard Deviation & $0.40$ \\
 
 \noindent We assume the data is exponentially distributed.  The probability density function is:
 
-\[f_*(y_i|\lambda)=\frac{1}{\lambda}e^{-y_i/\lambda} \]
+\[f_*(y_i|\lambda)=\frac{1}{\lambda}e^{-y_i/\lambda};\ \ \ \lambda>0;\ y_i\geq 0 \]
 
 \noindent The Likelihood function is:
 
 \begin{eqnarray*}
-L(y_i|\lambda) &=& \prod\left[\frac{1}{\lambda}e^{-y_i/\lambda}\right] \\
+L(\mathbf{y}|\lambda) &=& \prod\left[\frac{1}{\lambda}e^{-y_i/\lambda}\right] \\
 &=& \left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda} \\
 \end{eqnarray*}
 
-\noindent We will use an Inverse Gamma distribution for the prior, which has pdf:
+\noindent We will use an inverse gamma distribution for the prior, which has pdf:
 
-\[f(\lambda|a,b)=\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}\]
+\[\pi(\lambda)=\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda};\ \ \ \lambda>0;\ a>2;\ b>0\]
 
-\noindent Multiplying the likelihood with the prior and dividing by the integral of that same product will give us the posterior distribution.  So we have
+\noindent Having $a>2$ ensures we have at least the first two moments. Multiplying the likelihood with the prior and dividing by the integral of that same product will give us the posterior distribution.  So we have
 
 \begin{eqnarray*}
-f(\lambda|y_i,a,b) &=& \frac{\left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}}{\int_o^\infty \left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}d\lambda} \\
+\pi(\lambda|\mathbf{y}) &=& \frac{\left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}}{\int_o^\infty \left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}d\lambda} \\
 &=& \frac{\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}}{\int_0^\infty \left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}d\lambda} \\
 &=& \frac{\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}}{\frac{\Gamma(a+n)}{(b+\Sigma y_i)^{a+n}}\int_0^\infty \frac{(b+\Sigma y_i)^{a+n}}{\Gamma(a+n)}\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}d\lambda} \\
 &=& \frac{\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda}}{\frac{\Gamma(a+n)}{(b+\Sigma y_i)^{a+n}}} \\
 &=& \frac{(b+\Sigma y_i)^{a+n}}{\Gamma(a+n)}\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda} \\
 \end{eqnarray*}
 
-\noindent which is an Inverse Gamma distribution with parameters $a^*=a+n$ and $b^*=b+\Sigma y_i$.  Therefore, the Inverse Gamma is the conjugate prior to the probability density function.
-\bigskip
+\noindent which is an inverse gamma distribution with parameters $a^*=a+n$ and $b^*=b+\Sigma y_i$.  Therefore, the inverse gamma is the conjugate prior to the probability density function.
 
-\begin{scriptsize}
-\noindent \textit{Note:} In this analysis we are estimating $\lambda$.  The p.d.f., though a function $\lambda$, is in terms of $1/\lambda$.  This will turn out to be very convenient for us.  The p.d.f is an exponential distribution which has a mean and standard deviation of $1/\lambda$.  Thus with this particular function the mean and standard deviation will simply be $\lambda$.  So when we look at estimates of $\lambda$, we can easily make the connection between the parameter and what we are really interested in, i.e. river lengths in North America.
-\end{scriptsize}
+%\begin{scriptsize}
+%\noindent \textit{Note:} In this analysis we are estimating $\lambda$.  The p.d.f., though a function $\lambda$, is in terms of $1/\lambda$.  This will turn out to be very convenient for us.  The p.d.f is an exponential distribution which has a mean and standard deviation of $1/\lambda$.  Thus with this particular function the mean and standard deviation will simply be $\lambda$.  So when we look at estimates of $\lambda$, we can easily make the connection between the parameter and what we are really interested in, i.e. river lengths in North America.
+%\end{scriptsize}
 
 \subsection{Prior Parameters}
 
-\noindent For our analysis we selected priors of $a=5$ and $b=1600$.  With an Inverse Gamma distribution, this means we have a mean of $\frac{b}{a-1}=400$ and standard deviation of $\sqrt{\frac{b^2}{(a-1)^2(a-2)}}=230.94$.
+\noindent For our analysis we selected priors of $a=5$ and $b=1600$.  With an inverse gamma distribution, this means we have a mean of $\frac{b}{a-1}=400$ and standard deviation of $\sqrt{\frac{b^2}{(a-1)^2(a-2)}}=230.94$.
 \bigskip
 
-\noindent We want to choose priors that seem to match up with what we know about river lengths in North America (which is very little).  We are saying that the average length is about $400$ miles.  With a high standard deviation we have a higher chance of capturing the true mean in our analysis.  Since these priors are comparatively low, the posterior distribution will be more flexible to new data, which is what we want since we have little knowledge of anything about rivers.
+\noindent We are saying that the average length is about $400$ miles.  With a high standard deviation we have a higher chance of capturing the true mean in our analysis.  Since these priors are comparatively low, the posterior distribution will be more flexible to new data, which is what we want since we have little knowledge of anything about rivers.
 
 \subsection{Maximum Likelihood and Plots}
 
-The prior distribution with parameters $\alpha=5$ and $\beta=1600$.
+%The prior distribution with parameters $\alpha=5$ and $\beta=1600$.
+%
+%\begin{figure}[H]
+%\begin{center}
+%\includegraphics[scale=0.5]{figs/3priorplot.pdf}
+%\caption{Prior Distribution}
+%\end{center}
+%\end{figure}
 
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/3priorplot.pdf}
-\caption{Prior Distribution}
-\end{center}
-\end{figure}
+\noindent \emph{Parameters of the posterior distribution} With $n=141$ rivers and $\Sigma y_i=83357$, for the posterior distribution we have parameters $a^*=5+141=146$ and $b^*=1600+83357=84957$.
+\bigskip
 
-\noindent With $n=141$ rivers and $\Sigma y_i=83357$, for the posterior distribution we have parameters $\alpha_1=5+141=146$ and $\beta_1=1600+83357=84957$.
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/3postplot.pdf}
-\caption{Posterior Distribution}
-\end{center}
-\end{figure}
-
-\noindent \textit{Derivation of the maximum likelihood estimator.}  Begin, as before, by taking the logarithm of the likelihood function.
+\noindent \textit{Derivation of the maximum likelihood estimator.} Begin, as before, by taking the logarithm of the likelihood function and finding the derivative with respect to $\lambda$.
 
 \begin{eqnarray*}
-\mathrm{log}L(y_i|\lambda) &=& \mathrm{log}\left[\left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\right] \\
+\mathrm{log}L(\mathbf{y}|\lambda) &=& \mathrm{log}\left[\left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\right] \\
 &=& -n\mathrm{log}\lambda-\frac{\Sigma y_i}{\lambda} \\
-\end{eqnarray*}
-
-\noindent Find the derivative.
-
-\begin{eqnarray*}
-\frac{d}{d\lambda}\mathrm{log}L(y_i|\lambda) &=& \frac{d}{d\lambda}\left[-n\mathrm{log}\lambda-\frac{\Sigma y_i}{\lambda}\right] \\
+\frac{d}{d\lambda}\mathrm{log}L(\mathbf{y}|\lambda) &=& \frac{d}{d\lambda}\left[-n\mathrm{log}\lambda-\frac{\Sigma y_i}{\lambda}\right] \\
 &=& -\frac{n}{\lambda}+\frac{\Sigma y_i}{\lambda^2} \\
 \end{eqnarray*}
 
@@ -388,14 +376,23 @@ The prior distribution with parameters $\alpha=5$ and $\beta=1600$.
 \begin{eqnarray*}
 0 &=& -\frac{n}{\hat{\lambda}}+\frac{\Sigma y_i}{\hat{\lambda}^2} \\
 \frac{n}{\hat{\lambda}} &=& \frac{\Sigma y_i}{\hat{\lambda}^2} \\
-n\hat{\lambda} &=& \Sigma y_i \\
+%n\hat{\lambda} &=& \Sigma y_i \\
 \hat{\lambda} &=& \frac{\Sigma y_i}{n} \\
 &=& \ybar \\
 \end{eqnarray*}
 
+\noindent We calculate $\hat{\lambda}=591.1$.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{figs/3postplot.pdf}
+\caption{Plots of the prior (dashed), posterior (solid), and MLE (red).}
+\end{center}
+\end{figure}
+
 \subsection{Posterior Estimates}
 
-\noindent Because there is no analytic solution to the median of an Inverse Gamma distribution, we took a large random sample and found the median of the sample.  Thus, our estimate for the median is an approximation and not exact.
+\noindent To compute the median and credible interval, we took a large random sample of the inverse gamma and calculated the appropriate quantiles.
 
 \begin{figure}[H]
 \begin{center}
@@ -410,7 +407,7 @@ Standard Deviation & $48.8$ \\
 \end{center}
 \end{figure}
 
-\noindent The highest posterior density interval is $(493.5, 683.5)$.
+\noindent The 95\% central credible interval is $(497.0, 687.8)$.
 
 \subsection{Other Potential Priors}
 
@@ -421,13 +418,13 @@ Standard Deviation & $48.8$ \\
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\alpha=5$ and $\beta=1600$.
+\noindent \textit{Black}.  The priors used in the analysis $a=5$ and $b=1600$.
 
-\noindent \textit{Red}. $\alpha=2$, $\beta=1000$.  Most flexible to new data.  This was intended as the priors were chosen because of knowing little about North American rivers.
+\noindent \textit{Red}. $a=2$, $b=1000$.  Most flexible to new data.  This was intended as the priors were chosen because of knowing little about North American rivers.
 
-\noindent \textit{Blue}. $\alpha=9$, $\beta=3000$.  Attempts to agree with the lengths of the rivers in North America.  A brief internet search, independent of the data set, was used to get a rough estimate of the rivers.
+\noindent \textit{Blue}. $a=9$, $b=3000$.  Attempts to agree with the lengths of the rivers in North America.  A brief internet search, independent of the data set, was used to get a rough estimate of the rivers.
 
-\noindent \textit{Green}. $\alpha=6$, $\beta=4000$.  Priors based off a quick look at top river lengths throughout the world.  These parameters attempt to roughly match the mean from rivers worldwide.
+\noindent \textit{Green}. $a=6$, $b=4000$.  Priors based off a quick look at top river lengths throughout the world.  These parameters attempt to roughly match the mean from rivers worldwide.
 \bigskip
 
 \noindent Due to the large amount of data, it turns out that each of these choices in priors resulted in roughly the same posterior distribution.
@@ -448,75 +445,62 @@ Standard Deviation & $48.8$ \\
 
 \subsection{Summary}
 
-\noindent We analyze the test scores from the first exam in an honors section of Statistics 221.  This is an introductory course and we are told that the exam is ``extremely easy."
+\noindent We analyze the test scores from the first exam in an honors section of Statistics 221.  This is an introductory course and we are told that the exam is ``extremely easy.''
 
 \subsection{The Likelihood and Conjugate Prior}
 
-\noindent We will assume the data is normally distribution with mean $\mu$ and $\sigma=9$.  The probability density function is
+\noindent We will assume the data is normally distributed with mean $\mu$ and $\sigma=9$.  The probability density function is
 
-\[f(y_i|\mu,\sigma)=(2\pi\sigma^2)^{-1/2}exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right)\]
+\[f(y_i|\mu,\sigma)=(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right);\ \ \ -\infty<y_i,\mu<+\infty\]
 
 \noindent The likelihood function is
 
 \begin{eqnarray*}
-L(y_i|\mu,\sigma) &=& \prod\left[(2\pi\sigma^2)^{-1/2}exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right)\right] \\
-&=& (2\pi\sigma^2)^{-n/2}exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right) \\
+L(\mathbf{y}|\mu,\sigma) &=& \prod\left[(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right)\right] \\
+&=& (2\pi\sigma^2)^{-n/2}\exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right) \\
 \end{eqnarray*}
 
-\noindent We will use a Normal distribution for the prior, assuming $\mu\sim N(\mu_0,\sigma_0^2)$.  The function for the prior is
-
-\[f(\mu|\mu_0,\sigma_0^2)= (2\pi\sigma_0^2)^{-1/2}exp\left(-\frac{1}{2\sigma_0^2}(\mu-\mu_0)^2\right)\]
-
-\noindent Since the posterior distribution is the likelihood times the prior divided by the integral of that product with respect to $\mu$, the full derivation would be too much to express all at once.  So we will look at only the numerator and cancel out any constants, which are any terms without $\mu$.  The posterior distribution is then
+\noindent We will use a normal distribution for the prior, assuming $\mu\sim N(m,s^2)$. We consider first the numerator (or the expression inside the integral in the denominator). Since the integral in the denominator is with respect to $\mu$, any terms not containing a $\mu$ will cancel.
 
 \begin{eqnarray*}
-f(\mu|y_i,\sigma^2,\mu_0,\sigma_0^2) &\propto& (2\pi\sigma^2)^{\frac{-n}{2}}exp\left(\frac{-1}{2\sigma^2}\Sigma(y_i-\mu)^2\right)(2\pi\sigma_0^2)^{\frac{-1}{2}}exp\left(\frac{-1}{2\sigma_0^2}(\mu-\mu_0)^2\right) \\
-&\propto& exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right)exp\left(-\frac{1}{2\sigma_0^2}(\mu-\mu_0)^2\right) \\
-&\propto& exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2-\frac{1}{2\sigma_0^2}(\mu-\mu_0)^2\right) \\
-&\propto& exp\left(-\frac{1}{2\sigma^2}(\Sigma y_i^2-2\mu\Sigma y_i+n\mu^2)-\frac{1}{2\sigma_0^2}(\mu^2-2\mu\mu_0+\mu_0^2)\right) \\
-&\propto& exp\left(-\frac{1}{2\sigma^2\sigma_0^2}\left(\sigma_0^2(\Sigma y_i^2-2\mu\Sigma y_i+n\mu^2)+\sigma^2(\mu^2-2\mu\mu_0+\mu_0^2)\right)\right) \\
-&\propto& exp\left(-\frac{1}{2\sigma^2\sigma_0^2}\left(\sigma_0^2(n\mu^2-2\mu\Sigma y_i)+\sigma^2(\mu^2-2\mu\mu_0)\right)\right) \\
-&\propto& exp\left(-\frac{1}{2\sigma^2\sigma_0^2}\left(\sigma_0^2n\mu^2-\sigma_0^22\mu\Sigma y_i+\sigma^2\mu^2-\sigma^22\mu\mu_0\right)\right) \\
-&\propto& exp\left(-\frac{1}{2\sigma^2\sigma_0^2}\left(\mu^2(\sigma_0^2n+\sigma^2)-2\mu(\sigma_0^2\Sigma y_i-\sigma^2\mu_0)\right)\right) \\
-&\propto& exp\left[-\frac{1}{2\sigma^2\sigma_0^2}\left((\sigma_0^2n+\sigma^2)\left[\mu^2-2\mu\left(\frac{\sigma_0^2\Sigma y_i-\sigma^2\mu_0}{\sigma_0^2n+\sigma^2}\right)\right]\right)\right] \\
-&\propto& exp\left[-\frac{\sigma_0^2n+\sigma^2}{2\sigma^2\sigma_0^2}\left(\mu^2-2\mu\left(\frac{\sigma_0^2n\ybar-\sigma^2\mu_0}{\sigma_0^2n+\sigma^2}\right)\right)\right] \\
+\pi(\mu|\mathbf{y}) &\propto& (2\pi\sigma^2)^{-n/2}\exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right)(2\pi s^2)^{-1/2}\exp\left(-\frac{1}{2s^2}(\mu-m)^2\right) \\
+&\propto& \exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right)\exp\left(-\frac{1}{2 s^2}(\mu-m)^2\right) \\
+&\propto& \exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2-\frac{1}{2 s^2}(\mu-m)^2\right) \\
+&\propto& \exp\left(-\frac{1}{2\sigma^2}(\Sigma y_i^2-2\mu\Sigma y_i+n\mu^2)-\frac{1}{2 s^2}(\mu^2-2\mu m+m^2)\right) \\
+&\propto& \exp\left(-\frac{1}{2\sigma^2 s^2}\left(s^2(\Sigma y_i^2-2\mu\Sigma y_i+n\mu^2)+\sigma^2(\mu^2-2\mu m+m^2)\right)\right) \\
+&\propto& \exp\left(-\frac{1}{2\sigma^2 s^2}\left(s^2(n\mu^2-2\mu\Sigma y_i)+\sigma^2(\mu^2-2\mu\mu_0)\right)\right) \\
+&\propto& \exp\left(-\frac{1}{2\sigma^2 s^2}\left(s^2n\mu^2-s^22\mu\Sigma y_i+\sigma^2\mu^2-\sigma^22\mu m\right)\right) \\
+&\propto& \exp\left(-\frac{1}{2\sigma^2 s^2}\left(\mu^2(s^2n+\sigma^2)-2\mu(s^2\Sigma y_i-\sigma^2m)\right)\right) \\
+&\propto& \exp\left[-\frac{1}{2\sigma^2 s^2}\left((s^2n+\sigma^2)\left[\mu^2-2\mu\left(\frac{s^2\Sigma y_i-\sigma^2m}{s^2n+\sigma^2}\right)\right]\right)\right] \\
+&\propto& \exp\left[-\frac{s^2n+\sigma^2}{2\sigma^2s^2}\left(\mu^2-2\mu\left(\frac{s^2n\ybar-\sigma^2m}{s^2n+\sigma^2}\right)\right)\right] \\
 \end{eqnarray*}
 
 \noindent For simplicity in the remainder of the derivation we will let 
 
-\[\psi=\frac{\sigma_0^2n\ybar-\sigma^2\mu_0}{\sigma_0^2n+\sigma^2}\]
-
-\noindent which is a constant.
-
-\begin{eqnarray*}
-f(\mu|y_i,\sigma^2,\mu_0,\sigma_0^2) &\propto& exp\left[-\frac{\sigma_0^2n+\sigma^2}{2\sigma^2\sigma_0^2}\left(\mu^2-2\mu\psi\right)\right] \\
-&\propto& exp\left[-\frac{\sigma_0^2n+\sigma^2}{2\sigma^2\sigma_0^2}\left(\mu^2-2\mu\psi+\psi^2-\psi^2\right)\right] \\
-&\propto& exp\left[-\frac{\sigma_0^2n+\sigma^2}{2\sigma^2\sigma_0^2}\left(\mu^2-2\mu\psi+\psi^2\right)\right] \\
-&\propto& exp\left(-\frac{1}{2(\frac{\sigma_0^2n+\sigma^2}{\sigma^2\sigma_0^2})}\left(\mu-\psi\right)^2\right) \\
-\end{eqnarray*}
-
-\noindent We now show that this is indeed a normal distribution.  Let
-
-\[\tau^2=\frac{\sigma_0^2n+\sigma^2}{\sigma^2\sigma_0^2}\]
-
-\noindent and show the full derivation.
+\[m^*=\frac{s^2n\ybar-\sigma^2m}{s^2n+\sigma^2}\ \ \mathrm{and}\ \ s^{*2}=\left(\frac{s^2n+\sigma^2}{\sigma^2s^2}\right)^{-1}\]
+\noindent then proceed
 
 \begin{eqnarray*}
-f(\mu|y_i,\psi,\tau^2) &=& \frac{exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)}{\int_{-\infty}^\infty exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)d\mu} \\
-&=& \frac{exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)}{\frac{1}{(2\pi\tau^2)^{-\frac{1}{2}}}\int_{-\infty}^\infty(2\pi\tau^2)^{-\frac{1}{2}}exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)d\mu} \\
-&=& \frac{exp(-\frac{1}{2\tau^2}(\mu-\psi)^2)}{\frac{1}{(2\pi\tau^2)^{-\frac{1}{2}}}} \\
-&=& (2\pi\tau^2)^{-\frac{1}{2}}exp\left(-\frac{1}{2\tau^2}(\mu-\psi)^2\right) \\
+\pi(\mu|\mathbf{y}) &\propto& \exp\left[-\frac{1}{2s^{*2}}\left(\mu^2-2\mu m^*\right)\right] \\
+&\propto& \exp\left[-\frac{1}{2s^{*2}}\left(\mu^2-2\mu m^*+m^{*2}-m^{*2}\right)\right] \\
+&\propto& \exp\left[-\frac{1}{2s^{*2}}\left(\mu^2-2\mu m^*+m^{*2}\right)\right] \\
+&\propto& \exp\left[-\frac{1}{2s^{*2}}\left(\mu-m^*\right)^2\right] \\
 \end{eqnarray*}
 
-\noindent This is a normal distribution with parameters $\psi=\frac{\sigma_0^2n\ybar-\sigma^2\mu_0}{\sigma_0^2n+\sigma^2}$ and $\tau^2=\frac{\sigma_0^2n+\sigma^2}{\sigma^2\sigma_0^2}$.  We may also write
+\noindent To clarify, all of the operations done on the numerator are also performed on the denominator. The constants terms (with respect to $\mu$) are canceled. Returning to the posterior in its full form we have
 
-\[\mathrm{Posterior}\sim N\left(\frac{\sigma_0^2n\ybar-\sigma^2\mu_0}{\sigma_0^2n+\sigma^2},\frac{\sigma_0^2n+\sigma^2}{\sigma^2\sigma_0^2}\right).\]
+\begin{eqnarray*}
+\pi(\mu|\mathbf{y}) &=& \frac{\exp(-\frac{1}{2s^{*2}}(\mu-m^*)^2)}{\int_{-\infty}^\infty \exp(-\frac{1}{2s^{*2}}(\mu-m^*)^2)d\mu} \\
+&=& \frac{\exp(-\frac{1}{2s^{*2}}(\mu-m^*)^2)}{(2\pi s^{*2})^{1/2}\int_{-\infty}^\infty(2\pi s^{*2})^{-1/2}\exp(-\frac{1}{2s^{*2}}(\mu-m^*)^2)d\mu} \\
+&=& \frac{\exp(-\frac{1}{2s^{*2}}(\mu-m^*)^2)}{(2\pi s^{*2})^{1/2}} \\
+&=& (2\pi s^{*2})^{-1/2}\exp\left(-\frac{1}{2s^{*2}}(\mu-m^*)^2\right) \\
+\end{eqnarray*}
 
-\noindent So we have our desired conjugate prior.
+\noindent This is a normal distribution with mean $m^*$ and variance $s^{*2}$, as given above.
 
 \subsection{Prior Parameters}
 
-\noindent Since $\sigma^2$ is given and $\mu\sim N(\mu_0,\sigma_0^2)$ we only need to choose prior values for $\mu_0$ and $\sigma_0^2$.  We are told that the exam is extremely easy.  Since 70\% is typically thought of to be the average grade on a test, we will interpret ``extremely easy" to mean that the average is about 85\%, with some room for error.  So we will go with priors of $\mu_0=85$ and $\sigma_0^2=4$.
+\noindent Since $\sigma^2$ is given and $\mu\sim N(m,s^2)$ we only need to choose prior values for $m$ and $s^2$.  We are told that the exam is extremely easy.  Since 70\% is typically thought of to be the average grade on a test, we will interpret ``extremely easy" to mean that the average is about 85\%, with some room for error.  So we will go with priors of $m=85$ and $s^2=4$.
 \bigskip
 
 \subsection{Maximum Likelihood and Plots}
@@ -728,493 +712,5 @@ The highest probability density interval is $(41.4, 111.5)$.
 %\subsection{Conclusion}
 %
 %Taking the square root of our estimates will be most helpful in analyzing the distribution of the data.  For an HPD interval, we get $(6.44, 10.56)$ and this gives us a good idea of how our data are distributed.  In comparison to what we might normally expect with exam grades (say about 10), these standard deviations are small.  This suggests that, as a whole, the class did well and scored pretty close together, without too many low scores.
-
-% \newpage
-% 
-% \section*{Appendix}
-% 
-% \subsection*{Part 1 Code}
-% \begin{scriptsize}
-% \begin{verbatim}
-% ### Binomial with a Beta prior
-% 
-% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-% bonds=read.table(paste(path,"binomial2.dat",sep=""))
-% #V1 is date
-% #V2 is number of at-bats in the game (n)
-% #V3 is number of homeruns in the game (y)
-% 
-% priorA=5
-% priorB=45
-% 
-% n=sum(bonds$V2)
-% y=sum(bonds$V3)
-% postA=priorA+y
-% postB=priorB+n-y
-% 
-% pdf(paste(path,"1priorplot.pdf",sep=""),width=720,height=400)
-% curve(dbeta(x,priorA,priorB),n=1001,ylim=c(0,25),
-%     main="",
-%     ylab="",xlab="")
-% polygon(x=seq(0,1,0.001),
-%     y=dbeta(seq(0,1,0.001),priorA,priorB),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% pdf(paste(path,"1postplot.pdf",sep=""),width=720,height=400)
-% curve(dbeta(x,postA,postB),n=1001,main="",
-%     ylab="",xlab="")
-% polygon(x=seq(0,1,0.001),
-%     y=dbeta(seq(0,1,0.001),postA,postB),
-%     col='darkgray',border='black')
-% dev.off()
-% 
-% ### Estimates
-% #mean
-% postA/(postA+postB)
-% 
-% #median
-% qbeta(0.5,postA,postB)
-% 
-% #mode
-% (postA-1)/(postA+postB-2)
-% 
-% #variance
-% (postA*postB)/((postA+postB)^2*(postA+postB+1))
-% 
-% #standard deviation
-% sqrt((postA*postB)/((postA+postB)^2*(postA+postB+1)))
-% 
-% # minimum interval approximation (HPD)
-% n=10000
-% p=0.95
-% ints=matrix(NA,n,2)
-% for (i in 0:(n-1)){
-%     l=(1-p)/(n-1)*i
-%     ints[i+1,1]=qbeta(l,postA,postB)
-%     ints[i+1,2]=qbeta(l+p,postA,postB)
-%     }
-% len=ints[,2]-ints[,1]
-% ints[which.min(len),]	#this is the approximation of the narrowest interval
-% min(len)
-% 
-% ### Other priors
-% # mean closer to that of all previous seasons, lighter weights
-% a1=1
-% b1=14
-% 
-% # only takes into account when bonds was with the giants 1993 - 2000, medium weights
-% a2=4
-% b2=45
-% 
-% # only data from 2000 season used, stronger weights
-% a3=10
-% b3=90
-% 
-% pdf(paste(path,"1otherpriors.pdf",sep=""),width=720,height=400)
-% curve(dbeta(x,priorA,priorB),lwd=2,xlim=c(0,0.3),ylim=c(0,15),
-%     main="",xlab="",ylab="")
-% curve(dbeta(x,a1,b1),lwd=2,col='red',add=T)
-% curve(dbeta(x,a2,b2),lwd=2,col='blue',add=T)
-% curve(dbeta(x,a3,b3),lwd=3,col='green',add=T)
-% dev.off()
-% \end{verbatim}
-% \end{scriptsize}
-% 
-% \subsection*{Part 2 Code}
-% \begin{scriptsize}
-% \begin{verbatim}
-% ### Poisson with a Gamma prior
-% 
-% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-% 
-% comps=read.table(paste(path,"poisson.dat",sep=""))
-% comps=t(comps)
-% 
-% priorA=18
-% priorB=3
-% 
-% postA=priorA+sum(comps)
-% postB=priorB+length(comps)
-% 
-% pdf(paste(path,"2priorplot.pdf",sep=""),width=720,height=400)
-% curve(dgamma(x,priorA,priorB),n=1001,xlim=c(0,12),
-%     main="",ylab="",xlab="",ylim=c(0,1.2))
-% polygon(x=seq(0,12,0.001),
-%     y=dgamma(seq(0,12,0.001),priorA,priorB),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% pdf(paste(path,"2postplot.pdf",sep=""),width=720,height=400)
-% curve(dgamma(x,postA,postB),n=1001,xlim=c(0,12),
-%     main="",ylab="",xlab="",ylim=c(0,1.2))
-% polygon(x=seq(0,12,0.001),
-%     y=dgamma(seq(0,12,0.001),postA,postB),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% ### Estimates
-% 
-% #mean
-% postA/postB
-% 
-% #median
-% qgamma(0.5,postA,postB)
-% 
-% #mode
-% (postA-1)/postB
-% 
-% #variance
-% postA/postB^2
-% 
-% #standard deviation
-% sqrt(postA/postB^2)
-% 
-% #highest posterior density interval
-% 
-% n=10000
-% p=0.95
-% ints=matrix(NA,n,2)
-% for (i in 0:(n-1)){
-%     l=(1-p)/(n-1)*i
-%     ints[i+1,1]=qgamma(l,postA,postB)
-%     ints[i+1,2]=qgamma(l+p,postA,postB)
-%     }
-% len=ints[,2]-ints[,1]
-% ints[which.min(len),]	#this is the approximation of the narrowest interval
-% min(len)
-% 
-% 
-% # Other priors
-% 
-% pdf(paste(path,"2otherpriors.pdf",sep=""),width=720,height=400)
-% curve(dgamma(x,16,4),add=FALSE,col='green',xlim=c(0,15),lwd=2,
-%     main="",xlab="",ylab="")
-% curve(dgamma(x,8,2),n=1001,add=TRUE,col='blue',lwd=2)
-% curve(dgamma(x,8,1),n=1001,add=TRUE,col='red',lwd=2)
-% curve(dgamma(x,18,3),n=1001,add=TRUE,col='black',lwd=2)
-% dev.off()
-% \end{verbatim}
-% \end{scriptsize}
-% 
-% \subsection*{Part 3 Code}
-% \begin{scriptsize}
-% \begin{verbatim}
-% ### Exponential with an Inverse Gamma prior
-% 
-% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-% 
-% river=read.table(paste(path,"exponential.dat",sep=""))
-% river=t(river)
-% 
-% igpdf=function(x,alpha,beta){
-%     ((beta^alpha)/(gamma(alpha)))*(1/x)^(alpha+1)*exp(-beta/x)
-% }
-% 
-% ### since the data make the gamma function and the beta^alpha 
-% ### very large, we quickly reach to either 0 or infinity at any
-% ### value of x.  So "ig2pdf" takes all the multiplications in the pdf
-% ### separately, making the big numbers smaller and preventing
-% ### errors in reaching to 0 or infinity to quickly.
-% ig2pdf=function(x,alpha,beta){
-%     out=beta
-%     toA=1
-%     toB=0
-%     for (a in 1:(alpha-1)){
-%         out=out/(alpha-a)
-%         if (toB<ceiling(1*beta/3)){
-%             out=out*exp(-1/x)
-%             toB=toB+1
-%             }
-%         if (toA<ceiling(1*alpha/3)){
-%             out=out*beta
-%             toA=toA+1
-%             }
-%         }
-%     for (a in 1:(alpha+1)){
-%         out=out*(1/x)
-%         if (toB<ceiling(2*beta/3)){
-%             out=out*exp(-1/x)
-%             toB=toB+1
-%             }
-%         if (toA<ceiling(2*alpha/3)){
-%             out=out*beta
-%             toA=toA+1
-%             }
-%         }
-%     for (ab in 1:max(alpha,beta)){
-%         if (toB<ceiling(beta)){
-%             out=out*exp(-1/x)
-%             toB=toB+1
-%             }
-%         if (toA<ceiling(alpha)){
-%             out=out*beta
-%             toA=toA+1
-%             }
-%         }
-%     return(out)
-%     }
-% 
-% 
-% ### the gamma function gets too big so it freaks out,
-% ### try a metropolis sampler
-% 
-% priorA=5
-% priorB=1600
-% 
-% postA=priorA+length(river)
-% postB=priorB+sum(river)
-% 
-% pdf(paste(path,"3priorplot.pdf",sep=""),width=720,height=400)
-% xx=seq(0,1800,.1)
-% plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,1500),
-%     main="",ylab="",xlab="",ylim=c(0,0.005),type='l')
-% polygon(x=xx,
-%     y=igpdf(xx,priorA,priorB),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% pdf(paste(path,"3postplot.pdf",sep=""),width=720,height=400)
-% xx=seq(0,1000,1)
-% plot(xx,ig2pdf(xx,postA,postB),xlim=c(0,1000),
-%     main="",ylab="",xlab="",ylim=c(0,0.01),type='l')
-% polygon(x=xx,
-%     y=ig2pdf(xx,postA,postB),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% ### Estimates
-% samp=1/rgamma(10000,postA,postB)
-% 
-% #mean
-% postB/(postA-1)
-% 
-% #median
-% quantile(samp,0.5)
-% 
-% #mode
-% postB/(postA+1)
-% 
-% #variance
-% (postB^2)/(((postA-1)^2)*(postA-2))
-% 
-% #standard deviation
-% sqrt((postB^2)/(((postA-1)^2)*(postA-2)))
-% 
-% #highest posterior density interval
-% 
-% n=5000
-% p=0.95
-% ints=matrix(NA,n,2)
-% for (i in 0:(n-1)){
-%     l=(1-p)/(n-1)*i
-%     ints[i+1,1]=quantile(samp,l)
-%     ints[i+1,2]=quantile(samp,l+p)
-%     }
-% len=ints[,2]-ints[,1]
-% ints[which.min(len),]	#this is the approximation of the narrowest interval
-% min(len)
-% 
-% # Other priors
-% 
-% pdf(paste(path,"3otherpriors.pdf",sep=""),width=720,height=400)
-% xx=seq(0,1500,.1)
-% plot(xx,igpdf(xx,5,1600),xlim=c(0,1500),
-%     main="",ylab="",xlab="",ylim=c(0,0.005),type='l',lwd=2)
-% lines(xx,igpdf(xx,2,1000),lwd=2,col='red')
-% lines(xx,igpdf(xx,9,3000),lwd=2,col='blue')
-% lines(xx,igpdf(xx,6,4000),lwd=2,col='green')
-% dev.off()
-% \end{verbatim}
-% \end{scriptsize}
-% 
-% \subsection*{Part 4 Code}
-% \begin{scriptsize}
-% \begin{verbatim}
-% ### Normal (unknown mean) with Normal prior
-% 
-% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-% 
-% exammu=read.table(paste(path,"normalmean.dat",sep=""))
-% exammu=t(exammu)
-% 
-% priorA=85
-% priorB=4
-% sigma2=81
-% 
-% n=length(exammu)
-% ybar=mean(exammu)
-% 
-% postA=(n*ybar*priorB+priorA*sigma2)/(n*priorB+sigma2)
-% postB=(sigma2*priorB)/(n*priorB+sigma2)
-% 
-% pdf(paste(path,"4priorplot.pdf",sep=""),width=720,height=400)
-% xx=seq(0,100,.1)
-% curve(dnorm(x,priorA,sqrt(priorB)),from=0,to=100,n=1000,main="",
-%     xlab="",ylab="",ylim=c(0,0.4))
-% polygon(x=xx,
-%     y=dnorm(xx,priorA,sqrt(priorB)),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% pdf(paste(path,"4postplot.pdf",sep=""),width=720,height=400)
-% xx=seq(0,100,.1)
-% curve(dnorm(x,postA,sqrt(postB)),from=0,to=100,n=1000,main="",
-%     xlab="",ylab="",ylim=c(0,0.4))
-% polygon(x=xx,
-%     y=dnorm(xx,postA,sqrt(postB)),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% #mean/median/mode
-% postA
-% 
-% #variance
-% postB
-% 
-% #standard deviation
-% sqrt(postB)
-% 
-% #highest posterior density interval
-% qnorm(c(0.025,0.975),postA,postB)
-% 
-% # Other priors
-% 
-% pdf(paste(path,"4otherpriors.pdf",sep=""),width=720,height=400)
-% curve(dnorm(x,85,sqrt(4)),xlim=c(0,100),n=1000,main="",ylab="",
-%     ylim=c(0,0.4),type='l',lwd=2)
-% curve(dnorm(x,90,sqrt(1)),type='l',col='red',add=T,lwd=2,n=1000)
-% curve(dnorm(x,75,sqrt(25)),type='l',col='blue',add=T,lwd=2,n=1000)
-% curve(dnorm(x,80,sqrt(16)),type='l',col='green',add=T,lwd=2,n=1000)
-% dev.off()
-% \end{verbatim}
-% \end{scriptsize}
-% 
-% \subsection*{Part 5 Code}
-% \begin{scriptsize}
-% \begin{verbatim}
-% ### Normal (unknown variance) with an Inverse Gamma prior
-% 
-% path="C:/Users/Mickey/Desktop/Downloads/School/2013 A Winter/651/"
-% 
-% examvar=read.table(paste(path,"normalvariance.dat",sep=""))
-% examvar=t(examvar)
-% 
-% igpdf=function(x,alpha,beta){
-%     ((beta^alpha)/(gamma(alpha)))*(1/x)^(alpha+1)*exp(-beta/x)
-% }
-% 
-% ig2pdf=function(x,alpha,beta){
-%     out=beta
-%     toA=1
-%     toB=0
-%     for (a in 1:(alpha-1)){
-%         out=out/(alpha-a)
-%         if (toB<ceiling(1*beta/3)){
-%             out=out*exp(-1/x)
-%             toB=toB+1
-%             }
-%         if (toA<ceiling(1*alpha/3)){
-%             out=out*beta
-%             toA=toA+1
-%             }
-%         }
-%     for (a in 1:(alpha+1)){
-%         out=out*(1/x)
-%         if (toB<ceiling(2*beta/3)){
-%             out=out*exp(-1/x)
-%             toB=toB+1
-%             }
-%         if (toA<ceiling(2*alpha/3)){
-%             out=out*beta
-%             toA=toA+1
-%             }
-%         }
-%     for (ab in 1:max(alpha,beta)){
-%         if (toB<ceiling(beta)){
-%             out=out*exp(-1/x)
-%             toB=toB+1
-%             }
-%         if (toA<ceiling(alpha)){
-%             out=out*beta
-%             toA=toA+1
-%             }
-%         }
-%     return(out)
-%     }
-% 
-% 
-% ### the gamma function gets too big so it freaks out,
-% ### try a metropolis sampler
-% 
-% priorA=2
-% priorB=50
-% mu=87
-% 
-% postA=priorA+length(examvar)/2
-% postB=priorB+0.5*sum((examvar-mu)^2)
-% 
-% pdf(paste(path,"5priorplot.pdf",sep=""),width=720,height=400)
-% xx=seq(0,300,.1)
-% plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,300),
-%     main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
-% polygon(x=c(xx,300),
-%     y=c(igpdf(xx,priorA,priorB),0),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% pdf(paste(path,"5postplot.pdf",sep=""),width=720,height=400)
-% xx=seq(0,300,.1)
-% plot(xx,igpdf(xx,postA,postB),xlim=c(0,300),
-%     main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
-% polygon(x=c(xx,300),
-%     y=c(igpdf(xx,postA,postB),0),
-%     col='lightgray',border='black')
-% dev.off()
-% 
-% ### Estimates
-% samp=1/rgamma(10000,postA,postB)
-% 
-% #mean
-% postB/(postA-1)
-% 
-% #median
-% quantile(samp,0.5)
-% 
-% #mode
-% postB/(postA+1)
-% 
-% #variance
-% (postB^2)/(((postA-1)^2)*(postA-2))
-% 
-% #standard deviation
-% sqrt((postB^2)/(((postA-1)^2)*(postA-2)))
-% 
-% #highest posterior density interval
-% 
-% n=5000
-% p=0.95
-% ints=matrix(NA,n,2)
-% for (i in 0:(n-1)){
-%     l=(1-p)/(n-1)*i
-%     ints[i+1,1]=quantile(samp,l)
-%     ints[i+1,2]=quantile(samp,l+p)
-%     }
-% len=ints[,2]-ints[,1]
-% ints[which.min(len),]
-% min(len)
-% 
-% # Other priors
-% 
-% pdf(paste(path,"5otherpriors.pdf",sep=""),width=720,height=400)
-% xx=seq(0,500,.1)
-% plot(xx,igpdf(xx,2,50),xlim=c(0,200),
-%     main="",ylab="",xlab="",ylim=c(0,0.06),type='l',lwd=2)
-% lines(xx,igpdf(xx,2,150),lwd=2,col='red')
-% lines(xx,igpdf(xx,4,60),lwd=2,col='blue')
-% lines(xx,igpdf(xx,5,120),lwd=2,col='green')
-% dev.off()
-% \end{verbatim}
-% \end{scriptsize}
 
 \end{document}
