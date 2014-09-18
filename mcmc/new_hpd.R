@@ -1,11 +1,31 @@
-hpd.mult = function(x, dens, prob = 0.95, tol = 0.00001,
-    print = TRUE, visual = TRUE){
+color.den = function(dens, from, to, col1 = 1, col2 = NULL){
+    if (is.null(col2))
+        col2 = col1
+    index = which(dens$x > from & dens$x < to)
+    polygon(c(dens$x[index][1], dens$x[index],
+        dens$x[index][length(index)]), c(0, dens$y[index], 0),
+        col=col1, border=col2)
+    }
+col.mult = function(col1 = 0x000000, col2 = "black"){
+    if (is.character(col1))
+        val1 = t(col2rgb(col1) / 255)
+    if (is.numeric(col1))
+        val1 = t(int2rgb(col1) / 255)
+    if (is.character(col2))
+        val2 = t(col2rgb(col2) / 255)
+    if (is.numeric(col2))
+        val2 = t(int2rgb(col2) / 255)
+    rgb(val1 * val2)
+    }
+hpd.mult = function(x, dens, prob = 0.95, tol, interactive = TRUE){
     max.k = max(dens$y)
     min.k = min(dens$y)
 #   k = (max.k - min.k)/2
     k = runif(1, min.k, max.k)
+    if (missing(tol))
+        tol = max.k / 10000
     count = 0
-    if (visual){
+    if (interactive){
         plot(dens)
         polygon(dens$x, dens$y, col='gray80')
         }
@@ -58,7 +78,7 @@ hpd.mult = function(x, dens, prob = 0.95, tol = 0.00001,
         for (j in 1:(length(int)/2))
             c.prob = c.prob + mean(x >= dens$x[
                  int[2*j-1]] & x <= dens$x[int[2*j]])
-        if (visual){
+        if (interactive){
             abline(h=k)
             abline(h=c(max.k, min.k), col='blue')
             cat("Probability:",c.prob)
@@ -76,7 +96,7 @@ hpd.mult = function(x, dens, prob = 0.95, tol = 0.00001,
         # pick new height to test at
         k = runif(1, min.k, max.k)
         }
-    if (print)
+    if (interactive)
         cat("Iterations:",count,"\n")
     return (dens$x[int])
     }
@@ -88,14 +108,25 @@ x = ifelse(runif(n) < 0.5, rnorm(n, 2.5, 1), rnorm(n, 6, 0.5))
 dens = density(x, n = 20000)
 plot(density(x))
 
+#hpd.1 = hpd.mult(x, dens, visual = FALSE, print = FALSE)
 hpd.1 = hpd.mult(x, dens)
-abline(v=hpd.1, lty=2, col='gray')
+
+plot(density(x), main="Mixture Normal", xlab="x", ylab="f(x)")
+polygon(dens$x, dens$y, col='gray')
+col1 = col.mult('gray', 'dodgerblue')
+color.den(dens, hpd.1[1], hpd.1[2], col1 = 'dodgerblue')
+color.den(dens, hpd.1[3], hpd.1[4], col1)
+points(density(x), type='l')
+abline(h=0)
 
 
-### more bimodal
-x = ifelse(runif(n) < 0.5, rnorm(n, -1, 1), rnorm(n, 6.5, 0.5))
-dens = density(x)
-plot(density(x))
+#abline(v=hpd.1, lty=2, col='gray30', lwd=2)
 
-hpd.1 = hpd.mult(x, dens)
-abline(v=hpd.1, lty=2, col='gray')
+
+#### more bimodal
+#x = ifelse(runif(n) < 0.5, rnorm(n, -1, 1), rnorm(n, 6.5, 0.5))
+#dens = density(x)
+#plot(density(x))
+#
+#hpd.1 = hpd.mult(x, dens)
+#abline(v=hpd.1, lty=2, col='gray')
