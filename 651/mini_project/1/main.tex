@@ -87,10 +87,10 @@ L(\mathbf{y}|\theta) &=& \prod_{i=1}^n\left[{n_i \choose y_i}\theta^{y_i}(1-\the
 %\bigskip
 %\bigskip
 
-\noindent \textit{Parameters of the posterior distribution.}  In 2001, Barry Bonds was at-bat 476 times and hit 73 home runs.  Using this data to update our priors, we get posterior parameters of $a^*=5+73=78$ and $b^*=45+476-73=448$.
+\noindent \emph{Parameters of the posterior distribution.}  In 2001, Barry Bonds was at-bat 476 times and hit 73 home runs.  Using this data to update our priors, we get posterior parameters of $a^*=5+73=78$ and $b^*=45+476-73=448$.
 \bigskip
 
-\noindent \textit{Derivation of the maximum likelihood estimator.}  First, take the logarithm of the likelihood.
+\noindent \emph{Derivation of the maximum likelihood estimator.}  First, take the logarithm of the likelihood.
 
 \begin{eqnarray*}
 \mathrm{log}L(\mathbf{y}|\theta)&=& \mathrm{log}\left(\left[\prod_{i=1}^n{n_i \choose y_i}\right]\theta^{\Sigma y_i}(1-\theta)^{\Sigma n_i-\Sigma y_i}\right) \\
@@ -153,13 +153,13 @@ Standard Deviation & $0.0154$ \\
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $a=5$ and $b=45$.
+\noindent \emph{Black}.  The priors used in the analysis $a=5$ and $b=45$.
 
-\noindent \textit{Red}. $a=1$, $b=14$.  Based off all home runs and at-bats in seasons previous to 2001.  Very flexible to new data.
+\noindent \emph{Red}. $a=1$, $b=14$.  Based off all home runs and at-bats in seasons previous to 2001.  Very flexible to new data.
 
-\noindent \textit{Blue}. $a=4$, $b=45$.  Looks only at the time Bonds was with the Giants before 2001.  Moderately flexible to new data.
+\noindent \emph{Blue}. $a=4$, $b=45$.  Looks only at the time Bonds was with the Giants before 2001.  Moderately flexible to new data.
 
-\noindent \textit{Green}. $a=10$, $b=90$.  Uses only the 2000 season to select prior parameters.  New data affects posterior to a lesser degree than other priors.
+\noindent \emph{Green}. $a=10$, $b=90$.  Uses only the 2000 season to select prior parameters.  New data affects posterior to a lesser degree than other priors.
 
 %\subsection{Conclusion}
 %
@@ -222,10 +222,10 @@ The probability density function comes from the Poisson distribution, where $y_i
 %\end{center}
 %\end{figure}
 
-\noindent \textit{Parameters of the posterior distribution.}  From the data collected, there were a total of 34 failures in the 15 months.  So this means we have for posterior parameters $a^*=18+34=52$ and $b^*=3+15=18$.
+\noindent \emph{Parameters of the posterior distribution.}  From the data collected, there were a total of 34 failures in the 15 months.  So this means we have for posterior parameters $a^*=18+34=52$ and $b^*=3+15=18$.
 \bigskip
 
-\noindent \textit{Derivation of the maximum likelihood estimator.}  Take the logarithm of the likelihood function.
+\noindent \emph{Derivation of the maximum likelihood estimator.}  Take the logarithm of the likelihood function.
 
 \begin{eqnarray*}
 \mathrm{log}L(\mathbf{y}|\lambda) &=& \mathrm{log}\left[\frac{\lambda^{\Sigma y_i}e^{-n\lambda}}{\prod (y_i!)}\right] \\
@@ -284,13 +284,13 @@ Standard Deviation & $0.40$ \\
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $a=18$ and $b=3$.
+\noindent \emph{Black}.  The priors used in the analysis $a=18$ and $b=3$.
 
-\noindent \textit{Red}. $a=8$, $b=1$.  Not confident in experts response that the computer ``ought" not to fail more than 10 times a month.  Believes a value of 10 or higher is somewhat likely.
+\noindent \emph{Red}. $a=8$, $b=1$.  Not confident in experts response that the computer ``ought" not to fail more than 10 times a month.  Believes a value of 10 or higher is somewhat likely.
 
-\noindent \textit{Blue}. $a=8$, $b=2$.  Most flexible to the data, but leans towards higher probability in lower amounts of failures.
+\noindent \emph{Blue}. $a=8$, $b=2$.  Most flexible to the data, but leans towards higher probability in lower amounts of failures.
 
-\noindent \textit{Green}. $a=16$, $b=4$.  Has strong confidence in the experts.  Prior distribution has more weight in the posterior.
+\noindent \emph{Green}. $a=16$, $b=4$.  Has strong confidence in the experts.  Prior distribution has more weight in the posterior.
 
 
 %\subsection{Conclusion}
@@ -338,7 +338,7 @@ L(\mathbf{y}|\lambda) &=& \prod\left[\frac{1}{\lambda}e^{-y_i/\lambda}\right] \\
 \noindent which is an inverse gamma distribution with parameters $a^*=a+n$ and $b^*=b+\Sigma y_i$.  Therefore, the inverse gamma is the conjugate prior to the probability density function.
 
 %\begin{scriptsize}
-%\noindent \textit{Note:} In this analysis we are estimating $\lambda$.  The p.d.f., though a function $\lambda$, is in terms of $1/\lambda$.  This will turn out to be very convenient for us.  The p.d.f is an exponential distribution which has a mean and standard deviation of $1/\lambda$.  Thus with this particular function the mean and standard deviation will simply be $\lambda$.  So when we look at estimates of $\lambda$, we can easily make the connection between the parameter and what we are really interested in, i.e. river lengths in North America.
+%\noindent \emph{Note:} In this analysis we are estimating $\lambda$.  The p.d.f., though a function $\lambda$, is in terms of $1/\lambda$.  This will turn out to be very convenient for us.  The p.d.f is an exponential distribution which has a mean and standard deviation of $1/\lambda$.  Thus with this particular function the mean and standard deviation will simply be $\lambda$.  So when we look at estimates of $\lambda$, we can easily make the connection between the parameter and what we are really interested in, i.e. river lengths in North America.
 %\end{scriptsize}
 
 \subsection{Prior Parameters}
@@ -362,7 +362,7 @@ L(\mathbf{y}|\lambda) &=& \prod\left[\frac{1}{\lambda}e^{-y_i/\lambda}\right] \\
 \noindent \emph{Parameters of the posterior distribution} With $n=141$ rivers and $\Sigma y_i=83357$, for the posterior distribution we have parameters $a^*=5+141=146$ and $b^*=1600+83357=84957$.
 \bigskip
 
-\noindent \textit{Derivation of the maximum likelihood estimator.} Begin, as before, by taking the logarithm of the likelihood function and finding the derivative with respect to $\lambda$.
+\noindent \emph{Derivation of the maximum likelihood estimator.} Begin, as before, by taking the logarithm of the likelihood function and finding the derivative with respect to $\lambda$.
 
 \begin{eqnarray*}
 \mathrm{log}L(\mathbf{y}|\lambda) &=& \mathrm{log}\left[\left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\right] \\
@@ -418,13 +418,13 @@ Standard Deviation & $48.8$ \\
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $a=5$ and $b=1600$.
+\noindent \emph{Black}.  The priors used in the analysis $a=5$ and $b=1600$.
 
-\noindent \textit{Red}. $a=2$, $b=1000$.  Most flexible to new data.  This was intended as the priors were chosen because of knowing little about North American rivers.
+\noindent \emph{Red}. $a=2$, $b=1000$.  Most flexible to new data.  This was intended as the priors were chosen because of knowing little about North American rivers.
 
-\noindent \textit{Blue}. $a=9$, $b=3000$.  Attempts to agree with the lengths of the rivers in North America.  A brief internet search, independent of the data set, was used to get a rough estimate of the rivers.
+\noindent \emph{Blue}. $a=9$, $b=3000$.  Attempts to agree with the lengths of the rivers in North America.  A brief internet search, independent of the data set, was used to get a rough estimate of the rivers.
 
-\noindent \textit{Green}. $a=6$, $b=4000$.  Priors based off a quick look at top river lengths throughout the world.  These parameters attempt to roughly match the mean from rivers worldwide.
+\noindent \emph{Green}. $a=6$, $b=4000$.  Priors based off a quick look at top river lengths throughout the world.  These parameters attempt to roughly match the mean from rivers worldwide.
 \bigskip
 
 \noindent Due to the large amount of data, it turns out that each of these choices in priors resulted in roughly the same posterior distribution.
@@ -451,12 +451,15 @@ Standard Deviation & $48.8$ \\
 
 \noindent We will assume the data is normally distributed with mean $\mu$ and $\sigma=9$.  The probability density function is
 
-\[f(y_i|\mu,\sigma)=(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right);\ \ \ -\infty<y_i,\mu<+\infty\]
+\begin{eqnarray*}
+f_*(y_i|\mu,\sigma)=(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right); && -\infty<y_i,\mu<+\infty; \\
+&& \sigma^2>0 \\
+\end{eqnarray*}
 
 \noindent The likelihood function is
 
 \begin{eqnarray*}
-L(\mathbf{y}|\mu,\sigma) &=& \prod\left[(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right)\right] \\
+L(\mathbf{y}|\mu) &=& \prod\left[(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right)\right] \\
 &=& (2\pi\sigma^2)^{-n/2}\exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right) \\
 \end{eqnarray*}
 
@@ -505,35 +508,15 @@ L(\mathbf{y}|\mu,\sigma) &=& \prod\left[(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}
 
 \subsection{Maximum Likelihood and Plots}
 
-\noindent Parameters for the prior distribution are $\mu_0=85$ and $\sigma_0^2=4$.
+\noindent \emph{Parameters of the posterior distribution.} $m^*=86.34$ and $s^{*2}=1.64$.
+\bigskip
 
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/4priorplot.pdf}
-\caption{Prior Distribution}
-\end{center}
-\end{figure}
-
-\noindent Posterior distribution parameters: $\mu_1=86.34$ and $\sigma_1^2=1.64$.
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/4postplot.pdf}
-\caption{Posterior Distribution}
-\end{center}
-\end{figure}
-
-\noindent \textit{Derivation of the maximum likelihood estimator.}  The log likelihood function for the normal distribution is:
+\noindent \emph{Derivation of the maximum likelihood estimator.} Proceed!
 
 \begin{eqnarray*}
-\mathrm{log}L(y_i|\mu,\sigma^2) &=& \mathrm{log}\left[(2\pi\sigma^2)^{-n/2}exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right)\right] \\
+\mathrm{log}L(\mathbf{y}|\mu) &=& \mathrm{log}\left[(2\pi\sigma^2)^{-n/2}\exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right)\right] \\
 &=& -\frac{n}{2}\mathrm{log}(2\pi\sigma^2)-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2 \\
-\end{eqnarray*}
-
-The derivative with respect to $\mu$ is
-
-\begin{eqnarray*}
-\frac{d}{d\mu}\mathrm{log}L(y_i|\mu,\sigma^2) &=& \frac{d}{d\mu}\left[-\frac{n}{2}\mathrm{log}(2\pi\sigma^2)-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right] \\
+\frac{d}{d\mu}\mathrm{log}L(\mathbf{y}|\mu) &=& \frac{d}{d\mu}\left[-\frac{n}{2}\mathrm{log}(2\pi\sigma^2)-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right] \\
 &=& -\frac{1}{2\sigma^2}\Sigma(y_i-\mu)(2)(-1) \\
 &=& \frac{1}{\sigma^2}(\Sigma y_i-n\mu) \\
 \end{eqnarray*}
@@ -544,9 +527,18 @@ Set equal to 0 and solve for $\hat{\mu}$
 0 &=& \frac{1}{\sigma^2}(\Sigma y_i-n\hat{\mu}) \\
 0 &=& (\Sigma y_i-n\hat{\mu}) \\
 n\hat{\mu} &=& \Sigma y_i \\
-\hat{\mu} &=& \frac{\Sigma y_i}{n} \\
+%\hat{\mu} &=& \frac{\Sigma y_i}{n} \\
 &=& \ybar \\
 \end{eqnarray*}
+
+with $\hat{\mu}=87.27$.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{figs/4postplot.pdf}
+\caption{Posterior Distribution}
+\end{center}
+\end{figure}
 
 \subsection{Posterior Estimates}
 
@@ -563,7 +555,7 @@ Standard Deviation & $1.28$ \\
 \end{center}
 \end{figure}
 
-\noindent The highest probability density interval is $(83.11, 89.56)$.
+\noindent The 95\% central credible interval is $(83.11, 89.56)$.
 
 
 \subsection{Other Potential Priors}
@@ -575,13 +567,13 @@ Standard Deviation & $1.28$ \\
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\mu_0=85$ and $\sigma_0^2=4$.
+\noindent \emph{Black}.  The priors used in the analysis $m=85$ and $s^2=4$.
 
-\noindent \textit{Red}. $\mu_0=90$, $\sigma_0^2=1$.  The justification of these priors comes from another interpretation of ``extremely easy" suggesting that the average test score is quite high.
+\noindent \emph{Red}. $m=90$, $s^2=1$.  The justification of these priors comes from another interpretation of ``extremely easy" suggesting that the average test score is quite high.
 
-\noindent \textit{Blue}. $\mu_0=75$, $\sigma_0^2=25$.  Higher variability in what the mean could be, but considers the average score to center around 75\%.
+\noindent \emph{Blue}. $m=75$, $s^2=25$.  Higher variability in what the mean could be, but considers the average score to center around 75\%.
 
-\noindent \textit{Green}. $\mu_0=80$, $\sigma_0^2=16$.  Similar to that used in the analysis, but with more variability.  This is to take into account a range of higher scores.
+\noindent \emph{Green}. $m=80$, $s^2=16$.  Similar to that used in the analysis, but with more variability.  This is to take into account a range of higher scores.
 
 %\subsection{Conclusion}
 %
@@ -633,7 +625,7 @@ f(\theta|y_i,\eta,\delta) &=& \frac{\theta^{-\eta-1}exp(-\delta/\theta)}{\int_0^
 
 \subsection{Maximum Likelihood and Plots}
 
-\noindent \textit{Derivation of the maximum likelihood estimator.}  Let $\theta=\sigma^2$ to avoid confusion in the derivative.  The log likelihood function is
+\noindent \emph{Derivation of the maximum likelihood estimator.}  Let $\theta=\sigma^2$ to avoid confusion in the derivative.  The log likelihood function is
 
 \begin{eqnarray*}
 \mathrm{log}L(y_i|\mu,\theta) &=& \mathrm{log}\left[(2\pi\theta)^{-n/2}exp\left(-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right)\right] \\
@@ -701,13 +693,13 @@ The highest probability density interval is $(41.4, 111.5)$.
 \end{center}
 \end{figure}
 
-\noindent \textit{Black}.  The priors used in the analysis $\alpha=2$ and $\beta=50$.
+\noindent \emph{Black}.  The priors used in the analysis $\alpha=2$ and $\beta=50$.
 
-\noindent \textit{Red}. $\alpha=2$, $\beta=150$.  Variability is rather uncertain, so let it spread out further and be more flexible to new data.
+\noindent \emph{Red}. $\alpha=2$, $\beta=150$.  Variability is rather uncertain, so let it spread out further and be more flexible to new data.
 
-\noindent \textit{Blue}. $\alpha=4$, $\beta=60$.  Presumes to be rather confident in choice of $\sigma^2$.  Priors have more weight, less flexible to new data.
+\noindent \emph{Blue}. $\alpha=4$, $\beta=60$.  Presumes to be rather confident in choice of $\sigma^2$.  Priors have more weight, less flexible to new data.
 
-\noindent \textit{Green}. $\alpha=5$, $\beta=120$.  Considers variability to be in a higher range, thinking that ``extremely easy" doesn't apply to all who took the test.
+\noindent \emph{Green}. $\alpha=5$, $\beta=120$.  Considers variability to be in a higher range, thinking that ``extremely easy" doesn't apply to all who took the test.
 
 %\subsection{Conclusion}
 %
