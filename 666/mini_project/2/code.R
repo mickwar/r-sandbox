@@ -66,8 +66,8 @@ max(abs(y1 - x1))
 
 # correlation existing
 set.seed(1)
-n = 1000
-p = 5
+n = 20000
+p = 10
 # uncorrelated
 A = diag(p)
 # weakly correlated
@@ -89,9 +89,16 @@ A = chol(matrix(c(1.00,0.99,0.99,0.99,0.99,
                   0.99,0.99,0.99,1.00,0.99,
                   0.99,0.99,0.99,0.99,1.00), 5, 5))
 
-x2 = t(t(A) %*% matrix(rnorm(n*p), p, n))
-x2.miss = gen.miss(x2, 0.10)
+x2 = matrix(rnorm(n*p), n, p) %*% A
+x2.miss = gen.miss(x2, 0.20)
 
 y2 = em(x2.miss, tol=0.00001)
 
-max(abs(y2 - x2))
+missing = which(is.na(x2.miss))
+plot(density(y2[missing] - x2[missing]))
+curve(dnorm(x, mean(y2[missing]-x2[missing]),
+    sd(y2[missing]-x2[missing])), col='red', add=TRUE)
+    
+range(y2[missing]-x2[missing])
+quantile(y2[missing]-x2[missing], c(0.025, 0.975))
+
