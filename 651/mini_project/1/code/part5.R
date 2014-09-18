@@ -61,22 +61,28 @@ mu=87
 postA=priorA+length(examvar)/2
 postB=priorB+0.5*sum((examvar-mu)^2)
 
-png(paste(path,"5priorplot.png",sep=""),width=720,height=400)
-xx=seq(0,300,.1)
-plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,300),
-	main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
-polygon(x=c(xx,300),
-	y=c(igpdf(xx,priorA,priorB),0),
-	col='lightgray',border='black')
-dev.off()
+#png(paste(path,"5priorplot.png",sep=""),width=720,height=400)
+#xx=seq(0,300,.1)
+#plot(xx,igpdf(xx,priorA,priorB),xlim=c(0,300),
+#	main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
+#polygon(x=c(xx,300),
+#	y=c(igpdf(xx,priorA,priorB),0),
+#	col='lightgray',border='black')
+#dev.off()
 
-png(paste(path,"5postplot.png",sep=""),width=720,height=400)
+mle = sum((examvar-mu)^2) / length(examvar)
+
+pdf(paste(path,"figs/5postplot.pdf",sep=""),9,5)
 xx=seq(0,300,.1)
 plot(xx,igpdf(xx,postA,postB),xlim=c(0,300),
-	main="",ylab="",xlab="",ylim=c(0,0.04),type='l')
+	main="",ylab="",xlab="",ylim=c(0,0.028),type='l')
 polygon(x=c(xx,300),
 	y=c(igpdf(xx,postA,postB),0),
 	col='lightgray',border='black')
+points(xx,igpdf(xx,priorA,priorB),xlim=c(0,300),
+	main="",ylab="",xlab="",ylim=c(0,0.04),type='l',lty=2)
+abline(v=mle, col='red')
+legend(220, 0.028, c("Prior", "Posterior", "MLE"), lty=c(2,1,1), col=c("black","black","red"), cex=1.5)
 dev.off()
 
 ### Estimates
@@ -97,8 +103,10 @@ postB/(postA+1)
 #standard deviation
 sqrt((postB^2)/(((postA-1)^2)*(postA-2)))
 
-#highest posterior density interval
+# central 95%
+quantile(samp, c(0.025, 0.975))
 
+#highest posterior density interval
 n=5000
 p=0.95
 ints=matrix(NA,n,2)
@@ -113,11 +121,15 @@ min(len)
 
 # Other priors
 
-png(paste(path,"5otherpriors.png",sep=""),width=720,height=400)
+
+add.A = length(examvar)/2
+add.B = 0.5*sum((examvar-mu)^2)
+
+pdf(paste(path,"figs/5otherpriors.pdf",sep=""),9,5)
 xx=seq(0,500,.1)
-plot(xx,igpdf(xx,2,50),xlim=c(0,200),
-	main="",ylab="",xlab="",ylim=c(0,0.06),type='l',lwd=2)
-lines(xx,igpdf(xx,2,150),lwd=2,col='red')
-lines(xx,igpdf(xx,4,60),lwd=2,col='blue')
-lines(xx,igpdf(xx,5,120),lwd=2,col='green')
+plot(xx,igpdf(xx,2+add.A,50+add.B),xlim=c(0,200),
+	main="",ylab="",xlab="",ylim=c(0,0.03),type='l',lwd=2)
+lines(xx,igpdf(xx,2+add.A,150+add.B),lwd=2,col='red')
+lines(xx,igpdf(xx,4+add.A,60+add.B),lwd=2,col='blue')
+lines(xx,igpdf(xx,5+add.A,120+add.B),lwd=2,col='green')
 dev.off()

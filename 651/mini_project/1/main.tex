@@ -290,7 +290,7 @@ Standard Deviation & $0.40$ \\
 
 \noindent \emph{Blue}. $a=8$, $b=2$.  Most flexible to the data, but leans towards higher probability in lower amounts of failures.
 
-\noindent \emph{Green}. $a=16$, $b=4$.  Has strong confidence in the experts.  Prior distribution has more weight in the posterior.
+\noindent \emph{Green}. $a=16$, $b=4$.  Has strong confidence in the experts.
 
 
 %\subsection{Conclusion}
@@ -536,7 +536,7 @@ with $\hat{\mu}=87.27$.
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.5]{figs/4postplot.pdf}
-\caption{Posterior Distribution}
+\caption{Plots of the prior (dashed), posterior (solid), and MLE (red).}
 \end{center}
 \end{figure}
 
@@ -591,51 +591,52 @@ Standard Deviation & $1.28$ \\
 
 \noindent The probability density function is
 
-\[f(y_i|\mu,\sigma)=(2\pi\sigma^2)^{-1/2}exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right)\]
+\begin{eqnarray*}
+f_*(y_i|\mu,\sigma)=(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right); && -\infty<y_i,\mu<+\infty; \\
+&& \sigma^2>0 \\
+\end{eqnarray*}
 
 \noindent The likelihood function is
 
 \begin{eqnarray*}
-L(y_i|\mu,\sigma) &=& \prod\left[(2\pi\sigma^2)^{-1/2}exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right)\right] \\
-&=& (2\pi\sigma^2)^{-n/2}exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right) \\
+L(\mathbf{y}|\sigma) &=& \prod\left[(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigma^2}(y_i-\mu)^2\right)\right] \\
+&=& (2\pi\sigma^2)^{-n/2}\exp\left(-\frac{1}{2\sigma^2}\Sigma(y_i-\mu)^2\right) \\
 \end{eqnarray*}
 
-\noindent We will use the Inverse Gamma distribution for the prior.  Let $\theta=\sigma^2$.  The posterior distribution is then
+\noindent We will use the inverse gamma distribution for the prior.  Let $\theta=\sigma^2$.  The posterior distribution is then
 
 \begin{eqnarray*}
-f(\theta|y_i,\mu,\alpha,\beta) &\propto& (2\pi\theta)^{-\frac{n}{2}}exp\left(-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right)\frac{\beta^\alpha}{\Gamma(\alpha)}\theta^{-\alpha-1}exp(-\beta/\theta) \\
-&\propto& \theta^{-\frac{n}{2}}exp\left(-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right)\theta^{-\alpha-1}exp(-\beta/\theta) \\
-&\propto& \theta^{-(\alpha+\frac{n}{2})-1}exp\left(-\frac{1}{\theta}\left(\frac{\Sigma(y_i-\mu)^2}{2}+\beta\right)\right) \\
+\pi(\theta|\mathbf{y}) &\propto& (2\pi\theta)^{-\frac{n}{2}}\exp\left(-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right)\frac{b^a}{\Gamma(a)}\theta^{-a-1}\exp(-b/\theta) \\
+&\propto& \theta^{-\frac{n}{2}}\exp\left(-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right)\theta^{-a-1}\exp(-b/\theta) \\
+&\propto& \theta^{-(a+\frac{n}{2})-1}\exp\left(-\frac{1}{\theta}\left(\frac{\Sigma(y_i-\mu)^2}{2}+b\right)\right) \\
 \end{eqnarray*}
 
-\noindent Let $\eta=\alpha+\frac{n}{2}$ and $\delta=\left(\frac{\Sigma(y_i-\mu)^2}{2}+\beta\right)$ then
+\noindent Let $a^*=a+\frac{n}{2}$ and $b^*=\left(\frac{\Sigma(y_i-\mu)^2}{2}+b\right)$ then
 
 \begin{eqnarray*}
-f(\theta|y_i,\eta,\delta) &=& \frac{\theta^{-\eta-1}exp(-\delta/\theta)}{\int_0^\infty\theta^{-\eta-1}exp(-\delta/\theta)d\theta} \\
-&=& \frac{\theta^{-\eta-1}exp(-\delta/\theta)}{\frac{\Gamma(\eta)}{\delta^\eta}\int_0^\infty\frac{\delta^\eta}{\Gamma(\eta)}\theta^{-\eta-1}exp(-\delta/\theta)d\theta} \\
-&=& \frac{\theta^{-\eta-1}exp(-\delta/\theta)}{\frac{\Gamma(\eta)}{\delta^\eta}} \\
-&=& \frac{\delta^\eta}{\Gamma(\eta)}\theta^{-\eta-1}exp(-\delta/\theta) \\
+\pi(\theta|\mathbf{y}) &=& \frac{\theta^{-a^*-1}\exp(-b^*/\theta)}{\int_0^\infty\theta^{-a^*-1}\exp(-b^*/\theta)d\theta} \\
+&=& \frac{\theta^{-a^*-1}\exp(-b^*/\theta)}{\frac{\Gamma(a^*)}{(b^*)^{a^*}}\int_0^\infty\frac{(b^*)^{a^*}}{\Gamma(a^*)}\theta^{-a^*-1}\exp(-b^*/\theta)d\theta} \\
+%&=& \frac{\theta^{-a^*-1}\exp(-b^*/\theta)}{\frac{\Gamma(a^*)}{(b^*)^{a^*}}} \\
+&=& \frac{(b^*)^{a^*}}{\Gamma(a^*)}\theta^{-a^*-1}\exp(-b^*/\theta) \\
 \end{eqnarray*}
 
-\noindent This is an Inverse Gamma with parameters $\eta=\alpha+\frac{n}{2}$ and $\delta=\left(\frac{\Sigma(y_i-\mu)^2}{2}+\beta\right)$
+\noindent This is an inverse gamma with parameters $a^*=a+\frac{n}{2}$ and $b^*=\left(\frac{\Sigma(y_i-\mu)^2}{2}+b\right)$
 
 \subsection{Prior Parameters}
 
-\noindent Since we are given that $\mu=87$, we know we don't want a $\sigma^2$ that is too high since the max score is 100 and we would prefer not to go beyond that.  It seems appropriate to let a prior on $\sigma^2$ that causes the standard deviation to be about 6 or 7.  This means that two standard deviations above the mean will catch the max score and still go low enough to get the lower scores.  And since we are assuming the exam is easy, we wouldn't expect to go to for below the mean.
+\noindent Since we are given that $\mu=87$, we know we don't want a $\sigma^2$ that is too high since the max score is 100 and we would prefer not to go beyond that.  It seems appropriate to let a prior on $\sigma^2$ that causes the standard deviation to be about 6 or 7.  This means that two standard deviations above the mean will catch the max score and still go low enough to get the lower scores.  And since we are assuming the exam is easy, we wouldn't expect to go too far below the mean.
 
 \subsection{Maximum Likelihood and Plots}
+
+\noindent \emph{Parameters of the posterior.} $a^*=16.5$ and $b^*=1136$.
+\bigskip
 
 \noindent \emph{Derivation of the maximum likelihood estimator.}  Let $\theta=\sigma^2$ to avoid confusion in the derivative.  The log likelihood function is
 
 \begin{eqnarray*}
-\mathrm{log}L(y_i|\mu,\theta) &=& \mathrm{log}\left[(2\pi\theta)^{-n/2}exp\left(-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right)\right] \\
+\mathrm{log}L(\mathbf{y}|\theta) &=& \mathrm{log}\left[(2\pi\theta)^{-n/2}\exp\left(-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right)\right] \\
 &=& -\frac{n}{2}\mathrm{log}(2\pi\theta)-\frac{1}{2\theta}\Sigma(y_i-\mu)^2 \\
-\end{eqnarray*}
-
-\noindent Take the derivative with respect to $\theta$
-
-\begin{eqnarray*}
-\frac{d}{d\theta}\mathrm{log}L(y_i|\mu,\theta) &=& \frac{d}{d\theta}\left[-\frac{n}{2}\mathrm{log}(2\pi\theta)-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right] \\
+\frac{d}{d\theta}\mathrm{log}L(\mathbf{y}|\theta) &=& \frac{d}{d\theta}\left[-\frac{n}{2}\mathrm{log}(2\pi\theta)-\frac{1}{2\theta}\Sigma(y_i-\mu)^2\right] \\
 &=& -\frac{n}{2\theta}-\frac{1}{2\theta^2}\Sigma(y_i-\mu)^2(-1) \\
 &=& -\frac{n}{2\theta}+\frac{1}{2\theta^2}\Sigma(y_i-\mu)^2 \\
 \end{eqnarray*}
@@ -649,21 +650,11 @@ n\hat{\theta} &=& \Sigma(y_i-\mu)^2 \\
 \hat{\sigma}^2=\hat{\theta} &=& \frac{\Sigma(y_i-\mu)^2}{n} \\
 \end{eqnarray*}
 
-\noindent Prior distribution with parameters $\alpha=2$ and $\beta=50$.
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/5priorplot.pdf}
-\caption{Prior Distribution}
-\end{center}
-\end{figure}
-
-\noindent Posterior distribution with parameters $\alpha_1=16.5$ and $\beta_1=1136$.
 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.5]{figs/5postplot.pdf}
-\caption{Posterior Distribution}
+\caption{Plots of the prior (dashed), posterior (solid), and MLE (red).}
 \end{center}
 \end{figure}
 
@@ -682,7 +673,7 @@ Standard Deviation & $19.2$ \\
 \end{center}
 \end{figure}
 
-The highest probability density interval is $(41.4, 111.5)$.
+The 95\% central credible interval is $(45.1, 119.3)$.
 
 \subsection{Other Potential Priors}
 
@@ -693,13 +684,13 @@ The highest probability density interval is $(41.4, 111.5)$.
 \end{center}
 \end{figure}
 
-\noindent \emph{Black}.  The priors used in the analysis $\alpha=2$ and $\beta=50$.
+\noindent \emph{Black}.  The priors used in the analysis $a=2$ and $b=50$.
 
-\noindent \emph{Red}. $\alpha=2$, $\beta=150$.  Variability is rather uncertain, so let it spread out further and be more flexible to new data.
+\noindent \emph{Red}. $a=2$, $b=150$.  Variability is rather uncertain, so let it spread out further and be more flexible to new data.
 
-\noindent \emph{Blue}. $\alpha=4$, $\beta=60$.  Presumes to be rather confident in choice of $\sigma^2$.  Priors have more weight, less flexible to new data.
+\noindent \emph{Blue}. $a=4$, $b=60$.  Presumes to be rather confident in choice of $\sigma^2$.  Priors have more weight, less flexible to new data.
 
-\noindent \emph{Green}. $\alpha=5$, $\beta=120$.  Considers variability to be in a higher range, thinking that ``extremely easy" doesn't apply to all who took the test.
+\noindent \emph{Green}. $a=5$, $b=120$.  Considers variability to be in a higher range, thinking that ``extremely easy" doesn't apply to all who took the test.
 
 %\subsection{Conclusion}
 %
