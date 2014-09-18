@@ -1,3 +1,6 @@
+### needs to be put into bayes_functions
+### compare this hpd.mult() with the one in bayes_functions.R
+### and see the accuracy and speed of each
 color.den = function(dens, from, to, col1 = 1, col2 = NULL){
     if (is.null(col2))
         col2 = col1
@@ -17,6 +20,7 @@ col.mult = function(col1 = 0x000000, col2 = "black"){
         val2 = t(int2rgb(col2) / 255)
     rgb(val1 * val2)
     }
+# x is 
 hpd.mult = function(x, dens, prob = 0.95, tol, interactive = TRUE){
     max.k = max(dens$y)
     min.k = min(dens$y)
