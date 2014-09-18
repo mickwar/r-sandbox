@@ -1834,3 +1834,38 @@ apply(accept, 2, mean)
 # works out
 
 ##########
+
+
+##########
+# random draw? from the function? doubtful
+f = function(x)
+    dnorm(x)
+xx = seq(-5, 5, length=100000)
+
+plot(xx, f(xx), type='l')
+
+yy = floor(f(xx) / min(dnorm(xx)))
+new.x = sample(xx, 100000, replace = TRUE, prob = yy/sum(yy))
+new.y = rnorm(100000)
+
+hist(new.x, freq=FALSE, breaks=100, col='gray')
+curve(f(x), add=TRUE, col='red', lwd=2)
+points(density(new.y), col='blue', type='l', lwd=2)
+points(density(new.x), col='green', type='l', lwd=2)
+
+# some cosine density
+f = function(x)
+    (cos(x) + 1)/(2*pi)
+xx = seq(0, 2*pi, length=100000)
+
+plot(xx, f(xx), type='l')
+
+yy = floor(f(xx) / min(dnorm(xx)))
+new.x = sample(xx, 100000, replace = TRUE, prob = yy/sum(yy))
+#new.y = rnorm(100000)
+
+hist(new.x, freq=FALSE, breaks=100, col='gray')
+curve(f(x), add=TRUE, col='red', lwd=2)
+#points(density(new.y), col='blue', type='l', lwd=2)
+points(density(new.x), col='green', type='l', lwd=2)
+##########
