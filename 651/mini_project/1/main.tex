@@ -263,7 +263,7 @@ The probability density function comes from the Poisson distribution, where $y_i
 \begin{figure}[H]
 \begin{center}
 \begin{tabular}{l|r}
-Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
+Estimate & \multicolumn{1}{l}{Value} \\ \hline \hline
 Mean               & $2.88$ \\
 Median             & $2.87$ \\
 Mode               & $2.83$ \\
@@ -325,7 +325,7 @@ L(\mathbf{y}|\lambda) &=& \prod\left[\frac{1}{\lambda}e^{-y_i/\lambda}\right] \\
 
 \[\pi(\lambda)=\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda};\ \ \ \lambda>0;\ a>2;\ b>0\]
 
-\noindent Having $a>2$ ensures we have at least the first two moments. Multiplying the likelihood with the prior and dividing by the integral of that same product will give us the posterior distribution.  So we have
+\noindent Having $a>2$ ensures we have at least the first two moments. The posterior is then
 
 \begin{eqnarray*}
 \pi(\lambda|\mathbf{y}) &=& \frac{\left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}}{\int_o^\infty \left(\frac{1}{\lambda}\right)^ne^{-\Sigma y_i/\lambda}\frac{b^a}{\Gamma(a)}\left(\frac{1}{\lambda}\right)^{a+1}e^{-b/\lambda}d\lambda} \\
@@ -335,7 +335,7 @@ L(\mathbf{y}|\lambda) &=& \prod\left[\frac{1}{\lambda}e^{-y_i/\lambda}\right] \\
 &=& \frac{(b+\Sigma y_i)^{a+n}}{\Gamma(a+n)}\left(\frac{1}{\lambda}\right)^{(a+n)+1}e^{-(b+\Sigma y_i)/\lambda} \\
 \end{eqnarray*}
 
-\noindent which is an inverse gamma distribution with parameters $a^*=a+n$ and $b^*=b+\Sigma y_i$.  Therefore, the inverse gamma is the conjugate prior to the probability density function.
+\noindent which is an inverse gamma distribution with parameters $a^*=a+n$ and $b^*=b+\Sigma y_i$.
 
 %\begin{scriptsize}
 %\noindent \emph{Note:} In this analysis we are estimating $\lambda$.  The p.d.f., though a function $\lambda$, is in terms of $1/\lambda$.  This will turn out to be very convenient for us.  The p.d.f is an exponential distribution which has a mean and standard deviation of $1/\lambda$.  Thus with this particular function the mean and standard deviation will simply be $\lambda$.  So when we look at estimates of $\lambda$, we can easily make the connection between the parameter and what we are really interested in, i.e. river lengths in North America.
@@ -392,12 +392,12 @@ L(\mathbf{y}|\lambda) &=& \prod\left[\frac{1}{\lambda}e^{-y_i/\lambda}\right] \\
 
 \subsection{Posterior Estimates}
 
-\noindent To compute the median and credible interval, we took a large random sample of the inverse gamma and calculated the appropriate quantiles.
+%\noindent To compute the median and credible interval, we took a large random sample of the inverse gamma and calculated the appropriate quantiles.
 
 \begin{figure}[H]
 \begin{center}
 \begin{tabular}{l|r}
-Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
+Estimate & \multicolumn{1}{l}{Value} \\ \hline \hline
 Mean               & $585.9$ \\
 Median             & $583.2$ \\
 Mode               & $577.9$ \\
@@ -411,6 +411,8 @@ Standard Deviation & $48.8$ \\
 
 \subsection{Other Potential Priors}
 
+%\ \\ [-1.5cm]
+
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.5]{figs/3otherpriors.pdf}
@@ -420,14 +422,14 @@ Standard Deviation & $48.8$ \\
 
 \noindent \emph{Black}.  The priors used in the analysis $a=5$ and $b=1600$.
 
-\noindent \emph{Red}. $a=2$, $b=1000$.  Most flexible to new data.  This was intended as the priors were chosen because of knowing little about North American rivers.
+\noindent \emph{Red}. $a=2$, $b=1000$.  Most flexible to new data. Little knowledge of rivers.
 
-\noindent \emph{Blue}. $a=9$, $b=3000$.  Attempts to agree with the lengths of the rivers in North America.  A brief internet search, independent of the data set, was used to get a rough estimate of the rivers.
+\noindent \emph{Blue}. $a=9$, $b=3000$.  Attempts to agree with the lengths of the rivers in North America based on a brief Internet search.
 
-\noindent \emph{Green}. $a=6$, $b=4000$.  Priors based off a quick look at top river lengths throughout the world.  These parameters attempt to roughly match the mean from rivers worldwide.
-\bigskip
+\noindent \emph{Green}. $a=6$, $b=4000$.  Priors based off a quick look at top river lengths throughout the world. These parameters attempt to roughly match the mean from rivers worldwide.
+%\bigskip
 
-\noindent Due to the large amount of data, it turns out that each of these choices in priors resulted in roughly the same posterior distribution.
+%\noindent Due to the large amount of data, it turns out that each of these choices in priors resulted in roughly the same posterior distribution.
 
 %\subsection{Conclusion}
 %
@@ -521,7 +523,7 @@ L(\mathbf{y}|\mu) &=& \prod\left[(2\pi\sigma^2)^{-1/2}\exp\left(-\frac{1}{2\sigm
 &=& \frac{1}{\sigma^2}(\Sigma y_i-n\mu) \\
 \end{eqnarray*}
 
-Set equal to 0 and solve for $\hat{\mu}$
+\noindent Set equal to 0 and solve for $\hat{\mu}$
 
 \begin{eqnarray*}
 0 &=& \frac{1}{\sigma^2}(\Sigma y_i-n\hat{\mu}) \\
@@ -531,7 +533,7 @@ n\hat{\mu} &=& \Sigma y_i \\
 &=& \ybar \\
 \end{eqnarray*}
 
-with $\hat{\mu}=87.27$.
+\noindent with $\hat{\mu}=87.27$.
 
 \begin{figure}[H]
 \begin{center}
@@ -545,7 +547,7 @@ with $\hat{\mu}=87.27$.
 \begin{figure}[H]
 \begin{center}
 \begin{tabular}{l|r}
-Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
+Estimate & \multicolumn{1}{l}{Value} \\ \hline \hline
 Mean               & $86.34$ \\
 Median             & $86.34$ \\
 Mode               & $86.34$ \\
@@ -663,7 +665,7 @@ n\hat{\theta} &=& \Sigma(y_i-\mu)^2 \\
 \begin{figure}[H]
 \begin{center}
 \begin{tabular}{l|r}
-Estimator & \multicolumn{1}{l}{Value} \\ \hline \hline
+Estimate & \multicolumn{1}{l}{Value} \\ \hline \hline
 Mean               & $73.2$ \\
 Median             & $70.1$ \\
 Mode               & $64.9$ \\
