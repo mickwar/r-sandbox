@@ -1838,6 +1838,8 @@ apply(accept, 2, mean)
 
 ##########
 # random draw? from the function? doubtful
+# this is called griddy gibbs i think
+# not so useful in high dimensional spaces
 f = function(x)
     dnorm(x)
 xx = seq(-5, 5, length=100000)
