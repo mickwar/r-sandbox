@@ -96,7 +96,7 @@ colnames(X) = var.names
 n = nrow(X)
 
 CC = X[,which(colnames(X) == "kids_P")]
-CC = X[,12]
+CC = X[,3]
 SS = sort(unique(CC))
 means = double(length(SS))
 for (i in 1:length(means))
@@ -109,6 +109,33 @@ X2 = x.spline(X, 2, c(2, 6))
 X2 = x.spline(X2, 5, 3)
 
 X = X2
+
+# removing the correlated variables
+X.un = data.frame(X[,c(1,2,3,4,5,6,7,10,12,13,14)])
+X.un[,9] = log(X.un[,9])
+
+full.mod = glm(Y ~ kids_S + kids_V + ns(kids_P, 3) + PG13 + PG + G +
+    rot_crit + live_action + kids_I + rot_I,
+    data=X.un, family=binomial)
+null.mod = glm(Y ~ 1, data=X.un, family=binomial)
+
+mod = step(null.mod, scope=list(lower=null.mod, upper=full.mod),
+    k=log(nrow(dat)), data=dat, direction="both", family=binomial)
+summary(mod)
+vif(mod)
+vif(full.mod)
+
+risk.score = predict(mod, newdata=X.un)
+p = exp(risk.score)/(1+exp(risk.score))
+
+cbind(substr(movies, 1, 15), p, Y, abs(p-Y))
+
+those = as.vector(which(p > 0.83))
+cbind(substr(movies[those], 1, 15), p[those], Y[those], abs(p[those]-Y[those]))
+
+cbind(movies[those], X.un[those,])
+
+
 
 
 # the model: y_i ~ bern(p_i)
@@ -159,9 +186,9 @@ lower = rep(-Inf, nparams)
 upper = rep(+Inf, nparams)
 lower[nparams] = 0
 
-window = 500
-nburn = 10000
-nmcmc = 1000000
+window = 200
+nburn = 5000
+nmcmc = 10000
 
 params = matrix(0, nburn+nmcmc, nparams)
 params[1, ind.sig] = 80
