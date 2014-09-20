@@ -10,6 +10,7 @@ time route direction tod
 9:50.1 south to afternoon
 9:50.7 east from evening
 10:30.1 south to morning
+10:03.4 south from afternoon
 
 # south route is going up big hill
 # east route is going up 9th east passed wilk
