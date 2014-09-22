@@ -1764,20 +1764,35 @@ calc.post = function(params){
     out = sum(log(rho*dnorm(y, mu1, sig1) +
         (1-rho)*dnorm(y, mu2, sig2)))
     # priors
-    out = out + dbeta(rho, 7, 3, log = TRUE)
-    out = out + dnorm(mu1, 3, 10, log = TRUE)
-    out = out + dnorm(mu2, 3, 10, log = TRUE)
+#   out = out + dbeta(rho, 7, 3, log = TRUE)
+#   out = out + dnorm(mu1, 3, 10, log = TRUE)
+#   out = out + dnorm(mu2, 3, 10, log = TRUE)
+#   out = out + dgamma(sig1, 1.5, 0.5, log = TRUE)
+#   out = out + dgamma(sig2, 1.5, 0.5, log = TRUE)
+    out = out + dbeta(rho, 10, 15, log = TRUE)
+    out = out + dnorm(mu1, 24, 1, log = TRUE)
+    out = out + dnorm(mu2, 31, 1, log = TRUE)
     out = out + dgamma(sig1, 1.5, 0.5, log = TRUE)
-    out = out + dgamma(sig2, 1.5, 0.5, log = TRUE)
+    out = out + dgamma(sig2, 1.75, 0.5, log = TRUE)
     return (out)
     }
 
 y = gen(500)
+# mpg data
+y=c(209.5/6.171, 296.0/9.664, 240.5/9.867, 221.8/10.231,
+        319.3/10.404, 287.5/9.543, 307.3/9.911, 227.9/9.405,
+        318.1/9.812, 309.4/9.634, 269.2/9.271, 297.9/10.334,
+        163.3/9.913, 300.0/10.12, 355.1/10.384, 286.6/9.611,
+        330.6/10.390, 301.0/9.956, 316.2/10.020, 366.9/9.942,
+        262.1/10.055, 215.8/10.048, 283.1/8.690, 357.6/9.879,
+        242.5/10.121, 188.9/8.485, 311.3/9.870, 225.3/10.236,
+        259.8/10.304, 264.8/9.904, 277.3/10.465, 272.5/11.277)
+y = y[-c(13, 20)]
 plot(density(y))
 
 nparams = 5
 sigs = rep(1, nparams)
-nburn = 10000
+nburn = 15000
 nmcmc = 25000
 upper = c(1, Inf, Inf, Inf, Inf)
 lower = c(0, -Inf, -Inf, 0, 0)
@@ -1832,6 +1847,20 @@ apply(accept, 2, mean)
 # it's okay to estimate rho as 1-rho, just make the
 # changes with the other parameters and it all
 # works out
+
+m = nrow(params)
+pred.y = double(m)
+mix = rbinom(m, 1, params[,1])
+for (i in 1:m){
+    if (mix[i] == 1){
+        pred.y[i] = rnorm(1, params[i,2], sqrt(params[i,4]))
+    } else {
+        pred.y[i] = rnorm(1, params[i,3], sqrt(params[i,5]))
+        }
+    }
+
+plot(density(pred.y))
+points(density(y), col='red', type='l')
 
 ##########
 
