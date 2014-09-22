@@ -1,6 +1,6 @@
 dat = read.table("~/files/R/666/data/oliver3b.txt", head=TRUE)
 dat = as.matrix(dat)
-#dat = dat[-c(40,191,67),]
+dat = dat[-c(40, 3, 165, 132, 176),]
 n = nrow(dat)
 p = ncol(dat)
 
@@ -15,15 +15,17 @@ mw.pairs = function(x){
                 legend("topright", legend = i, box.lty = 0, cex = 1.5)
             } else {
                 if (i > j){
-                    z = kde2d(x[,i], x[,j])
+                    z = kde2d(x[,j], x[,i])
                     plot(NA, xlim = range(z$x), ylim = range(z$y), axes = FALSE)
+#                   .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
+#                       col=gray(seq(0.0, 1.0, length=20)))
                     .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
-                        col=gray(seq(0.0, 1.0, length=20)))
+                        col=two.colors(20, start="dodgerblue"))
 #                   points(dat[,4], dat[,1], pch=20)
                 } else {
                     plot(x[,j], x[,i], pch=20, axes = FALSE)
-                    points(x[40,j], x[40,i], pch=20, col='red')
-                    points(x[1,j], x[1,i], pch=20, col='blue')
+#                   points(x[40,j], x[40,i], pch=20, col='red')
+#                   points(x[191,j], x[1,i], pch=20, col='blue')
                     }
                 }
             box()
@@ -31,7 +33,9 @@ mw.pairs = function(x){
         }
     }
 
+#pairs(dat)
 mw.pairs(dat)
+
 
 x.bar = apply(dat, 2, mean)
 S = var(dat)
@@ -43,6 +47,9 @@ for (i in 1:length(D))
     D[i] = as.vector(t(dat[i,]-x.bar) %*% S.inv %*% (dat[i,]-x.bar))
 
 plot(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D),
+    pch = 20)
+abline(0,1)
+plot(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(E),
     pch = 20)
 abline(0,1)
 order(D, decreasing = TRUE)
@@ -141,8 +148,29 @@ for (i in 1:length(D))
         (new.dat[i,]-x.bar))
 
 plot(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D),
-    pch = 20, col=col, ylim=c(0, 0.12))
+    pch = 20)#, ylim=c(0, 0.12))
 identify(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D))
 abline(0,1)
 
+x = matrix(rnorm(n*p), n, p)
 ### kurtosis and skewness
+calc.skew.kurt = function(x){
+    n = nrow(x)
+    p = ncol(x)
+    S.inv = solve((n-1)/n * var(x))
+    xbar = apply(x, 2, mean)
+    # equation 4.35
+    g.ij = function(i, j)
+        t(x[i,] - xbar) %*% S.inv %*% (x[j,] - xbar)
+    g = matrix(0, n, n)
+    for (i in 1:n)
+        for (j in 1:n)
+            g[i,j] = g.ij(i, j)
+    # skewness
+    b1 = sum(g^3) / (n^2)
+    # kurtosis
+    b2 = sum(diag(g)^2) / n
+    return (c(b1, b2))
+    }
+
+
