@@ -1,6 +1,6 @@
 dat = read.table("~/files/R/666/data/oliver3b.txt", head=TRUE)
 dat = as.matrix(dat)
-dat = dat[-c(40, 3, 165, 132, 176),]
+#dat = dat[-c(40, 3, 165, 132, 176),]
 n = nrow(dat)
 p = ncol(dat)
 
@@ -17,10 +17,10 @@ mw.pairs = function(x){
                 if (i > j){
                     z = kde2d(x[,j], x[,i])
                     plot(NA, xlim = range(z$x), ylim = range(z$y), axes = FALSE)
-#                   .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
-#                       col=gray(seq(0.0, 1.0, length=20)))
                     .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
-                        col=two.colors(20, start="dodgerblue"))
+                        col=gray(seq(0.0, 1.0, length=20)))
+#                   .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
+#                       col=two.colors(20, start="dodgerblue"))
 #                   points(dat[,4], dat[,1], pch=20)
                 } else {
                     plot(x[,j], x[,i], pch=20, axes = FALSE)
@@ -34,7 +34,9 @@ mw.pairs = function(x){
     }
 
 #pairs(dat)
+pdf("figs/pairs_raw.pdf", 8, 8)
 mw.pairs(dat)
+dev.off()
 
 
 x.bar = apply(dat, 2, mean)
@@ -114,7 +116,9 @@ max.loop = function(x, lambda, niter = 1000, temperature = 0.99, width, print = 
 
 mult.lam = max.loop(dat, print = TRUE)
 mw.pairs(dat)
+pdf("figs/pairs_trans.pdf", 8, 8)
 mw.pairs(lam.func(dat, mult.lam))
+dev.off()
 
 # tri-variate plots
 col = rep("black", n)
