@@ -1,5 +1,6 @@
-dat = read.table("~/files/R/666/data/oliver3b.txt", head=TRUE)
-dat = as.matrix(dat)
+raw.dat = read.table("~/files/R/666/data/oliver3b.txt", head=TRUE)
+raw.dat = as.matrix(raw.dat)
+dat = raw.dat
 #dat = dat[-c(40, 3, 165, 132, 176),]
 n = nrow(dat)
 p = ncol(dat)
@@ -87,7 +88,6 @@ max.loop = function(x, lambda, niter = 1000, temperature = 0.99, width, print = 
         }
     if (missing(width))
         width = rep(1, p)
-    temp = temperature
     current = max.func(x, lam)
     window = round(niter/20)
     for (i in 1:niter){
@@ -99,7 +99,7 @@ max.loop = function(x, lambda, niter = 1000, temperature = 0.99, width, print = 
                 current = candidate
                 lam[j] = cand.lam[j]
             } else {
-                width[j] = width[j] * temp
+                width[j] = width[j] * temperature
                 }
             }
         if (floor(i/window) == i/window && print)
@@ -108,73 +108,45 @@ max.loop = function(x, lambda, niter = 1000, temperature = 0.99, width, print = 
     return (lam)
     }
 
-#start.lam = double(p)
-#for (i in 1:p)
-#    start.lam[i] = max.loop(dat[,i], print = TRUE)
-#mult.lam = max.loop(dat, lam = start.lam, print = TRUE)
-#mw.pairs(lam.func(dat, start.lam))
-
 mult.lam = max.loop(dat, print = TRUE)
-mw.pairs(dat)
 pdf("figs/pairs_trans.pdf", 8, 8)
 mw.pairs(lam.func(dat, mult.lam))
 dev.off()
 
-# tri-variate plots
-col = rep("black", n)
-col[1] = "blue"
-col[40] = "red"
-#for (i in 1:(p-2)){
-#    for (j in (i+1):(p-1)){
-#        for (k in (j+1):p){
-#            plot3d(dat[,i], dat[,j], dat[,k], size=5, col=col)
-#            cat(i,j,k)
-#            readline()
-#            }
-#        }
-#    }
-
-plot(dat[,4], dat[,1], pch=20)
-#identify(dat[,4], dat[,1])
-# observation 40 looks to be an outlier
-
-plot(dat[,1], type='l')
-
-new.dat = lam.func(dat, mult.lam)
-x.bar = apply(new.dat, 2, mean)
-S = var(new.dat)
-S.inv = solve(S)
+box.dat = lam.func(dat, mult.lam)
+box.x.bar = apply(box.dat, 2, mean)
+box.S = var(box.dat)
+box.S.inv = solve(box.S)
 
 # qq plotting
 D = double(n)
 for (i in 1:length(D))
-    D[i] = as.vector(t(new.dat[i,]-x.bar) %*% S.inv %*%
-        (new.dat[i,]-x.bar))
+    D[i] = as.vector(t(box.dat[i,]-box.x.bar) %*% box.S.inv %*%
+        (box.dat[i,]-box.x.bar))
 
-plot(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D),
-    pch = 20)#, ylim=c(0, 0.12))
-identify(qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2), n/(n-1)^2*sort(D))
+# remove 3 highest D's (possible outliers)
+dat.out = raw.dat[-order(D, decreasing = TRUE)[1:3],]
+n.out = nrow(dat.out)
+p.out = ncol(dat.out)
+mult.lam.out = max.loop(dat.out, print = TRUE)
+box.dat.out = lam.func(dat.out, mult.lam.out)
+box.x.bar.out = apply(box.dat.out, 2, mean)
+box.S.out = var(box.dat.out)
+box.S.inv.out = solve(box.S.out)
+E = double(n.out)
+for (i in 1:length(E))
+    E[i] = as.vector(t(box.dat.out[i,]-box.x.bar.out) %*% box.S.inv.out %*%
+        (box.dat.out[i,]-box.x.bar.out))
+
+pdf("figs/qq_trans.pdf", 8, 8)
+u = n/(n-1)^2*sort(D)
+v = qbeta((1:n - 0.5)/n, p/2, (n - p - 1)/2)
+plot(u, v, pch = 20, xlab = "u", ylab = "v")
 abline(0,1)
-
-x = matrix(rnorm(n*p), n, p)
-### kurtosis and skewness
-calc.skew.kurt = function(x){
-    n = nrow(x)
-    p = ncol(x)
-    S.inv = solve((n-1)/n * var(x))
-    xbar = apply(x, 2, mean)
-    # equation 4.35
-    g.ij = function(i, j)
-        t(x[i,] - xbar) %*% S.inv %*% (x[j,] - xbar)
-    g = matrix(0, n, n)
-    for (i in 1:n)
-        for (j in 1:n)
-            g[i,j] = g.ij(i, j)
-    # skewness
-    b1 = sum(g^3) / (n^2)
-    # kurtosis
-    b2 = sum(diag(g)^2) / n
-    return (c(b1, b2))
-    }
-
-
+dev.off()
+pdf("figs/qq_outlier.pdf", 8, 8)
+u = n.out/(n.out-1)^2*sort(E)
+v = qbeta((1:n.out - 0.5)/n.out, p.out/2, (n.out - p.out - 1)/2)
+plot(u, v, pch = 20, xlab = "u", ylab = "v")
+abline(0,1)
+dev.off()

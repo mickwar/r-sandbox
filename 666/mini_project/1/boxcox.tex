@@ -1,16 +1,30 @@
-\section{Normality Assumption}
+\subsection{Box-Cox Transformation}
 
-\begin{figure}[H]
+Figure \ref{pairs_raw} shows univariate histograms and bivariate plots for each variable in the data. Variables 6 and 8 (eicosanoic and eicosenoic) have univariate distributions which are clearly not normally distributed. Thus, we do not have multivariate normality.
+
+We use the multivariate extension of the Box-Cox transformation to make the data closer to normality. Each variable $y$ is modified according to the function
+\[y^{(\lambda)} = \left\{\begin{array}{ll} \frac{y^\lambda-1}{\lambda} & \mathrm{for}\ \lambda\neq0,\\
+\log(y) & \mathrm{for}\ \lambda=0. \end{array} \right.\]
+
+\noindent We find $\m{\lambda}=(\lambda_1,\cdots,\lambda_p)$ by maximizing the function
+\[l(\m{\lambda})=-\frac{n}{2}\log|\m{S_{\m{\lambda}}}|+\sum_{j=1}^p\left[(\lambda_j-1)\sum_{i=1}^n\log(y_{ij})\right] \]
+
+\noindent where $y_{ij}$ is the $i$th (untransformed) measurement on the $j$th variable and $\m{S_{\m{\lambda}}}$ is the maximum likelihood estimate of the covariance matrix for the transformed data. We use a random walk algorithm to maximize the function $l(\m{\lambda})$. Figure \ref{pairs_trans} shows the transformed data. The transformation makes each univariate and bivariate distribution appear more normal. However, variable 5 (linoleic) is now left skewed univariately. Subsequent analyses are based on the transformed data.
+
+\begin{figure}
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.30]{figs/pairs_raw.pdf}
+        \includegraphics[scale=0.25]{figs/pairs_raw.pdf}
         \caption{Raw data}
+        \label{pairs_raw}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.30]{figs/pairs_trans.pdf}
+        \includegraphics[scale=0.25]{figs/pairs_trans.pdf}
         \caption{Transformed data}
+        \label{pairs_trans}
     \end{subfigure}
     \caption{Diagonals: univariate histograms. Off-diagonals: bivariate contours and scatterplots}
+    \label{pairs_both}
 \end{figure}

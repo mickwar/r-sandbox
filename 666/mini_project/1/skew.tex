@@ -1,0 +1,26 @@
+\global\def\ds{\displaystyle}
+
+  \subsection{Skewness \& Kurtosis}
+    Lastly, we test the skewness and kurtosis (peakedness) of the data. We estimate these
+    quantities with:
+    \[ b_{1,p} = \frac{1}{n^2} 
+                      \sum\limits_{i=1}^n\sum\limits_{j=1}^n {g_{ij}}^3,~~~~~
+          b_{2,p} = \frac{1}{n} \sum\limits_{i=1}^n {g_{ii}}^2 \]
+    \noindent where $n$ is the number of observations, $b_{1,p}$ is the skewness,
+    $b_{2,p}$ is the kurtosis, and
+    \[
+      g_{ij} = (\m{y}_i-\overline{\m{y}})' \hat{\m{\Sigma}}^{-1}(\m{y}_j-\overline{\m{y}}).
+    \]
+    
+    The sample skewness for the transformed data is $8.34$, and the sample kurtosis is
+    $89.51$. We expect the skewness and kurtosis for
+    multivariate normal data to be close to $3$ and $80$, respectively. To test these estimates, we calculate the statistics:
+    \[  z_1 = \frac{\ds(p+1)(n+1)(n+3)}{\ds6[(n+1)(p+1)-6]}b_{1,p}, ~~~~~
+        z_2 = \frac{\ds b_{2,p}-p(p+2)/n}
+                     {\ds \sqrt{8p(p+2)/n}} \]
+
+    We calculate $z_1 = 287.54$ which follows a $\chi^2$ distribution with $\frac{1}{6}p(p+1)(p+2)$ degrees of freedom. The p-value associated
+    with the statistic $z_1$ is $8.88 \times 10^{-16}$. The statistic $z_2=3.36$ and follows
+    a $\mathcal{N}(0,1)$ distribution. The p-value is 0.000396.  So we reject the hypothesis that the skewness and kurtosis agree with that of a multivariate normal. Therefore, these 
+    transformed data, with outliers removed, are \emph{not multivariate
+    normal}. 
