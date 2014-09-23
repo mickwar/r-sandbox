@@ -1,0 +1,24 @@
+\subsection{The Q-Q Plot}
+
+A second test in diagnosing multivariate normality is through the use of the Q-Q plot. For observation $\m{y}_i$ we compute the standardized distance from $\overline{\m{y}}$:
+\[D_i^2 = (\m{y}_i-\overline{\m{y}})'\m{S}^{-1}(\m{y}_i-\overline{\m{y}}) \]
+
+Under the assumption of normality $u_i=\frac{nD_i^2}{(n-1)^2}$ has a beta distribution. Figures \ref{qq_trans} and \ref{qq_outlier} give Q-Q plots for $u_i$. If the data are multivariate normal, then the points should follow the line $u=v$. The Q-Q plots are evidence that the data are not normal, even after removing potential outliers (the observations with the thee highest $D_i^2$ values: 40, 3, and 176).
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.30]{figs/qq_trans.pdf}
+        \caption{Transformed data}
+        \label{qq_trans}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.30]{figs/qq_outlier.pdf}
+        \caption{After removing potential outliers}
+        \label{qq_outlier}
+    \end{subfigure}
+    \caption{Q-Q plots. Values in the $u$-axis are scaled standardized distances for each observation from its mean. In the $v$-axis are the corresponding beta quantiles. The solid lines are $u=v$, a line of slope one and intercept zero.}
+    \label{qq_both}
+\end{figure}
