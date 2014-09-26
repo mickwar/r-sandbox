@@ -3,7 +3,8 @@
 dat = read.table("~/files/R/666/data/T3_6_PROBE.DAT", row.names = 1)
 
 y = as.matrix(dat)
-colnames(y) <- rownames(y) <- NULL
+colnames(y) = paste("X", 1:5, sep="")
+rownames(y) = NULL
 
 n = nrow(y)
 p = ncol(y)
@@ -16,7 +17,7 @@ Sinv = solve(S)
 mu0 = c(30, 25, 40, 25, 30)
 
 # Hotellings T^2
-T2 = n * t(ybar - mu0) %*% Sinv %*% (ybar - mu0)
+(T2 = n * t(ybar - mu0) %*% Sinv %*% (ybar - mu0))
 
 # convert to F-statistic, distributed F(p, nu-p+1)
 F.stat = (nu - p + 1)/(nu * p) * T2
@@ -28,6 +29,39 @@ pf(F.stat, p, nu - p + 1, lower.tail = FALSE)
 ### part b
 t.stat = (ybar - mu0) / sqrt(diag(S)/n)
 # p-value
-2*pt(abs(t.stat), nu, lower.tail = FALSE)
-2*pt(abs(t.stat), nu, lower.tail = FALSE) < 0.05
+data.frame("t.stat"=t.stat, "p-val"=2*pt(abs(t.stat), nu, lower.tail = FALSE),
+"Reject"=2*pt(abs(t.stat), nu, lower.tail = FALSE) < 0.05)
 # reject mu1 and mu3
+
+### part c
+# discriminant function
+a = Sinv %*% (ybar - mu0)
+D = diag(sqrt(diag(S)))
+(a.star = D %*% a)
+
+### 5.16
+# two sample comparison
+dat = read.table("~/files/R/666/data/T5_5_FBEETLES.DAT")
+
+y = as.matrix(dat[,-1])
+colnames(y) = c("sample", paste("X", 1:4, sep=""))
+rownames(y) = NULL
+
+y1 = y[y[,1]==1,-1]
+y2 = y[y[,1]==2,-1]
+
+n = c(nrow(y1), nrow(y2))
+p = ncol(y1)
+nu = sum(n)-2
+ybar = rbind(apply(y1, 2, mean), apply(y2, 2, mean))
+S = list(var(y1), var(y2))
+Sinv = list(solve(S[[1]]), solve(S[[2]]))
+
+Spl = ((n[1] - 1) * S[[1]] + (n[2] - 1) * S[[2]]) / (sum(n) - 2)
+Spl.inv = solve(Spl)
+
+# Hotellings T^2
+(T2 = (n[1]*n[2])/(n[1]+n[2]) * t(ybar[1,] - ybar[2,]) %*% Spl.inv %*% (ybar[1,] - ybar[2,]))
+
+F.stat = (nu - p + 1)/(nu*p) * T2
+pf(F.stat, p, nu-p+1, lower.tail = FALSE)
