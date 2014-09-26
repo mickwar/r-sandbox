@@ -37,18 +37,33 @@ simulate = function(n, k, p){
 p = 5
 
 # number of samples
-k = 6
+k = 4
 
 # number of observations for each sample
 # must be length k
 n = c(18, 46, 30, 25, 23, 32)
 
-x = simulate(n, k, p)
+m.vec = double(10000)
+u.vec = double(length(m.vec))
+for (i in 1:length(u.vec)){
+    x = simulate(n, k, p)
 
-M = calc.M(x)
-c1 = calc.c1(x)
+    m.vec[i] = calc.M(x)
+    c1 = calc.c1(x)
 
-# u ~ chi^2, df=0.5*(k-1)*p*(p+1)
-# eq 7.23
-u = -2 * (1 - c1) * log(M)
-pchisq(u, 0.5*(k-1)*p*(p+1), lower.tail = FALSE)
+    # u ~ chi^2, df=0.5*(k-1)*p*(p+1)
+    # eq 7.23
+    u.vec[i] = -2 * (1 - c1) * log(m.vec[i])
+#   pchisq(u, 0.5*(k-1)*p*(p+1), lower.tail = FALSE)
+    }
+
+plot(density(m.vec, n = 100000), xlim=c(0, 0.0000001))
+hist(m.vec, col='gray', breaks=500, freq=FALSE, xlim=c(0, 5e-06))
+m = mean(m.vec)
+v = var(m.vec)
+a = m*(m*(1-m)/v - 1)
+b = (1-m)*(m*(1-m)/v - 1)
+curve(dbeta(x, a, b), add=TRUE, col='red', lwd=2)
+
+plot(density(u.vec))
+curve(dchisq(x, 0.5*(k-1)*p*(p+1)), add=TRUE, col='red')
