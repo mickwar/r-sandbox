@@ -140,3 +140,20 @@ pf(F.stat, p, n - p, lower.tail=FALSE)
 
 (t.stat = dbar/sqrt(diag(S)/n))
 pt(2*abs(t.stat), n-1, lower.tail = FALSE)
+
+### problem 6
+mu = c(3, 11, -4, 1)
+sigma = matrix(c(11,3,3,1,3,10,2,-5,3,2,10,-6,1,-5,-6,15),4,4)
+
+a = c(3,-2, 0, 0)
+t(a) %*% mu
+t(a) %*% sigma %*% a
+
+A = matrix(c(3,0,0,-2,0,0,0,1,0,0,0,1),3,4)
+(new.mu = A %*% mu)
+(new.sig = A %*% sigma %*% t(A))
+
+new.mu[1] + new.sig[1,2:3] %*% solve(new.sig[2:3,2:3]) %*% (c(1,-2)-new.mu[2:3])
+new.sig[1,1] - new.sig[1,2:3] %*% solve(new.sig[2:3,2:3]) %*% new.sig[2:3,1]
+
+det(sigma)
