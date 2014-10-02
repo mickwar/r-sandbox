@@ -1,3 +1,5 @@
 \section{Handling Missing Values (EM Algorithm)}
 
-For many olives we do not have measurements on one or more acids.
+For many olives we do not have measurements on one or more acids. This prohibits us from doing analyses unless we deal with the missing data. One option is to simply remove those olives from the dataset that do not have acid measurements. However, in doing so we might throw out valuable information. We desire a better approach.
+
+The Expectation-Maximization (EM) algorithm is a means of imputing those missing values. The idea is to predict the missing acid measurements based on the values of the other acids that were measured.
