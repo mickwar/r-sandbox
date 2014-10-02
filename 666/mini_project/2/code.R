@@ -102,3 +102,42 @@ curve(dnorm(x, mean(y2[missing]-x2[missing]),
 range(y2[missing]-x2[missing])
 quantile(y2[missing]-x2[missing], c(0.025, 0.975))
 
+###### test for missing at random
+### 
+dat2 = read.table("~/files/R/666/data/oliver2a.txt", header=TRUE)
+n.miss2 = sum(is.na(dat))
+zero2 = double(nrow(dat))
+for (i in 1:length(zero2))
+    zero2[i] = sum(is.na(dat[i,]))
+
+gen.miss = function(x, k){
+    # k is number of missing values
+    n = nrow(x)
+    p = ncol(x)
+    # 1 indicates missing (for zero matrix)
+    x[sample(n*p, k)] = 1
+    return (x)
+    }
+
+M = 10000
+# 9 is for 0 through 8, the number of possible missing acids
+out = matrix(0, M, 9)
+for (i in 1:M){
+    x = gen.miss(matrix(0, nrow(dat2), ncol(dat2)), n.miss2)
+    x.miss = apply(x, 1, sum)
+    out[i,1:length(table(x.miss))] = table(x.miss)
+    }
+
+plot(table(out[,1])/M)
+abline(v=(0.1+table(zero2)[1]), col='red')
+plot(table(out[,2])/M)
+abline(v=(0.1+table(zero2)[2]), col='red')
+plot(table(out[,3])/M)
+abline(v=(0.1+table(zero2)[3]), col='red')
+plot(table(out[,4])/M)
+abline(v=(0.1+table(zero2)[4]), col='red')
+plot(table(out[,5])/M)
+abline(v=(0.1), col='red')
+
+pairs(rbind(out[,1:5], c(table(zero2), 0)), pch=20,
+    col=c(rep("black", M), "red"))
