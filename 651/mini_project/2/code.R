@@ -1,10 +1,15 @@
+library(rgl)
+library(truncnorm)
 dat = as.matrix(read.table("./faculty.dat"))
 colnames(dat) <- rownames(dat) <- NULL
 
 y = as.vector(dat)
 
-# Likelihood: Normal, unknown mean and variance
+# Likelihood: Truncated Normal, unknown mean and variance
 # Prior: mu ~ Normal, sigma^2 ~ I.G, indepdent of each other
+# Note: the mu and sigma^2 parameters for the truncated normal
+#       are not the mean variance, but do have the same
+#       support as mu and sigma^2 in a regular normal
 
 # inverse gamma density
 igpdf=function(x, a, b)
@@ -24,12 +29,27 @@ cross = function(...){
     return(out)
     }
 
+calc.mode = function(dens, method="loess"){
+    dx = dens$x
+    dy = dens$y
+    if (method == "loess"){
+        l = loess(dy ~ dx)
+        return (l$x[which.max(l$y)])
+        }
+    if (method == "density")
+        return (dx[which.max(dy)])
+    }
+
+make.R = function(theta)
+    matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)),2,2)
+
 # unnormalize posterior
 # m, s2, a, b are hyperparameters
-g = function(x, m = 4, s2 = 100, a = 2.5, b = 1.5){
+g = function(x, m = 5, s2 = 100, a = 2.5, b = 1.5){
+    require(truncnorm)
     mu = x[1]
     sig2 = x[2]
-    prod(dnorm(y, mu, sqrt(sig2))) * dnorm(mu, m, sqrt(s2)) *
+    prod(dtruncnorm(y, 1, 7, mu, sqrt(sig2)))*dnorm(mu, m, sqrt(s2)) *
         igpdf(sig2, a, b)
     }
 
@@ -41,42 +61,61 @@ g = function(x, m = 4, s2 = 100, a = 2.5, b = 1.5){
 #    }
 #rW = function(n)
 #    matrix(c(rnorm(n,mean(y),sqrt(0.04)),rgamma(n,5.5,scale=1/16)),n,2)
+
+modes = c(5.78, 0.31)
+# about the mode of the posterior for mean (after trial and error)
+cauchy.adj = modes[1]
+
+cauchy.scale = 1/32
+
+# this fixes the mode at modes[2], increasing alpha decrease variance
+ig.alpha = 6
+ig.beta = modes[2]*(ig.alpha+1)
+
 dW = function(x){
     mu = x[1]
     sig2 = x[2]
-    dcauchy(mu-mean(y), scale=1/7) * igpdf(sig2, 5, 0.28*(5+1))
+    dcauchy(mu-cauchy.adj, scale=cauchy.scale) *
+        igpdf(sig2, ig.alpha, ig.beta)
     }
 rW = function(n)
-    matrix(c(rcauchy(n, scale=1/7)+mean(y),
-        1/rgamma(n, 5, rate=0.28*(5+1))),n,2)
+    matrix(c(rcauchy(n, scale=cauchy.scale)+cauchy.adj,
+        1/rgamma(n, ig.alpha, rate=ig.beta)),n,2)
 
-mu.vec = seq(4.0, 7.0, length=500)
-sig.vec = seq( 0.01, 2.0, length=500)
+mu.vec = seq(3.0, 9.0, length=100)
+sig.vec = seq(0.15, 4.0, length=100)
 xy = cross(mu.vec, sig.vec)
+
+# rotations
+R = make.R(pi/4.5)
+offset = (modes %*% R - modes)
+offset.mat = matrix(rep(offset, length(z)), length(z), 2, byrow=TRUE)
+xy.rotate = xy %*% R - offset.mat
 
 z = double(nrow(xy))
 w = double(nrow(xy))
 for (i in 1:length(z)){
-    z[i] = g(xy[i,])
-    w[i] = dW(xy[i,])
+    z[i] = log(g(xy[i,]))
+    w[i] = log(dW(xy[i,]))
     }
 
+
 # estimate of the constant to bring g down
-H = G
-(G = max(z/w))
+(G = max(z - w))
 g.star = function(x)
-    g(x) / G 
+    log(g(x)) - G 
 
-#h = double(nrow(xy))
-#for (i in 1:length(z))
-#    h[i] = g.star(xy[i,])
-
-z.star = z / G
+z.star = z - G
 plot3d(cbind(xy, z.star))
 points3d(cbind(xy, w), col='red')
-plot3d(cbind(xy, w), col='red')
-points3d(cbind(xy, z.star))
+
+plot3d(cbind(xy.rotate[w > -25,], w[w > -25]), col='red')
+points3d(cbind(xy[z.star > -25,], z.star[z.star > -25]))
 #points3d(cbind(xy, h), col='blue')
+
+plot3d(cbind(xy.rotate[w > -15,] - offset, w[w > -15]), col='red')
+points3d(cbind(xy[w > -15,], w[w > -15]), col='blue')
+
 
 reject = function(M = 100){
     # initialize
@@ -86,11 +125,11 @@ reject = function(M = 100){
     out[,1:2] = rW(M)
 
     # uniform draws
-    out[,3] = runif(M)
+    out[,3] = log(runif(M))
     
     # calculate ratios
     for (i in 1:M)
-        out[i,4] = g.star(out[i,1:2]) / dW(out[i,1:2])
+        out[i,4] = g.star(out[i,1:2]) - log(dW(out[i,1:2]))
 
     # accept or not
     for (i in 1:M){
@@ -100,7 +139,14 @@ reject = function(M = 100){
     return (out)
     }
 
-X = reject(3000000)
+niter = 100000
+system.time(X <- reject(niter))
+# remove the NAs and Infs
+X = X[!is.na(X[,4]),]
+X = X[X[,4] != Inf,]
+# proportion removed
+(niter - nrow(X)) / niter
+
 # porportion of acceptances (about 0.35 so far)
 mean(X[,5])
 
@@ -110,11 +156,19 @@ sum(X[,5])
 # ratios should not exceed 1, otherwise not a correct envelope
 max(X[,4])
 
+X[X[,4] == max(X[,4]),]
+
+at = which.max(X[,4])
+
 # accepted draws
 Y = X[X[,5] == 1, 1:2]
+calc.mode(density(Y[,1]))
+calc.mode(density(Y[,2]))
 
 # joint posterior
-plot(Y[sample(nrow(Y), 10000),], pch=20)
+plot(Y[sample(nrow(Y), nrow(Y)),], pch=20)
+
+plot(density(Y[,2]))
 
 # marginal posterior distributions
 plot(density(Y[sample(nrow(Y), 100000),1]))
@@ -122,3 +176,16 @@ plot(density(Y[sample(nrow(Y), 100000),2]))
 
 plot(density(y))
 curve(dnorm(x, mean(Y[,1]), sqrt(mean(Y[,2]))), add=TRUE, col='blue')
+
+mu.vec = seq(3.0, 9.0, length=100)
+sig.vec = seq(0.1, 4.0, length=100)
+z.mat = matrix(0, length(mu.vec), length(sig.vec))
+for (i in 1:length(mu.vec))
+    for (j in 1:length(sig.vec))
+        z.mat[i,j] = exp(g.star(c(mu.vec[i], sig.vec[j])))
+
+
+contour(mu.vec, sig.vec, z.mat, xlim=c(5,7), ylim=c(0,1), col='blue')
+points(Y, pch=20)
+contour(mu.vec, sig.vec, z.mat, add=TRUE, col='blue')
+
