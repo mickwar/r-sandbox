@@ -40,6 +40,9 @@ calc.mode = function(dens, method="loess"){
         return (dx[which.max(dy)])
     }
 
+make.R = function(theta)
+    matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)),2,2)
+
 # unnormalize posterior
 # m, s2, a, b are hyperparameters
 g = function(x, m = 5, s2 = 100, a = 2.5, b = 1.5){
@@ -49,71 +52,84 @@ g = function(x, m = 5, s2 = 100, a = 2.5, b = 1.5){
     prod(dtruncnorm(y, 1, 7, mu, sqrt(sig2)))*dnorm(mu, m, sqrt(s2)) *
         igpdf(sig2, a, b)
     }
-# log of adjusted unnormalize posterior
-g.star = function(x, G)
-    log(g(x)) - G 
-
-
-modes = c(5.78, 0.31)
-
-# about the mode of the posterior for mean (after trial and error)
-t.adj = 16
-t.move = 4.3
-t.df = 8
-t.ncp = 25
-
-# this fixes the mode at modes[2], increasing alpha decrease variance
-ig.alpha = 8
-ig.beta = modes[2]*(ig.alpha+1)
 
 # envelope function
-dW = function(x){
-    mu = x[1]
-    sig2 = x[2]
-    dt((mu-t.move)*t.adj, t.df, t.ncp) * igpdf(sig2, ig.alpha, ig.beta)
+#dW = function(x){
+#    mu = x[1]
+#    sig2 = x[2]
+#    dnorm(mu, mean(y), sqrt(0.04)) * dnorm(sig2, 0.3, sqrt(0.04))
+#    }
+#rW = function(n)
+#    matrix(c(rnorm(n,mean(y),sqrt(0.04)),rgamma(n,5.5,scale=1/16)),n,2)
+
+modes = c(5.78, 0.31)
+# about the mode of the posterior for mean (after trial and error)
+cauchy.adj = modes[1]
+
+cauchy.scale = 1/32
+
+# this fixes the mode at modes[2], increasing alpha decrease variance
+ig.alpha = 6
+ig.beta = modes[2]*(ig.alpha+1)
+
+dW = function(uv, R, off){
+    xy = (uv + off) %*% t(R)
+    if (xy[2] > 0){
+        return (dcauchy(xy[1]-cauchy.adj, scale=cauchy.scale) *
+            igpdf(xy[2], ig.alpha, ig.beta))
+    } else {
+        return (0)
+        }
     }
-rW = function(n)
-    x = matrix(c(rt(n, t.df, t.ncp), 1/rgamma(n, ig.alpha, rate=ig.beta)),n,2)
+rW = function(n, R, off){
+    x = matrix(c(rcauchy(n, scale=cauchy.scale)+cauchy.adj,
+        1/rgamma(n, ig.alpha, rate=ig.beta)),n,2)
+    x %*% R - matrix(rep(off, n), n, 2, byrow=TRUE)
+    }
 
+X = rW(50000, R, offset)
+plot(X[,2:1], pch=20, xlim=c(-8, 15), ylim=c(-5, 10))
 
-xx = seq(0, 10, length=500)
-plot(xx, dcauchy(xx, 0, 1/8), type='l')
-plot(xx, dt((xx-4.3)*16, 8, 25), type='l')
-abline(v = modes[1])
-t.df = 1
-t.ncp = modes[1]
-
-# estimating G via a grid
-mu.vec = seq(4.0, 7.0, length=100)
-sig.vec = seq(0.15, 3.0, length=100)
+mu.vec = seq(3.0, 9.0, length=100)
+sig.vec = seq(0.15, 4.0, length=100)
 xy = cross(mu.vec, sig.vec)
+
+# rotations
+theta = pi/4.5
+R = make.R(theta)
+offset = (modes %*% R - modes)
+offset.mat = matrix(rep(offset, nrow(xy)), nrow(xy), 2, byrow=TRUE)
+xy.rotate = xy %*% R - offset.mat
 
 z = double(nrow(xy))
 w = double(nrow(xy))
 for (i in 1:length(z)){
     z[i] = log(g(xy[i,]))
-    w[i] = log(dW(xy[i,]))
+    w[i] = log(dW(xy[i,], R, offset))
     }
+keep = which(w != -Inf)
+w = w[keep]
+z = z[keep]
+xy = xy[keep,]
 
+
+# estimate of the constant to bring g down
 (G = max(z - w))
+g.star = function(x)
+    log(g(x)) - G 
 
 z.star = z - G
-plot3d(cbind(xy[w > -25,], exp(w[w > -25])), col='blue')
-points3d(cbind(xy[z.star > -25,], exp(z.star[z.star > -25])))
+plot3d(cbind(xy, z.star))
+points3d(cbind(xy, w), col='red')
+
+plot3d(cbind(xy[w > -25,], w[w > -25]), col='blue')
+points3d(cbind(xy[w > -25,], w[w > -25]), col='red')
+points3d(cbind(xy[z.star > -25,], z.star[z.star > -25]), col='green')
 #points3d(cbind(xy, h), col='blue')
 
-# estimating G through random draws
-niter = 100000
-draws = rW(niter)
-ratios = log(apply(draws, 1, g)) - log(apply(draws, 1, dW))
+plot3d(cbind(xy.rotate[w > -15,] - offset, w[w > -15]), col='red')
+points3d(cbind(xy[w > -15,], w[w > -15]), col='blue')
 
-rem = c(which(is.na(ratios)), which(ratios == Inf))
-ratios = ratios[-rem]
-draws = draws[-rem,]
-var(draws)
-cor(draws)
-
-draws[which.max(ratios),]
 
 reject = function(M = 100){
     # initialize
@@ -127,7 +143,7 @@ reject = function(M = 100){
     
     # calculate ratios
     for (i in 1:M)
-        out[i,4] = g.star(out[i,1:2], G) - log(dW(out[i,1:2]))
+        out[i,4] = g.star(out[i,1:2]) - log(dW(out[i,1:2]))
 
     # accept or not
     for (i in 1:M){
@@ -151,7 +167,7 @@ mean(X[,5])
 # count of acceptances
 sum(X[,5])
 
-# ratios should not exceed 0, otherwise not a correct envelope
+# ratios should not exceed 1, otherwise not a correct envelope
 max(X[,4])
 
 X[X[,4] == max(X[,4]),]
