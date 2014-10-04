@@ -53,8 +53,7 @@ g = function(x, m = 5, s2 = 100, a = 2.5, b = 1.5){
     }
 # log of adjusted unnormalize posterior
 g.star = function(x)
-    log(g(x)) -G 
-
+    log(g(x)) - G 
 
 modes = c(5.78, 0.31)
 
@@ -71,20 +70,29 @@ rW = function(n){
     }
 
 # estimating G via a grid
-mu.vec = seq(4.0, 9.0, length=100)
-sig.vec = seq(0.15, 3.0, length=100)
-xy = cross(mu.vec, sig.vec)
+mu.vec = seq(4.0, 9.0, length=75)
+sig.vec = seq(0.15, 3.0, length=75)
+xy.1 = cross(mu.vec, sig.vec)
+
+mu.vec = seq(4.0, 9.0, length=250)
+sig.vec = seq(0.15, 3.0, length=250)
+xy.2 = cross(mu.vec, sig.vec)
 
 nu = 4
 sigma = matrix(c(0.24, 0.17, 0.17, 0.23), 2, 2)
 sigma = sigma/3.5
-z = log(apply(xy, 1, g))
-w = log(apply(xy, 1, dW))
+z = log(apply(xy.2, 1, g))
+w = log(apply(xy.1, 1, dW))
 (G = max(z - w))
 
 z.star = z - G
-plot3d(cbind(xy[w > -25,], (w[w > -25])), col='blue')
-points3d(cbind(xy[z.star > -25,], (z.star[z.star > -25])))
+plot3d(cbind(xy.1[w > -15,], (w[w > -15])), col=rgb(0.0589,0.4980,0.2812),
+    xlab = "mu", ylab = "sigma^2", zlab="density")
+points3d(cbind(xy.2[z.star > -15,], (z.star[z.star > -15])),
+    col='dodgerblue')
+
+# take a screenshot of the rgl device
+#rgl.postscript("figs/env2.pdf", "pdf")
 
 plot3d(cbind(xy, exp(w)), col='blue')
 points3d(cbind(xy, exp(z.star)))
@@ -157,7 +165,7 @@ for (i in 1:length(mu.vec))
 pdf("figs/contour.pdf")
 par(mar=c(4,4.5,2,1))
 contour(mu.vec, sig.vec, z.mat, xlim=c(5.25,6.5), ylim=c(0,1.25),
-    col=rgb(0.2,0.2,0.5), main="Unnormalized posterior",
+    col='dodgerblue', main="Unnormalized posterior",
     xlab = expression(mu), ylab = expression(sigma^2),
     cex.lab = 1.5, cex.main=1.5, lwd=2)
 dev.off()
