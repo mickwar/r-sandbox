@@ -4,8 +4,11 @@
 \usepackage{float}
 \usepackage{amsmath}
 \usepackage{bm}
+\usepackage{subcaption}
 \usepackage[font=footnotesize]{caption}
+
 \newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\newcommand{\R}{I\hspace{-4.4pt}R}
 
 \begin{document}
 
@@ -27,7 +30,7 @@ f_*(y|\mu,\sigma^2,a,b) = \frac{\frac{1}{\sigma}\phi(\frac{y-\mu}{\sigma})}{\Phi
 & -\infty \leq a < b \leq +\infty; & a < y < b, \\
 \end{eqnarray*}
 
-\noindent where $\phi(\cdot)$ is the density of the standard normal distribution,$\Phi(\cdot)$ is the c.d.f. of the standard normal, and $a$ and $b$ are the lower and upper bounds. We fix $a=1$ and $b=7$ because of our knowledge of the data. The likelihood function is
+\noindent where $\phi(\cdot)$ is the density of the standard normal distribution, $\Phi(\cdot)$ is the c.d.f. of the standard normal, and $a$ and $b$ are the lower and upper bounds. We fix $a=1$ and $b=7$ because of our knowledge of the data. The likelihood function is
 
 \[L(\m{y}|\m{\theta}) = \prod_{i=1}^n f_*(y_i|\m{\theta}) \]
 
@@ -46,17 +49,54 @@ f_*(y|\mu,\sigma^2,a,b) = \frac{\frac{1}{\sigma}\phi(\frac{y-\mu}{\sigma})}{\Phi
 
 \[ \pi(\sigma^2) = \frac{b^a}{\Gamma(a)}(\sigma^2)^{-a-1}\exp(-b/\sigma^2);~~~ a,b,\sigma^2>0. \]
 
-\noindent The hyperpriors on $\mu$ result in a distribution centered around 5, which is to say we think on average the faculty would have a score of 5. The prior on $\sigma^2$ has a mean of 1, variance of 1.5, and the central 95\% density interval is $(0.234, 3.612)$. These both represent fairly noninformative priors.
+\noindent The hyperpriors on $\mu$ result in a distribution centered around 5, which is to say we think on average the faculty would have a score of 5. The prior on $\sigma^2$ has a mean of 1, variance of 1.5, and the central 95\% density interval is $(0.234, 3.612)$. These both represent fairly noninformative priors, allowing the data to do more of the talking.
 
 \subsection{The Envelope Distribution}
 
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.5]{figs/contour.pdf}
-\end{center}
-\caption{okay}
+\begin{figure}
+    \begin{center}
+    \includegraphics[scale=0.4]{figs/contour.pdf}
+    \end{center}
+    \caption{Contour plot of the unnormalized posterior. Note the slight covariance between $\mu$ and $\sigma^2$.}
+    \label{contour}
 \end{figure}
 
+
+\noindent Figure \ref{contour} shows contours of the unnormalized joint posterior. We seek a distribution that will capture the covariance between $\mu$ and $\sigma^2$ and not approach $0$ in the tails too quickly or too slowly so as to have acceptable efficiency.
+\bigskip
+
+\noindent We will use the multivariate $t$ distribution, denoted $t_\nu(\m{\mu}, \m{\Sigma})$, as our envelope, which has density
+
+\begin{eqnarray*}
+W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamma(\nu/2)[1+\frac{1}{\nu}(\m{x}-\m{\mu})^\top\m{\Sigma}^{-1}(\m{x}-\m{\mu})]^{(\nu+p)/2}}; && \m{x}, \m{\mu} \in \R^p; \nu>0; \\
+&& \m{\Sigma}~\mathrm{pos.~def.~in~} \R^{p\times p}\\
+\end{eqnarray*}
+
+\noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0685 & 0.0485 \\ 0.0485 & 0.0657 \\ \end{array}\right)$, and $p=2$ (since there are two parameters). The log of this distribution evaluated at a grid of points $(\mu_i, \sigma^2_i)$ is shown Figure \ref{envelope}. The unnormalized posterior $g(\m{\theta})$ is also evaulated at the same grid. We calculate $G=\max_i\frac{g(\mu_i,\sigma^2_i)}{W(\mu_i,\sigma^2_i)}$ and let $g^\star(\m{\theta}) = g(\m{\theta})/G$. We see in Figure \ref{envelope} that $W(\m{\theta})\geq g^\star(\m{\theta})$ for all $\m{\theta}$.
+\bigskip
+
+\noindent Though we only use a few set of points to calculate $G$, we are confident that $W$ dominates $g^\star$ due to the heavy tails in the multivariate $t$. Should $g^\star$ exceed $W$, this may be in a near-zero probability region, so we don't expect to have issues with this envelope distribution.
+\bigskip
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.45]{figs/env1.pdf}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.45]{figs/env2.pdf}
+    \end{subfigure}
+    \caption{The logarithm of the scaled, unnormalized joint posterior (blue) and logarithm of multivariate $t$ envelope (green). Two different angles are shown.}
+    \label{envelope}
+\end{figure}
+
+\noindent Drawing from the multivariate $t$ is simple enough. If $\m{y}\sim\mathcal{N}_p(\m{0},\m{\Sigma})$, $u\sim\chi^2$, and $\m{\mu}\in\R^p$, then $\m{x}=\m{\mu}+\m{y}\sqrt{\nu/u}$ is $t_\nu(\m{\mu},\m{\Sigma})$. Some draws will be negative for $\sigma^2$. This does not concern us since $g^\star$ is defined to be $0$ outside its support.
+
+\subsection{Posterior Distribution}
+
+\noindent We now be explicit on the form of $g(\m{\theta}) \propto \pi(\mu,\sigma^2|\m{y})$.
 
 \section{Importance Sampling}
 
