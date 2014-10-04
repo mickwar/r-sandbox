@@ -46,74 +46,82 @@ g = function(x, m = 5, s2 = 100, a = 2.5, b = 1.5){
     require(truncnorm)
     mu = x[1]
     sig2 = x[2]
+    if (sig2 <= 0)
+        return (0)
     prod(dtruncnorm(y, 1, 7, mu, sqrt(sig2)))*dnorm(mu, m, sqrt(s2)) *
         igpdf(sig2, a, b)
     }
 # log of adjusted unnormalize posterior
-g.star = function(x, G)
-    log(g(x)) - G 
+g.star = function(x)
+    log(g(x)) -G 
 
 
 modes = c(5.78, 0.31)
 
-# about the mode of the posterior for mean (after trial and error)
-t.adj = 16
-t.move = 4.3
-t.df = 8
-t.ncp = 25
+### t and ig prior
+# # about the mode of the posterior for mean (after trial and error)
+# t.adj = 16
+# t.move = 4.3
+# t.df = 8
+# t.ncp = 25
+# 
+# # this fixes the mode at modes[2], increasing alpha decrease variance
+# ig.alpha = 8
+# ig.beta = modes[2]*(ig.alpha+1)
+# 
+# # envelope function
+# dW = function(x){
+#     mu = x[1]
+#     sig2 = x[2]
+#     dt((mu-t.move)*t.adj, t.df, t.ncp) * igpdf(sig2, ig.alpha, ig.beta)
+#     }
+# rW = function(n)
+#     x = matrix(c(rt(n, t.df, t.ncp), 1/rgamma(n, ig.alpha, rate=ig.beta)),n,2)
 
-# this fixes the mode at modes[2], increasing alpha decrease variance
-ig.alpha = 8
-ig.beta = modes[2]*(ig.alpha+1)
-
-# envelope function
-dW = function(x){
-    mu = x[1]
-    sig2 = x[2]
-    dt((mu-t.move)*t.adj, t.df, t.ncp) * igpdf(sig2, ig.alpha, ig.beta)
+### envelope -- multivariate normal
+dW = function(x)
+    ((2*pi)^2*det(sigma))^(-1/2) * exp(-0.5* t(x-modes) %*%
+        solve(sigma) %*% (x-modes))
+rW = function(n){
+    L = chol(sigma)
+    z = matrix(rnorm(n * nrow(L)), n, 2)
+    z %*% L + matrix(rep(modes, n), n ,2, byrow = TRUE)
     }
-rW = function(n)
-    x = matrix(c(rt(n, t.df, t.ncp), 1/rgamma(n, ig.alpha, rate=ig.beta)),n,2)
 
+### multivariate t
+dW = function(x)
+    gamma((nu + 2)/2) / (gamma(nu/2)*nu*pi*sqrt(det(sigma)) *
+        (1+1/nu*t(x-modes) %*% solve(sigma) %*% (x-modes))^((nu+2)/2))
+rW = function(n){
+    chi = rchisq(n, nu)
+    L = chol(sigma)
+    z = matrix(rnorm(n * nrow(L)), n, 2)
+    (z %*% L) * sqrt(nu/chi) + matrix(rep(modes, n), n ,2,
+        byrow = TRUE)
+    }
 
-xx = seq(0, 10, length=500)
-plot(xx, dcauchy(xx, 0, 1/8), type='l')
-plot(xx, dt((xx-4.3)*16, 8, 25), type='l')
-abline(v = modes[1])
-t.df = 1
-t.ncp = modes[1]
+x = rW(5000)
+plot(x, pch=20)
 
 # estimating G via a grid
-mu.vec = seq(4.0, 7.0, length=100)
-sig.vec = seq(0.15, 3.0, length=100)
+mu.vec = seq(4.0, 20.0, length=100)
+sig.vec = seq(0.15, 20.0, length=100)
 xy = cross(mu.vec, sig.vec)
 
-z = double(nrow(xy))
-w = double(nrow(xy))
-for (i in 1:length(z)){
-    z[i] = log(g(xy[i,]))
-    w[i] = log(dW(xy[i,]))
-    }
-
+nu = 4
+sigma = matrix(c(0.24, 0.17, 0.17, 0.23), 2, 2)
+sigma = sigma/3.5
+z = log(apply(xy, 1, g))
+w = log(apply(xy, 1, dW))
 (G = max(z - w))
 
 z.star = z - G
-plot3d(cbind(xy[w > -25,], exp(w[w > -25])), col='blue')
-points3d(cbind(xy[z.star > -25,], exp(z.star[z.star > -25])))
-#points3d(cbind(xy, h), col='blue')
+plot3d(cbind(xy[w > -25,], (w[w > -25])), col='blue')
+points3d(cbind(xy[z.star > -25,], (z.star[z.star > -25])))
 
-# estimating G through random draws
-niter = 100000
-draws = rW(niter)
-ratios = log(apply(draws, 1, g)) - log(apply(draws, 1, dW))
+plot3d(cbind(xy, exp(w)), col='blue')
+points3d(cbind(xy, exp(z.star)))
 
-rem = c(which(is.na(ratios)), which(ratios == Inf))
-ratios = ratios[-rem]
-draws = draws[-rem,]
-var(draws)
-cor(draws)
-
-draws[which.max(ratios),]
 
 reject = function(M = 100){
     # initialize
@@ -127,7 +135,7 @@ reject = function(M = 100){
     
     # calculate ratios
     for (i in 1:M)
-        out[i,4] = g.star(out[i,1:2], G) - log(dW(out[i,1:2]))
+        out[i,4] = g.star(out[i,1:2]) - log(dW(out[i,1:2]))
 
     # accept or not
     for (i in 1:M){
@@ -137,14 +145,8 @@ reject = function(M = 100){
     return (out)
     }
 
-niter = 100000
+niter = 3500000
 system.time(X <- reject(niter))
-# remove the NAs and Infs
-X = X[!is.na(X[,4]),]
-X = X[X[,4] != Inf,]
-# proportion removed
-(niter - nrow(X)) / niter
-
 # porportion of acceptances (about 0.35 so far)
 mean(X[,5])
 
@@ -153,6 +155,8 @@ sum(X[,5])
 
 # ratios should not exceed 0, otherwise not a correct envelope
 max(X[,4])
+
+#hist(X[,4], breaks=1000, xlim=c(0, 2), ylim=c(0, 100), col='gray')
 
 X[X[,4] == max(X[,4]),]
 
@@ -164,7 +168,7 @@ calc.mode(density(Y[,1]))
 calc.mode(density(Y[,2]))
 
 # joint posterior
-plot(Y[sample(nrow(Y), nrow(Y)),], pch=20)
+plot(Y[sample(nrow(Y), 100000),], pch=20)
 
 plot(density(Y[,2]))
 
