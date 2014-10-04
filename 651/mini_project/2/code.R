@@ -58,36 +58,6 @@ g.star = function(x)
 
 modes = c(5.78, 0.31)
 
-### t and ig prior
-# # about the mode of the posterior for mean (after trial and error)
-# t.adj = 16
-# t.move = 4.3
-# t.df = 8
-# t.ncp = 25
-# 
-# # this fixes the mode at modes[2], increasing alpha decrease variance
-# ig.alpha = 8
-# ig.beta = modes[2]*(ig.alpha+1)
-# 
-# # envelope function
-# dW = function(x){
-#     mu = x[1]
-#     sig2 = x[2]
-#     dt((mu-t.move)*t.adj, t.df, t.ncp) * igpdf(sig2, ig.alpha, ig.beta)
-#     }
-# rW = function(n)
-#     x = matrix(c(rt(n, t.df, t.ncp), 1/rgamma(n, ig.alpha, rate=ig.beta)),n,2)
-
-### envelope -- multivariate normal
-dW = function(x)
-    ((2*pi)^2*det(sigma))^(-1/2) * exp(-0.5* t(x-modes) %*%
-        solve(sigma) %*% (x-modes))
-rW = function(n){
-    L = chol(sigma)
-    z = matrix(rnorm(n * nrow(L)), n, 2)
-    z %*% L + matrix(rep(modes, n), n ,2, byrow = TRUE)
-    }
-
 ### multivariate t
 dW = function(x)
     gamma((nu + 2)/2) / (gamma(nu/2)*nu*pi*sqrt(det(sigma)) *
@@ -100,12 +70,9 @@ rW = function(n){
         byrow = TRUE)
     }
 
-x = rW(5000)
-plot(x, pch=20)
-
 # estimating G via a grid
-mu.vec = seq(4.0, 20.0, length=100)
-sig.vec = seq(0.15, 20.0, length=100)
+mu.vec = seq(4.0, 9.0, length=100)
+sig.vec = seq(0.15, 3.0, length=100)
 xy = cross(mu.vec, sig.vec)
 
 nu = 4
@@ -179,15 +146,22 @@ plot(density(Y[sample(nrow(Y), 100000),2]))
 plot(density(y))
 curve(dnorm(x, mean(Y[,1]), sqrt(mean(Y[,2]))), add=TRUE, col='blue')
 
-mu.vec = seq(3.0, 9.0, length=100)
-sig.vec = seq(0.1, 4.0, length=100)
+mu.vec = seq(5.25, 6.5, length=200)
+sig.vec = seq(0.1, 1.25, length=200)
 z.mat = matrix(0, length(mu.vec), length(sig.vec))
 for (i in 1:length(mu.vec))
     for (j in 1:length(sig.vec))
         z.mat[i,j] = exp(g.star(c(mu.vec[i], sig.vec[j])))
 
 
-contour(mu.vec, sig.vec, z.mat, xlim=c(5,7), ylim=c(0,1), col='blue')
+pdf("figs/contour.pdf")
+par(mar=c(4,4.5,2,1))
+contour(mu.vec, sig.vec, z.mat, xlim=c(5.25,6.5), ylim=c(0,1.25),
+    col=rgb(0.2,0.2,0.5), main="Unnormalized posterior",
+    xlab = expression(mu), ylab = expression(sigma^2),
+    cex.lab = 1.5, cex.main=1.5, lwd=2)
+dev.off()
+
 points(Y, pch=20)
 contour(mu.vec, sig.vec, z.mat, add=TRUE, col='blue')
 
