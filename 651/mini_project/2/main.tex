@@ -72,10 +72,7 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 && \m{\Sigma}~\mathrm{pos.~def.~in~} \R^{p\times p}\\
 \end{eqnarray*}
 
-\noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0685 & 0.0485 \\ 0.0485 & 0.0657 \\ \end{array}\right)$, and $p=2$ (since there are two parameters). The log of this distribution evaluated at a grid of points $(\mu_i, \sigma^2_i)$ is shown Figure \ref{envelope}. The unnormalized posterior $g(\m{\theta})$ is also evaulated at the same grid. We calculate $G=\max_i\frac{g(\mu_i,\sigma^2_i)}{W(\mu_i,\sigma^2_i)}$ and let $g^\star(\m{\theta}) = g(\m{\theta})/G$. We see in Figure \ref{envelope} that $W(\m{\theta})\geq g^\star(\m{\theta})$ for all $\m{\theta}$.
-\bigskip
-
-\noindent Though we only use a few set of points to calculate $G$, we are confident that $W$ dominates $g^\star$ due to the heavy tails in the multivariate $t$. Should $g^\star$ exceed $W$, this may be in a near-zero probability region, so we don't expect to have issues with this envelope distribution.
+\noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0522 & 0.0370 \\ 0.0370 & 0.0501 \\ \end{array}\right)$, and $\m{\mu}=(5.78, 0.31)^\top$ which is about the mode of the posterior. There are $p=2$ parameters. The log of this distribution evaluated at a grid of points $(\mu_i, \sigma^2_j)$ is shown Figure \ref{envelope}. The unnormalized posterior $g(\m{\theta})$ is also evaulated at the same grid. We calculate $G=\max_i\frac{g(\mu_i,\sigma^2_j)}{W(\mu_i,\sigma^2_j)}$ and let $g^\star(\m{\theta}) = g(\m{\theta})/G$. We see in Figure \ref{envelope} that $W(\m{\theta})\geq g^\star(\m{\theta})$ for all $\m{\theta}$.
 \bigskip
 
 \begin{figure}
@@ -92,13 +89,56 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
     \label{envelope}
 \end{figure}
 
-\noindent Drawing from the multivariate $t$ is simple enough. If $\m{y}\sim\mathcal{N}_p(\m{0},\m{\Sigma})$, $u\sim\chi^2$, and $\m{\mu}\in\R^p$, then $\m{x}=\m{\mu}+\m{y}\sqrt{\nu/u}$ is $t_\nu(\m{\mu},\m{\Sigma})$. Some draws will be negative for $\sigma^2$. This does not concern us since $g^\star$ is defined to be $0$ outside its support.
+\noindent Though we only use a few set of points to calculate $G$, we are confident that $W$ dominates $g^\star$ due to the heavy tails in the multivariate $t$. Should $g^\star$ exceed $W$, this may be in a near-zero probability region, so we don't expect to have issues with this envelope distribution.
+\bigskip
+
+\noindent Drawing from the multivariate $t$ is simple enough. If $\m{y}\sim\mathcal{N}_p(\m{0},\m{\Sigma})$, $u\sim\chi^2_\nu$, and $\m{\mu}\in\R^p$, then $\m{x}=\m{\mu}+\m{y}\sqrt{\nu/u}$ is $t_\nu(\m{\mu},\m{\Sigma})$. Some draws will be negative for $\sigma^2$. This does not concern us since $g^\star$ is defined to be $0$ outside its support.
 
 \subsection{Posterior Distribution}
 
-\noindent We now be explicit on the form of $g(\m{\theta}) \propto \pi(\mu,\sigma^2|\m{y})$.
+\noindent We now be explicit on the form of $g(\m{\theta}) \propto \pi(\m{\theta}|\m{y})$.
+
+\begin{eqnarray*}
+\pi(\m{\theta}|\m{y}) &\propto& L(\m{y}|\mu, \sigma^2)\pi(\mu, \sigma^2) \\
+&\propto& L(\m{y}|\mu, \sigma^2)\pi(\mu)\pi(\sigma^2) \\
+&\propto& \prod_{i=1}^n f_*(y_i|\mu,\sigma^2)\times \exp\left(-\frac{(\mu-5)^2}{2\cdot10^2}\right) \times (\sigma^2)^{-2.5-1}\exp\left(-\frac{1.5}{\sigma^2}\right) \\ 
+\end{eqnarray*}
+
+\noindent where $f_*(\cdot)$ is given above and $g(\m{\theta})$ is equal to the right-hand side of the equation. A bivariate contour plot of $g(\m{\theta})$ is given in Figure \ref{contour}. Note that we do not remove any constant terms in $f_*(\cdot)$ so we can make use of \texttt{R} functions.
+
+\subsection{Moment Calculations}
+
+\begin{figure}
+    \begin{center}
+    \includegraphics[scale=0.4]{figs/draws.pdf}
+    \end{center}
+    \caption{A sample of $10,000$ draws from $\pi(\mu,\sigma^2|\m{y})$ overlain by contours.}
+    \label{draws}
+\end{figure}
+
+\noindent We run the rejection algorithm $3,500,000$ times and obtain 1,220,000 draws (about 35\% efficiency) from the joint posterior distribution. The algorithm takes about 7 minutes to run. A sample of the draws are plotted in Figure \ref{draws}. Using these draws we make the following calculations:
+
+\begin{eqnarray*}
+\mathrm{E}(\mu,\sigma^2|\m{y}) &=& (5.808,~0.393) \\
+\mathrm{Var}(\mu, \sigma^2|\m{y}) &=& \left(\begin{array}{ll} 0.0257 & 0.0112 \\ 0.0112 & 0.0275 \\ \end{array}\right) \\
+\sqrt{\mathrm{Var}(\mu, \sigma^2|\m{y})} &=& (0.160,~0.165) \\
+\end{eqnarray*}
+
+\subsection{Posterior Predictive Distribution}
+
+\noindent The predictive distribution is shown in Figure \ref{prediction}. We calculate the probability of a randomly selected teacher scoring 5 or more on their next evaluation at $0.897$.
+
+\begin{figure}
+    \begin{center}
+    \includegraphics[scale=0.4]{figs/pred.pdf}
+    \end{center}
+    \caption{Posterior predictive distribution.}
+    \label{prediction}
+\end{figure}
 
 \section{Importance Sampling}
+
+\noindent Hereo this goes
 
 \section{Approach Comparison}
 
