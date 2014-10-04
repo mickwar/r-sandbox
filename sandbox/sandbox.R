@@ -1982,3 +1982,46 @@ mean.out = mean.out / n
 df * V
 mean.out
 ##########
+
+##########
+# rejection algorithm
+reject = function(dg, denv, renv, niter){
+    # dg is target density
+    # denv is envelope density
+    # renv a function to produce random draws
+    out = matrix(0, niter, 4)
+    out[,1] = renv(niter)
+    out[,2] = log(runif(niter))
+    out[,3] = log(dg(out[,1])) - log(denv(out[,1]))
+    out[,4] = out[,2] < out[,3]
+    return (out)
+    }
+
+a = 2.7
+b = 6.3
+g = function(x)
+    dbeta(x, a, b)
+g.star = function(x)
+    g(x) / G
+
+# The envelope need not be constrained to the support
+# of the target distribution, but you do lose out on
+# some efficiency. That cost isn't much if the
+# envelope is easier to work with than others.
+denv = function(x)
+    dnorm(x, 0.2, 0.25)
+renv = function(n)
+    rnorm(n, 0.2, 0.25)
+
+G = max(dbeta(xx, a, b) / denv(xx))
+
+xx = seq(0, 1, length=1000)
+plot(xx, g.star(xx), type='l')
+points(xx, denv(xx), type='l', col='green')
+
+out = reject(g.star, denv, renv, 100000)
+plot(xx, dbeta(xx, 2.7, 6.3), type='l')
+points(density(out[out[,4] == 1, 1]), type='l', col='red')
+
+mean(out[,4])
+#########
