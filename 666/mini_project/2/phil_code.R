@@ -45,7 +45,8 @@ em = function(x, tol = 0.01){
 
 #### test on region 2
 
-olive2 <- as.matrix(read.table('oliver2a.txt',stringsAsFactors=FALSE,header=T))
+olive2 <- as.matrix(read.table('~/files/R/666/data/oliver2a.txt',
+    stringsAsFactors=FALSE,header=T))
 n1 <- nrow(olive2)
 p <- ncol(olive2)
 max_2 <- em(olive2,tol=1e-6)
@@ -59,7 +60,8 @@ F <- T2 * ((n1-1) - p + 1) / ((n1-1)*p)
 
 #### test on region 4
 
-olive4 <- as.matrix(read.table('oliver4a.txt',stringsAsFactors=FALSE,header=T))
+olive4 <- as.matrix(read.table('~/files/R/666/data/oliver4a.txt',
+    stringsAsFactors=FALSE,header=T))
 n2 <- nrow(olive4)
 p <- ncol(olive4)
 

@@ -2,4 +2,18 @@
 
 For many olives we do not have measurements on one or more acids. This prohibits us from doing analyses unless we deal with the missing data. One option is to simply remove those olives from the dataset that do not have acid measurements. However, in doing so we might throw out valuable information. We desire a better approach.
 
-The Expectation-Maximization (EM) algorithm is a means of imputing those missing values. The idea is to predict the missing acid measurements based on the values of the other acids that were measured.
+The Expectation-Maximization (EM) algorithm is a means of imputing those missing values. The goal is to predict the missing acid measurements based on the values of the other acids that were measured.
+
+We begin by calculating the mean vector $\overline{\m{x}}$ and sample covariance matrix $\m{S}$ by using only the known values in the data. It is possible that $\m{S}$ will not be positive definite. We remedy this by forcing any zero or negative eigenvalues of $\m{S}$ to be just about zero. Let the superscripts $(q)$ and $(p)$ denote partitions of $\m{x}_i$, $\overline{\m{x}}$, and $\m{S}$ for the missing components and the known values, respectively. Then we do the following procedure
+
+\begin{enumerate}
+\item For each $\m{x}_i$ with missing values, regress $\m{x}_i^{(p)}$ onto $\m{x}_i^{(q)}$ by
+\begin{eqnarray*}
+\m{x}_i^{(q)} = \overline{\m{x}}^{(q)} + \m{S}^{(q)(p)}(\m{S}^{(p)(p)})^{-1}\left(\m{x}_i^{(p)}-\overline{\m{x}}^{(p)}\right). 
+\end{eqnarray*}
+\item Update $\overline{\m{x}}$ and $\m{S}$ using the new values in each $\m{x}_i$.
+\item Repeat steps 1 and 2 until convergence.
+\end{enumerate}
+
+\noindent Note that $\m{x}_i^{(q)}$ and $\overline{\m{x}}^{(q)}$ are $q\times1$, $\m{x}_i^{(p)}$ and $\overline{\m{x}}^{(p)}$ are $(p-q)\times1$, $\m{S}^{(q)(p)}$ is $q\times(p-q)$, and $\m{S}^{(p)(p)}$ is $(p-q)\times(p-q)$.
+
