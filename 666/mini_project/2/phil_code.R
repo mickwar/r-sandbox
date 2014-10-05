@@ -53,8 +53,8 @@ max_2 <- em(olive2,tol=1e-6)
 mu10 <- c(1300,120,265,7310,820,45,65,28)
 S1 <- cov(max_2)
 m1 <- apply(max_2,2,mean)
-T2 <- n1 * t(m1 - mu10) %*% solve(S1) %*% (m1 - mu10)
-F <- T2 * ((n1-1) - p + 1) / ((n1-1)*p)
+(T2 <- n1 * t(m1 - mu10) %*% solve(S1) %*% (m1 - mu10))
+(F <- T2 * ((n1-1) - p + 1) / ((n1-1)*p))
 
 1 - pf(F,p,n1-1 - p +1)
 
@@ -69,8 +69,8 @@ max_4 <- em(olive4,tol=1e-6)
 mu20 <- c(1230,105,275,7360,830,41,75,38)
 S2 <- cov(max_4)
 m2 <- apply(max_4,2,mean)
-T2 <- n2 * t(m2 - mu20) %*% solve(S2) %*% (m2 - mu20)
-F <- T2 * ((n2-1) - p + 1) / ((n2-1)*p)
+(T2 <- n2 * t(m2 - mu20) %*% solve(S2) %*% (m2 - mu20))
+(F <- T2 * ((n2-1) - p + 1) / ((n2-1)*p))
 
 1 - pf(F,p,n2-1 - p +1)
 

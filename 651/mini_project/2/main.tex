@@ -27,7 +27,7 @@
 
 \begin{eqnarray*}
 f_*(y|\mu,\sigma^2,a,b) = \frac{\frac{1}{\sigma}\phi(\frac{y-\mu}{\sigma})}{\Phi(\frac{b-\mu}{\sigma})-\Phi(\frac{a-\mu}{\sigma})} & -\infty < \mu < +\infty; & \sigma > 0; \\
-& -\infty \leq a < b \leq +\infty; & a < y < b, \\
+& -\infty \leq a < b \leq +\infty; & a < y < b,
 \end{eqnarray*}
 
 \noindent where $\phi(\cdot)$ is the density of the standard normal distribution, $\Phi(\cdot)$ is the c.d.f. of the standard normal, and $a$ and $b$ are the lower and upper bounds. We fix $a=1$ and $b=7$ because of our knowledge of the data. The likelihood function is
@@ -69,7 +69,7 @@ f_*(y|\mu,\sigma^2,a,b) = \frac{\frac{1}{\sigma}\phi(\frac{y-\mu}{\sigma})}{\Phi
 
 \begin{eqnarray*}
 W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamma(\nu/2)[1+\frac{1}{\nu}(\m{x}-\m{\mu})^\top\m{\Sigma}^{-1}(\m{x}-\m{\mu})]^{(\nu+p)/2}}; && \m{x}, \m{\mu} \in \R^p; \nu>0; \\
-&& \m{\Sigma}~\mathrm{pos.~def.~in~} \R^{p\times p}\\
+&& \m{\Sigma}~\mathrm{pos.~def.~in~} \R^{p\times p}
 \end{eqnarray*}
 
 \noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0522 & 0.0370 \\ 0.0370 & 0.0501 \\ \end{array}\right)$, and $\m{\mu}=(5.78, 0.31)^\top$ which is about the mode of the posterior. There are $p=2$ parameters. The log of this distribution evaluated at a grid of points $(\mu_i, \sigma^2_j)$ is shown Figure \ref{envelope}. The unnormalized posterior $g(\m{\theta})$ is also evaulated at the same grid. We calculate $G=\max_i\frac{g(\mu_i,\sigma^2_j)}{W(\mu_i,\sigma^2_j)}$ and let $g^\star(\m{\theta}) = g(\m{\theta})/G$. We see in Figure \ref{envelope} that $W(\m{\theta})\geq g^\star(\m{\theta})$ for all $\m{\theta}$.
@@ -101,7 +101,7 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 \begin{eqnarray*}
 \pi(\m{\theta}|\m{y}) &\propto& L(\m{y}|\mu, \sigma^2)\pi(\mu, \sigma^2) \\
 &\propto& L(\m{y}|\mu, \sigma^2)\pi(\mu)\pi(\sigma^2) \\
-&\propto& \prod_{i=1}^n f_*(y_i|\mu,\sigma^2)\times \exp\left(-\frac{(\mu-5)^2}{2\cdot10^2}\right) \times (\sigma^2)^{-2.5-1}\exp\left(-\frac{1.5}{\sigma^2}\right) \\ 
+&\propto& \prod_{i=1}^n f_*(y_i|\mu,\sigma^2)\times \exp\left(-\frac{(\mu-5)^2}{2\cdot10^2}\right) \times (\sigma^2)^{-2.5-1}\exp\left(-\frac{1.5}{\sigma^2}\right)
 \end{eqnarray*}
 
 \noindent where $f_*(\cdot)$ is given above and $g(\m{\theta})$ is equal to the right-hand side of the equation. A bivariate contour plot of $g(\m{\theta})$ is given in Figure \ref{contour}. Note that we do not remove any constant terms in $f_*(\cdot)$ so we can make use of \texttt{R} functions.
@@ -121,7 +121,7 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 \begin{eqnarray*}
 \mathrm{E}(\mu,\sigma^2|\m{y}) &=& (5.808,~0.393) \\
 \mathrm{Var}(\mu, \sigma^2|\m{y}) &=& \left(\begin{array}{ll} 0.0257 & 0.0112 \\ 0.0112 & 0.0275 \\ \end{array}\right) \\
-\sqrt{\mathrm{Var}(\mu, \sigma^2|\m{y})} &=& (0.160,~0.165) \\
+\sqrt{\mathrm{Var}(\mu, \sigma^2|\m{y})} &=& (0.160,~0.165)
 \end{eqnarray*}
 
 \subsection{Posterior Predictive Distribution}
