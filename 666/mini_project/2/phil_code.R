@@ -102,6 +102,24 @@ miss.mat4 <- 1*is.na(olive4)
 
 colnames(miss.mat2) <- colnames(miss.mat4) <- c("a1","a2","a3","a4","a5","a6","a7","a8")
 
+### multinomial test
+miss.mult2 = apply(miss.mat2, 2, sum)
+miss.mult4 = apply(miss.mat4, 2, sum)
+
+tt = dmultinom(miss.mult2, prob = rep(1/p, p))
+vec = apply(rmultinom(1000000, sum(miss.mult2), prob = rep(1/p, p)),
+    2, function(x) dmultinom(x, sum(miss.mult2), rep(1/p, p)))
+mean(vec <= tt)
+
+tt = dmultinom(miss.mult4, prob = rep(1/p, p))
+vec = apply(rmultinom(1000000, sum(miss.mult4), prob = rep(1/p, p)),
+    2, function(x) dmultinom(x, sum(miss.mult4), rep(1/p, p)))
+mean(vec <= tt)
+
+
+factorial(sum(miss.mult4)) * prod(((1/p)^(miss.mult4))/factorial(miss.mult4))
+
+###
 des2 <- cbind(max_2,miss.mat2)
 des4 <- cbind(max_4,miss.mat4)
 
