@@ -5,6 +5,23 @@ For the olives in regions two and four we want to test whether the means of the 
 H_{02}:\m{\mu}_{02}=(1300,120,265,7310,820,45,65,28)^\top \\
 H_{04}:\m{\mu}_{04}=(1230,105,275,7360,830,41,75,38)^\top
 \end{eqnarray*}
-\noindent where $H_{02}$ and $H_{04}$ are the null hypotheses for tests and regions two and four, respectively.
+where $H_{02}$ and $H_{04}$ are the null hypotheses for tests and regions two and four, respectively.
 
+We will use Hotelling's $T^2$ test statistic (a multivariate analogue of the univariate $t$ test statistic) defined as
+\[ T^2 = n(\overline{\m{x}}-\m{\mu}_0)^\top\m{S}^{-1}(\overline{\m{x}}-\m{\mu}_0) \]
+to test for significant departures from the hypothesized mean $\m{\mu}_0$. Large differences in the mean of any variable from the historical mean will result in a large $T^2$ statistic. We can convert $T^2$ into an $F$ distribution via
+\[ \frac{\nu -p+1}{\nu p}T^2 = F \sim F_{p,\nu-p+1}. \]
+where $\nu=n-1$ degrees of freedom and $p=8$ acids.
 
+Table \ref{history} shows the test statistics and $p$-values for each region's null hypothesis.
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l | rrr}
+Region & \multicolumn{1}{l}{$T^2$}  & \multicolumn{1}{l}{$F$}    & \multicolumn{1}{l}{$p$-value} \\ \hline \hline
+     2 & 10.119 & 1.103  & 0.377     \\
+     4 & 20.183 & 2.018  & 0.081     \\
+\end{tabular}
+\caption{Historical means comparison test results.}
+\label{history}
+\end{center}
+\end{table}
