@@ -85,6 +85,8 @@ z = log(apply(xy, 1, g))
 w = log(apply(xy, 1, dW))
 (G = max(z - w))
 
+G = -20.613136
+
 xy[which.max(z-w),]
 
 niter = 10000
@@ -132,8 +134,6 @@ reject = function(M = 100){
 
 niter = 3500000
 system.time(X <- reject(niter))
-# remove NA
-X = X[-which(is.na(X[,5])),]
 # porportion of acceptances (about 0.35 so far)
 mean(X[,5])
 
@@ -205,4 +205,20 @@ dev.off()
 
 points(Y, pch=20)
 contour(mu.vec, sig.vec, z.mat, add=TRUE, col='blue')
+
+### importance sampling
+theta = rW(1000000)
+
+# takes a moment
+g.val = apply(theta, 1, g)
+I.val = apply(theta, 1, dW)
+
+# estimate of c
+(const = mean(g.val / I.val))
+
+# expectations
+(est.mean = apply(theta * g.val / I.val, 2, mean)/const)
+(est.var = apply(theta^2 * g.val / I.val, 2, mean)/const - est.mean^2)
+(est.sd = sqrt(est.var))
+
 

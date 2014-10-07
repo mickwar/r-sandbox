@@ -16,7 +16,7 @@
 
 \noindent Stat 651 -- Mini Project 2
 
-\section{Rejection Sampling}
+\section{Rejection sampling}
 
 \subsection{Likelihood}
 
@@ -51,7 +51,7 @@ f_*(y|\mu,\sigma^2,a,b) = \frac{\frac{1}{\sigma}\phi(\frac{y-\mu}{\sigma})}{\Phi
 
 \noindent The hyperpriors on $\mu$ result in a distribution centered around 5, which is to say we think on average the faculty would have a score of 5. The prior on $\sigma^2$ has a mean of 1, variance of 1.5, and the central 95\% density interval is $(0.234, 3.612)$. These both represent fairly noninformative priors, allowing the data to do more of the talking.
 
-\subsection{The Envelope Distribution}
+\subsection{The envelope distribution}
 
 \begin{figure}
     \begin{center}
@@ -72,7 +72,7 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 && \m{\Sigma}~\mathrm{pos.~def.~in~} \R^{p\times p}
 \end{eqnarray*}
 
-\noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0522 & 0.0370 \\ 0.0370 & 0.0501 \\ \end{array}\right)$, and $\m{\mu}=(5.78, 0.31)^\top$ which is about the mode of the posterior. There are $p=2$ parameters. The log of this distribution evaluated at a grid of points $(\mu_i, \sigma^2_j)$ is shown Figure \ref{envelope}. The unnormalized posterior $g(\m{\theta})$ is also evaulated at the same grid. We calculate $G=\max_i\frac{g(\mu_i,\sigma^2_j)}{W(\mu_i,\sigma^2_j)}$ and let $g^\star(\m{\theta}) = g(\m{\theta})/G$. We see in Figure \ref{envelope} that $W(\m{\theta})\geq g^\star(\m{\theta})$ for all $\m{\theta}$.
+\noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0522 & 0.0370 \\ 0.0370 & 0.0501 \\ \end{array}\right)$, and $\m{\mu}=(5.78, 0.31)^\top$ which is about the mode of the posterior. There are $p=2$ parameters. The log of this distribution evaluated at a grid of points $(\mu_i, \sigma^2_j)$ is shown in Figure \ref{envelope}. The unnormalized posterior $g(\m{\theta})$ is also evaulated at the same grid. We calculate $G=\max_i\frac{g(\mu_i,\sigma^2_j)}{W(\mu_i,\sigma^2_j)}$ and let $g^\star(\m{\theta}) = g(\m{\theta})/G$. We see in Figure \ref{envelope} that $W(\m{\theta})\geq g^\star(\m{\theta})$ for all $\m{\theta}$.
 \bigskip
 
 \begin{figure}
@@ -92,9 +92,9 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 \noindent Though we only use a few set of points to calculate $G$, we are confident that $W$ dominates $g^\star$ due to the heavy tails in the multivariate $t$. Should $g^\star$ exceed $W$, this may be in a near-zero probability region, so we don't expect to have issues with this envelope distribution.
 \bigskip
 
-\noindent Drawing from the multivariate $t$ is simple enough. If $\m{y}\sim\mathcal{N}_p(\m{0},\m{\Sigma})$, $u\sim\chi^2_\nu$, and $\m{\mu}\in\R^p$, then $\m{x}=\m{\mu}+\m{y}\sqrt{\nu/u}$ is $t_\nu(\m{\mu},\m{\Sigma})$. Some draws will be negative for $\sigma^2$. This does not concern us since $g^\star$ is defined to be $0$ outside its support.
+\noindent Drawing from the multivariate $t$ is simple enough. If $\m{y}\sim\mathcal{N}_p(\m{0},\m{\Sigma})$, $u\sim\chi^2_\nu$, and $\m{\mu}\in\R^p$, then $\m{x}=\m{\mu}+\m{y}\sqrt{\nu/u}$ is $t_\nu(\m{\mu},\m{\Sigma})$. Some draws will be negative for $\sigma^2$. This does not concern us since $g^\star$ is defined to be $0$ outside its support; however, we do lose some efficiency as a result.
 
-\subsection{Posterior Distribution}
+\subsection{Posterior distribution}
 
 \noindent We now be explicit on the form of $g(\m{\theta}) \propto \pi(\m{\theta}|\m{y})$.
 
@@ -104,9 +104,9 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 &\propto& \prod_{i=1}^n f_*(y_i|\mu,\sigma^2)\times \exp\left(-\frac{(\mu-5)^2}{2\cdot10^2}\right) \times (\sigma^2)^{-2.5-1}\exp\left(-\frac{1.5}{\sigma^2}\right)
 \end{eqnarray*}
 
-\noindent where $f_*(\cdot)$ is given above and $g(\m{\theta})$ is equal to the right-hand side of the equation. A bivariate contour plot of $g(\m{\theta})$ is given in Figure \ref{contour}. Note that we do not remove any constant terms in $f_*(\cdot)$ so we can make use of \texttt{R} functions.
+\noindent where $f_*(\cdot)$ is given above and $g(\m{\theta})$ is equal to the right-hand side of the equation. A bivariate contour plot of $g(\m{\theta})$ is given in Figure \ref{contour}.
 
-\subsection{Moment Calculations}
+\subsection{Moment calculations}
 
 \begin{figure}
     \begin{center}
@@ -124,7 +124,9 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 \sqrt{\mathrm{Var}(\mu, \sigma^2|\m{y})} &=& (0.160,~0.165)
 \end{eqnarray*}
 
-\subsection{Posterior Predictive Distribution}
+\noindent The diagonal elements of $\mathrm{Var}(\mu, \sigma^2|\m{y})$ are the posterior variances of $\mu$ and $\sigma^2$ and the off-diagonals are the covariances.
+
+\subsection{Posterior predictive distribution}
 
 \noindent The predictive distribution is shown in Figure \ref{prediction}. We calculate the probability of a randomly selected teacher scoring 5 or more on their next evaluation at $0.897$.
 
@@ -136,10 +138,35 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
     \label{prediction}
 \end{figure}
 
-\section{Importance Sampling}
+\section{Importance sampling}
 
-\noindent Hereo this goes
+\noindent For our importance function, $I(\mu, \sigma^2)$, we use the same multivariate $t$ distribution that we used for our envelope distribution in the rejection sampling. This function will do well since it has a similar shape as $g$, the unnormalized posterior, and has heavy tails. However, we suffer from the same problem as before where we may draw values from $I$ that have zero probability in $g$. This results in less than optimal accuracy for the amount of draws we will do.
 
-\section{Approach Comparison}
+\subsection{Moment calculations}
+
+\begin{eqnarray*}
+\mathrm{E}(\mu,\sigma^2|\m{y}) &=& (5.808,~0.393) \\
+\mathrm{Var}(\mu, \sigma^2|\m{y}) &=& (0.026,~0.027) \\
+\sqrt{\mathrm{Var}(\mu, \sigma^2|\m{y})} &=& (0.161,~0.165)
+\end{eqnarray*}
+
+\subsection{Estimation of the normalizing constant}
+
+\noindent With importance sampling we can get an estimate of the normalizing constant
+\[ \int_0^{+\infty}\int_{-\infty}^{+\infty} L(\m{y}|\mu,\sigma^2)\pi(\mu)\pi(\sigma^2)d\mu d\sigma^2 \]
+which is the denominator in the posterior distribution. It is estimated by
+\[ \hat{c} = \frac{1}{M}\sum_{i=1}^M \frac{g(\mu_i, \sigma^2_i)}{I(\mu_i,\sigma^2_i)} = 3.838\times 10^{-10} \]
+where $(\mu_i, \sigma^2_i)$ are random draws from $I$, the multivariate $t$ distribution.
+\bigskip
+
+\noindent We may interpret this normalizing constant as the value necessary to make $g$ intergrate to one. That is, $\lim_{M\rightarrow\infty} \int\cdots\int g(\m{\theta})/\hat{c}d\m{\theta} = 1$. But note that this $g$ as given in Section 1.4 and may still contain constants not removed from the posterior (there are many possibilities of unnormalized posteriors, depending on how much one wants to cancel out all of the terms beside the integral in the denominator). So $\hat{c}$ must be interpreted as the integral of the $g$ used in the importance sampling.
+
+\section{Approach comparison}
+
+\subsection{As computational procedures}
+
+\subsection{With respect to the estimates produced}
+
+\subsection{With respect to the difficulty of implementation}
 
 \end{document}
