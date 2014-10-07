@@ -15,5 +15,4 @@ We begin by calculating the mean vector $\overline{\m{x}}$ and sample covariance
 \item Repeat steps 1 and 2 until convergence.
 \end{enumerate}
 
-\noindent Note that $\m{x}_i^{(q)}$ and $\overline{\m{x}}^{(q)}$ are $q\times1$, $\m{x}_i^{(p)}$ and $\overline{\m{x}}^{(p)}$ are $(p-q)\times1$, $\m{S}^{(q)(p)}$ is $q\times(p-q)$, and $\m{S}^{(p)(p)}$ is $(p-q)\times(p-q)$. The EM algorithm performs well for more correlated the variables are, due to the variances of the partitioned $\m{S}$ matrix. Subsequent analyses in this report will use data after running the EM algorithm.
-
+\noindent Note that $\m{x}_i^{(q)}$ and $\overline{\m{x}}^{(q)}$ are $q\times1$, $\m{x}_i^{(p)}$ and $\overline{\m{x}}^{(p)}$ are $(p-q)\times1$, $\m{S}^{(q)(p)}$ is $q\times(p-q)$, and $\m{S}^{(p)(p)}$ is $(p-q)\times(p-q)$. The EM algorithm performs well for more correlated the variables are, due to the variances of the partitioned $\m{S}$ matrix. Further, the algorithm assumes the missing values are \emph{missing at random}, which we discuss in a later section. Subsequent analyses in this report will use data after running the EM algorithm.

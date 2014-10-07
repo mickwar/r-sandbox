@@ -1,0 +1,23 @@
+\section{Missing at random}
+
+As mentioned earlier, the EM algorithm assumes the missing values are missing at random. That is, the measurements are not missing due to the values of other variables. For instance, it may be the case that high measurements in one acid increase the likelihood of another variable to be missing. This is not a desirable characteristic since it invalidates the use of the EM algorithm.
+
+Let $\m{X}$ be our $n\times p$ data matrix (after using the EM algorithm). Let $\m{A}$ be an $n\times p$ binary matrix where $0$ represents a known value in $\m{X}$ and $1$ represents a missing value. Define $\m{Z} = (\m{X}, \m{A})$, which is $n\times 2p$. We will test the following hypothesis:
+\[H_0:\m{\Sigma}_z = \left(\begin{array}{ll} \m{\Sigma}_{xx} & \m{O} \\ \m{O} & \m{\Sigma}_{aa} \end{array}\right),~\mathrm{or~equivalently}~H_0:\m{\Sigma}_{xa}=\m{O}\]
+What this hypothesis is saying is that there is no correlation between the values of the measurements and whether or not a variable is missing. We expect there to be no correlation between missingness and the values of measurements. The test is made using Wilks' $\Lambda$ of
+\[\Lambda=\frac{|\m{S}|}{|\m{S}_{xx}||\m{S}_{aa}|}\]
+where $\m{S}$ is the sample covariance matrix for $\m{\Sigma}_z$, the covariance matrix for the combined $\m{X}$ and $\m{A}$ matrices. This $\Lambda$ statistic is a measure variability in $\m{S}$ due to $\m{S}_{xa}$. The more covariance there is in $\m{S}_{xa}$ the closer $\Lambda$ will be to $0$. So we reject for small values of $\Lambda$.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{c | rrr}
+Region & \multicolumn{1}{l}{$\Lambda$}  & \multicolumn{1}{l}{$F$}    & \multicolumn{1}{l}{$p$-value} \\ \hline \hline
+     2 & 0.202 & 1.182  & 0.186     \\
+     4 & 0.147 & 0.903  & 0.658     \\
+\end{tabular}
+\caption{Wilks' $\Lambda$ test on $H_0:\m{\Sigma}_{xa}=\m{O}$}
+\label{missing}
+\end{center}
+\end{table}
+
+Wilks' $\Lambda$ follows a $\Lambda_{p,q,n-1-q}$ distribution, but we will convert it to an $F$ distribution. Table \ref{missing} shows the results of the test. Since both $p$-values are above $0.05$, we do not reject the hypothesis that there is zero covariance between the measurements and whether or not a value is missing.
