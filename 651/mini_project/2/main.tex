@@ -4,8 +4,8 @@
 \usepackage{float}
 \usepackage{amsmath}
 \usepackage{bm}
-\usepackage{subcaption}
 \usepackage[font=footnotesize]{caption}
+\usepackage{subcaption}
 
 \newcommand{\m}[1]{\mathbf{\bm{#1}}}
 \newcommand{\R}{I\hspace{-4.4pt}R}
@@ -38,18 +38,18 @@ f_*(y|\mu,\sigma^2,a,b) = \frac{\frac{1}{\sigma}\phi(\frac{y-\mu}{\sigma})}{\Phi
 
 \subsection{Prior on $(\mu, \sigma^2)$}
 
-\noindent We assume $\mu$ and $\sigma^2$ are indepedent so we may write
+\noindent We assume $\mu$ and $\sigma^2$ are independent so we may write
 
 \[ \pi(\mu, \sigma^2) = \pi(\mu)\pi(\sigma^2). \]
 
-\noindent This will simplify computations and there isn't any evidence to suggest nonindependence nor to necessitate the use of a hierarchical specification for $\mu$ and $\sigma^2$.
+\noindent This will simplify computations and there isn't any evidence to suggest non-independence nor to necessitate the use of a hierarchical specification for $\mu$ and $\sigma^2$.
 \bigskip
 
 \noindent We let $\mu\sim\mathcal{N}(5, 10^2)$ and $\sigma^2\sim\mathcal{IG}(2.5, 1.5)$ where the inverse gamma has the following parametrization
 
 \[ \pi(\sigma^2) = \frac{b^a}{\Gamma(a)}(\sigma^2)^{-a-1}\exp(-b/\sigma^2);~~~ a,b,\sigma^2>0. \]
 
-\noindent The hyperpriors on $\mu$ result in a distribution centered around 5, which is to say we think on average the faculty would have a score of 5. The prior on $\sigma^2$ has a mean of 1, variance of 1.5, and the central 95\% density interval is $(0.234, 3.612)$. These both represent fairly noninformative priors, allowing the data to do more of the talking.
+\noindent The parameter choice for $\mu$ result in a distribution centered around 5, which is to say we think on average the faculty would have a score of 5. The prior on $\sigma^2$ has a mean of 1, variance of 1.5, and the central 95\% density interval is $(0.234, 3.612)$. These both represent fairly non-informative priors, allowing the data to do more of the talking.
 
 \subsection{The envelope distribution}
 
@@ -72,7 +72,7 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 && \m{\Sigma}~\mathrm{pos.~def.~in~} \R^{p\times p}
 \end{eqnarray*}
 
-\noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0522 & 0.0370 \\ 0.0370 & 0.0501 \\ \end{array}\right)$, and $\m{\mu}=(5.78, 0.31)^\top$ which is about the mode of the posterior. There are $p=2$ parameters. The log of this distribution evaluated at a grid of points $(\mu_i, \sigma^2_j)$ is shown in Figure \ref{envelope}. The unnormalized posterior $g(\m{\theta})$ is also evaulated at the same grid. We calculate $G=\max_i\frac{g(\mu_i,\sigma^2_j)}{W(\mu_i,\sigma^2_j)}$ and let $g^\star(\m{\theta}) = g(\m{\theta})/G$. We see in Figure \ref{envelope} that $W(\m{\theta})\geq g^\star(\m{\theta})$ for all $\m{\theta}$.
+\noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0522 & 0.0370 \\ 0.0370 & 0.0501 \\ \end{array}\right)$, and $\m{\mu}=(5.78, 0.31)^\top$ which is about the mode of the posterior. There are $p=2$ parameters. The log of this distribution evaluated at a grid of points $(\mu_i, \sigma^2_j)$ is shown in Figure \ref{envelope}. The unnormalized posterior $g(\m{\theta})$ is also evaluated at the same grid. We calculate $G=\max_i\frac{g(\mu_i,\sigma^2_j)}{W(\mu_i,\sigma^2_j)}$ and let $g^\star(\m{\theta}) = g(\m{\theta})/G$. We see in Figure \ref{envelope} that $W(\m{\theta})\geq g^\star(\m{\theta})$ for all $\m{\theta}$.
 \bigskip
 
 \begin{figure}
@@ -124,7 +124,7 @@ W(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 \sqrt{\mathrm{Var}(\mu, \sigma^2|\m{y})} &=& (0.160,~0.165)
 \end{eqnarray*}
 
-\noindent The diagonal elements of $\mathrm{Var}(\mu, \sigma^2|\m{y})$ are the posterior variances of $\mu$ and $\sigma^2$ and the off-diagonals are the covariances.
+\noindent The diagonal elements of $\mathrm{Var}(\mu, \sigma^2|\m{y})$ are the posterior variances of $\mu$ and $\sigma^2$ and the off-diagonal is the covariance.
 
 \subsection{Posterior predictive distribution}
 
@@ -159,7 +159,7 @@ which is the denominator in the posterior distribution. It is estimated by
 where $(\mu_i, \sigma^2_i)$ are random draws from $I$, the multivariate $t$ distribution.
 \bigskip
 
-\noindent We may interpret this normalizing constant as the value necessary to make $g$ intergrate to one. That is, $\lim_{M\rightarrow\infty} \int\cdots\int g(\m{\theta})/\hat{c}d\m{\theta} = 1$. But note that this $g$ as given in Section 1.4 and may still contain constants not removed from the posterior (there are many possibilities of unnormalized posteriors, depending on how much one wants to cancel out all of the terms beside the integral in the denominator). So $\hat{c}$ must be interpreted as the integral of the $g$ used in the importance sampling.
+\noindent We may interpret this normalizing constant as the value necessary to make $g$ integrate to one. That is, $\lim_{M\rightarrow\infty} \int\cdots\int g(\m{\theta})/\hat{c}d\m{\theta} = 1$. But note that this $g$ as given in Section 1.4 and may still contain constants not removed from the posterior (there are many possibilities of unnormalized posteriors, depending on how much one wants to cancel out all of the terms beside the integral in the denominator). So $\hat{c}$ must be interpreted as the integral of the $g$ used in the importance sampling.
 
 \section{Approach comparison}
 
