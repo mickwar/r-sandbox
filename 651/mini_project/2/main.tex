@@ -165,8 +165,20 @@ where $(\mu_i, \sigma^2_i)$ are random draws from $I$, the multivariate $t$ dist
 
 \subsection{As computational procedures}
 
+\noindent Rejection sampling is a sampling method which guarantees the draws we accept are from the target distribution. With these draws from the posterior distribution we have the option to calculate expectations, quantiles, and other features. In importance sampling, we are limited to the calculations of moments.
+\bigskip
+
+\noindent A major advantage of importance sampling over rejection sampling is the computation time. Depending on the efficiency of the algorithm, rejection sampling can take a very long time, and perhaps will vary from run to run. Importance sampling has a fixed number of iterations and will generally execute quicker than rejection sampling.
+
 \subsection{With respect to the estimates produced}
 
+\noindent Both rejection and importance sampling should produce the same estimates. The accuracy of estimates from the rejection algorithm depend on the number of accepted draws. The accuracy of importance sampling estimates depends on the choice of importance function and the number of runs. Poor importance functions will require more runs for good results or may even produce bad results, regardless of the number of runs.
+
 \subsection{With respect to the difficulty of implementation}
+
+\noindent Valid importance functions are much easier to obtain than valid envelope distributions. For an envelope distribution to be valid, it must be verified that the density dominates the unnormalized posterior for the entire parameter space. As seen in this paper, even in two dimensions finding a valid envelope is difficult, especially in light of the efficiency (note the obscure parameters in the multivariate $t$). I imagine that self-amputation is more pleasant than finding an envelope for more than two dimensions.
+\bigskip
+
+\noindent Both algorithms are fairly simple to actually code. Rejection sampling needs to be done in a loop to produce exactly the desired number of accepted draws. Importance sampling can be entirely vectorized. This is akin to kitten hugging; we all like them vectors.
 
 \end{document}
