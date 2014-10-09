@@ -2044,14 +2044,21 @@ test.x = seq(0, 1, length=100)
 
 ## prior
 R = k(test.x)
-draws = mvrnorm(50, rep(0.5, length(test.x)), R)
+draws = mvrnorm(5000, rep(0.5, length(test.x)), R)
+
+c.lu = apply(draws, 2, quantile, c(0.025, 0.975)) 
+c.mean = apply(draws, 2, mean)
 
 pdf ("~/files/R/figs/gp_prior.pdf", bg = "gray86", width = 9, height = 9)
+par(mar=c(5.1, 4.6, 4.1, 2.1))
 plot(0, type='n',xlim=c(0,1), ylim=c(-3, 4), xlab = "x", ylab = "y",
     cex.lab = 2.0)
 polygon(c(-0.04, -0.04, 1.04, 1.04), c(-3.28, 4.28, 4.28, -3.28), col='white')
-for (i in 1:nrow(draws))
+for (i in 1:50)
     points(test.x, draws[i,], type='l', col='dodgerblue')
+#points(test.x, c.mean, type='l', lwd=3)
+#points(test.x, c.lu[1,], type='l', lwd=3)
+#points(test.x, c.lu[2,], type='l', lwd=3)
 dev.off()
 
 ## posterior
@@ -2070,6 +2077,7 @@ draws = mvrnorm(50, post.mu, post.sig)
 # change everything to gray86 and then use polygon to make the plotting region white
 # instead of gray86
 pdf ("~/files/R/figs/gp_data.pdf", bg = "gray86", width = 9, height = 9)
+par(mar=c(5.1, 4.6, 4.1, 2.1))
 plot(0, type='n',xlim=c(0,1), ylim=c(0, 1), xlab = "x", ylab = "y",
     cex.lab = 2.0)
 polygon(c(-0.04, -0.04, 1.04, 1.04), c(-0.04, 1.04, 1.04, -0.04), col='white')
