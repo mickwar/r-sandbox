@@ -2040,22 +2040,23 @@ k = function(x){
             out[i, j] = exp(-((x[i] - x[j])^2)/(2*l^2))
     return (out)
     }
-test.x = seq(0, 1, length=100)
+test.x = seq(0, 1, length=200)
 
 ## prior
 R = k(test.x)
-draws = mvrnorm(5000, rep(0.5, length(test.x)), R)
+set.seed(29)
+draws = mvrnorm(6, rep(0.5, length(test.x)), R)
 
-c.lu = apply(draws, 2, quantile, c(0.025, 0.975)) 
-c.mean = apply(draws, 2, mean)
+#c.lu = apply(draws, 2, quantile, c(0.025, 0.975)) 
+#c.mean = apply(draws, 2, mean)
 
 pdf ("~/files/R/figs/gp_prior.pdf", bg = "gray86", width = 9, height = 9)
 par(mar=c(5.1, 4.6, 4.1, 2.1))
 plot(0, type='n',xlim=c(0,1), ylim=c(-3, 4), xlab = "x", ylab = "y",
-    cex.lab = 2.0)
+    cex.lab = 2.0, main = "Six random draws from a Gaussian process prior", cex.main = 2)
 polygon(c(-0.04, -0.04, 1.04, 1.04), c(-3.28, 4.28, 4.28, -3.28), col='white')
-for (i in 1:50)
-    points(test.x, draws[i,], type='l', col='dodgerblue')
+for (i in 1:nrow(draws))
+    points(test.x, draws[i,], type='l', col='dodgerblue', lwd=2.5)
 #points(test.x, c.mean, type='l', lwd=3)
 #points(test.x, c.lu[1,], type='l', lwd=3)
 #points(test.x, c.lu[2,], type='l', lwd=3)
@@ -2079,10 +2080,10 @@ draws = mvrnorm(50, post.mu, post.sig)
 pdf ("~/files/R/figs/gp_data.pdf", bg = "gray86", width = 9, height = 9)
 par(mar=c(5.1, 4.6, 4.1, 2.1))
 plot(0, type='n',xlim=c(0,1), ylim=c(0, 1), xlab = "x", ylab = "y",
-    cex.lab = 2.0)
+    cex.lab = 2.0, main = "GP conditioned on noise free observations", cex.main = 2)
 polygon(c(-0.04, -0.04, 1.04, 1.04), c(-0.04, 1.04, 1.04, -0.04), col='white')
 for (i in 1:nrow(draws))
-    points(test.x, draws[i,], type='l', col='dodgerblue')
+    points(test.x, draws[i,], type='l', col='dodgerblue', lwd=2.5)
 points(dat.x, dat.y, pch=20, lwd=16)
 dev.off()
 
