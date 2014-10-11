@@ -2026,6 +2026,7 @@ points(density(out[out[,4] == 1, 1]), type='l', col='red')
 mean(out[,4])
 #########
 
+<<<<<<< HEAD
 ########
 # polynomial contrasts
 
@@ -2048,3 +2049,65 @@ poly.contrast = function(x, n){
     }
 
 poly.contrast(5, 1:2)
+=======
+#########
+# simple gaussian process example
+library(MASS)
+dat.x = c(0.2, 0.3, 0.6, 0.8)
+dat.y = c(0.5, 0.56, 0.52, 0.40)
+
+l = 0.25
+k = function(x){
+    out = matrix(0, length(x), length(x))
+    for (i in 1:length(x))
+        for (j in 1:length(x))
+            out[i, j] = exp(-((x[i] - x[j])^2)/(2*l^2))
+    return (out)
+    }
+test.x = seq(0, 1, length=200)
+
+## prior
+R = k(test.x)
+set.seed(29)
+draws = mvrnorm(6, rep(0.5, length(test.x)), R)
+
+#c.lu = apply(draws, 2, quantile, c(0.025, 0.975)) 
+#c.mean = apply(draws, 2, mean)
+
+pdf ("~/files/R/figs/gp_prior.pdf", bg = "gray86", width = 9, height = 9)
+par(mar=c(5.1, 4.6, 4.1, 2.1))
+plot(0, type='n',xlim=c(0,1), ylim=c(-3, 4), xlab = "x", ylab = "y",
+    cex.lab = 2.0, main = "Six random draws from a Gaussian process prior", cex.main = 2)
+polygon(c(-0.04, -0.04, 1.04, 1.04), c(-3.28, 4.28, 4.28, -3.28), col='white')
+for (i in 1:nrow(draws))
+    points(test.x, draws[i,], type='l', col='dodgerblue', lwd=2.5)
+#points(test.x, c.mean, type='l', lwd=3)
+#points(test.x, c.lu[1,], type='l', lwd=3)
+#points(test.x, c.lu[2,], type='l', lwd=3)
+dev.off()
+
+## posterior
+R = k(c(test.x, dat.x))
+ind.test = 1:length(test.x)
+ind.train = (1+length(test.x)):(length(test.x) + length(dat.x))
+post.mu = rep(0.5, length(test.x)) + R[ind.test, ind.train] %*% (solve(R[ind.train, ind.train]) %*%
+    (dat.y - rep(0.5, length(dat.y))))
+post.sig = R[ind.test, ind.test] - R[ind.test, ind.train] %*%
+    solve(R[ind.train, ind.train]) %*% R[ind.train, ind.test]
+
+draws = mvrnorm(50, post.mu, post.sig)
+
+# need a polygon over the plotting region since pdf() will make all the white space
+# transparent. the bg option in pdf changes the plotting region and the margins. i
+# change everything to gray86 and then use polygon to make the plotting region white
+# instead of gray86
+pdf ("~/files/R/figs/gp_data.pdf", bg = "gray86", width = 9, height = 9)
+par(mar=c(5.1, 4.6, 4.1, 2.1))
+plot(0, type='n',xlim=c(0,1), ylim=c(0, 1), xlab = "x", ylab = "y",
+    cex.lab = 2.0, main = "GP conditioned on noise free observations", cex.main = 2)
+polygon(c(-0.04, -0.04, 1.04, 1.04), c(-0.04, 1.04, 1.04, -0.04), col='white')
+for (i in 1:nrow(draws))
+    points(test.x, draws[i,], type='l', col='dodgerblue', lwd=2.5)
+points(dat.x, dat.y, pch=20, lwd=16)
+dev.off()
+
