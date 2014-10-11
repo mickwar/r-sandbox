@@ -2111,3 +2111,43 @@ for (i in 1:nrow(draws))
 points(dat.x, dat.y, pch=20, lwd=16)
 dev.off()
 
+##########
+# kernel density estimation
+
+k = function(x, x.obs, h){
+    # x:     values at which to estimate density
+    # x.obs: random draws
+    # h:     bandwidth
+
+    out = double(length(x))
+    n = length(x.obs)
+    
+    # from wikipedia page on kde, when using gaussian kernel
+    if (missing(h))
+        h = (4/3)^(1/5) * sd(x.obs) * n^(-1/5)
+
+    # standard gaussian kernel
+    f = function(x)
+        dnorm((x.obs - x)/h, 0, 1)
+
+    # non vectorized form, but not much of a difference in time
+    # still slower than just density()
+#   for (i in 1:length(x)){
+#       out[i] = 1/(n*h)*sum(dnorm((x.obs - x[i])/h, 0, 1))
+#       }
+    out = sapply(x, function(x) 1/(n*h)*sum(f(x)))
+
+    return (out)
+    }
+
+x.draws = rgamma(10000, 1.5, 1.5)
+x.draws = rbeta(10000, 1.5, 1.5)
+x.draws = rbeta(10000, 0.5, 0.5)
+
+x.seq = seq(min(x.draws), max(x.draws), length=512)
+hist(x.draws, freq=FALSE, breaks=50)
+points(density(x.draws, from=min(x.draws), to=max(x.draws)),
+    type='l', col='red')
+points(x.seq, k(x.seq, x.draws), type='l', col='blue')
+
+##########
