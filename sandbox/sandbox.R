@@ -2025,3 +2025,26 @@ points(density(out[out[,4] == 1, 1]), type='l', col='red')
 
 mean(out[,4])
 #########
+
+########
+# polynomial contrasts
+
+poly.contrast = function(x, n){
+    # default when given x = number of x's
+    if (length(x) == 1)
+        x = seq(1, x)
+
+    # center x
+    x = x - (max(x) - min(x)) / 2
+
+    out = matrix(0, length(n), length(x))
+
+    for (i in 1:length(n)){
+        y = x^n[i]
+        out[i,] = y - mean(y)
+        }
+
+    return (out)
+    }
+
+poly.contrast(5, 1:2)
