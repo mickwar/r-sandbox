@@ -221,4 +221,13 @@ I.val = apply(theta, 1, dW)
 (est.var = apply(theta^2 * g.val / I.val, 2, mean)/const - est.mean^2)
 (est.sd = sqrt(est.var))
 
+# bootstrap importance
+weights = (g.val / I.val) / const
 
+b.ind = sample(nrow(theta), nrow(theta), replace = TRUE,
+    prob = weights)
+
+# posterior draws
+b.draws = theta[b.ind,]
+
+plot(b.draws[1:10000,], pch=20)
