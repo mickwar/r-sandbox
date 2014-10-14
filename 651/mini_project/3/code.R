@@ -111,3 +111,8 @@ xx = seq(0, 20, length=100)
 plot(xx, f.star(xx), type='l', lwd=3)
 points(density(params,bw =((4*sd(params)^5)/(3*length(params)))^(1/5)),
     type='l', col='red', lwd=3)
+
+### problem 3 (gibbs)
+dat = scan("~/files/R/651/data/ballbearing2.dat")
+
+

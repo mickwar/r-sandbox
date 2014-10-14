@@ -1,6 +1,6 @@
 library(rgl)
 library(truncnorm)
-dat = as.matrix(read.table("./faculty.dat"))
+dat = as.matrix(read.table("~/files/R/651/data/faculty.dat"))
 colnames(dat) <- rownames(dat) <- NULL
 
 y = as.vector(dat)
