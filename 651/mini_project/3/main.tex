@@ -1,0 +1,87 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage[font=footnotesize]{caption}
+\usepackage{subcaption}
+\usepackage[margin=1.25in]{geometry}
+
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\newcommand{\R}{I\hspace{-4.4pt}R}
+
+\begin{document}
+
+\noindent Mickey Warner
+
+\noindent Stat 651 -- Mini Project 3
+
+\section{Bootstrap importance sampling}
+
+\subsection{Importance function}
+
+\noindent We will use the multivariate $t$ distribution, denoted $t_\nu(\m{\mu}, \m{\Sigma})$, as our importance function, which has density
+
+\begin{eqnarray*}
+I(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamma(\nu/2)[1+\frac{1}{\nu}(\m{x}-\m{\mu})^\top\m{\Sigma}^{-1}(\m{x}-\m{\mu})]^{(\nu+p)/2}}; && \m{x}, \m{\mu} \in \R^p; \nu>0; \\
+&& \m{\Sigma}~\mathrm{pos.~def.~in~} \R^{p\times p}
+\end{eqnarray*}
+
+\noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0522 & 0.0370 \\ 0.0370 & 0.0501 \\ \end{array}\right)$, and $\m{\mu}=(5.78, 0.31)^\top$ which is about the mode of the posterior. There are $p=2$ parameters. This function has a similar shape as the joint posterior of the parameters. Having low degrees of freedom ($\nu=4$) means we have heavy tails and so we should have no problems in low probability regions.
+
+\subsection{Joint posterior}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.57]{figs/boot_joint.pdf}
+    \caption*{}
+\end{figure}
+
+\subsection{Expectations}
+
+\begin{eqnarray*}
+\mathrm{E}(\mu,\sigma^2|\m{y}) &=& (5.808,~0.393) \\
+\mathrm{Var}(\mu, \sigma^2|\m{y}) &=& \left(\begin{array}{ll} 0.0257 & 0.0112 \\ 0.0112 & 0.0275 \\ \end{array}\right) \\
+\sqrt{\mathrm{Var}(\mu, \sigma^2|\m{y})} &=& (0.160,~0.165)
+\end{eqnarray*}
+
+\subsection{Posterior predictive}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.57]{figs/boot_pred.pdf}
+    \caption*{}
+\end{figure}
+
+\noindent The probability of scoring a 5 or better is $0.897$.
+
+\section{Metropolis-Hastings algorithm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.50]{figs/mh_post.pdf}
+    \caption*{}
+\end{figure}
+
+\section{Gibbs and M-H}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.50]{figs/gibb_joint.pdf}
+    \caption*{}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.50]{figs/gibb_marginal.pdf}
+    \caption*{}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.50]{figs/gibb_pred.pdf}
+    \caption*{}
+\end{figure}
+
+\end{document}
