@@ -2026,7 +2026,6 @@ points(density(out[out[,4] == 1, 1]), type='l', col='red')
 mean(out[,4])
 #########
 
-<<<<<<< HEAD
 ########
 # polynomial contrasts
 
@@ -2049,7 +2048,6 @@ poly.contrast = function(x, n){
     }
 
 poly.contrast(5, 1:2)
-=======
 #########
 # simple gaussian process example
 library(MASS)

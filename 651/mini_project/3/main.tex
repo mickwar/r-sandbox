@@ -19,6 +19,17 @@
 
 \section{Bootstrap importance sampling}
 
+\subsection{Likelihood and priors}
+
+\noindent We model the teacher ratings using a truncated normal, which has density
+
+\begin{eqnarray*}
+f_*(y|\mu,\sigma^2,a,b) = \frac{\frac{1}{\sigma}\phi(\frac{y-\mu}{\sigma})}{\Phi(\frac{b-\mu}{\sigma})-\Phi(\frac{a-\mu}{\sigma})} & -\infty < \mu < +\infty; & \sigma > 0; \\
+& -\infty \leq a < b \leq +\infty; & a < y < b,
+\end{eqnarray*}
+
+\noindent where $\phi(\cdot)$ is the standard normal density and $\Phi(\cdot)$ is the standard normal c.d.f. We fix $a=1$ and $b=7$. We assign the parameters $\mu$ and $\sigma^2$ to be independent $\mathcal{N}(5, 10^2)$ and $\mathcal{IG}(2.5, 1.5)$, respectively.
+
 \subsection{Importance function}
 
 \noindent We will use the multivariate $t$ distribution, denoted $t_\nu(\m{\mu}, \m{\Sigma})$, as our importance function, which has density
@@ -30,14 +41,6 @@ I(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 
 \noindent where, after trial and error, we fix $\nu = 4$, $\m{\Sigma} = \left(\begin{array}{ll} 0.0522 & 0.0370 \\ 0.0370 & 0.0501 \\ \end{array}\right)$, and $\m{\mu}=(5.78, 0.31)^\top$ which is about the mode of the posterior. There are $p=2$ parameters. This function has a similar shape as the joint posterior of the parameters. Having low degrees of freedom ($\nu=4$) means we have heavy tails and so we should have no problems in low probability regions.
 
-\subsection{Joint posterior}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.57]{figs/boot_joint.pdf}
-    \caption*{}
-\end{figure}
-
 \subsection{Expectations}
 
 \begin{eqnarray*}
@@ -46,11 +49,20 @@ I(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
 \sqrt{\mathrm{Var}(\mu, \sigma^2|\m{y})} &=& (0.160,~0.165)
 \end{eqnarray*}
 
+\subsection{Joint posterior}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.49]{figs/boot_joint.pdf}
+    \caption*{}
+\end{figure}
+
+
 \subsection{Posterior predictive}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.57]{figs/boot_pred.pdf}
+    \includegraphics[scale=0.49]{figs/boot_pred.pdf}
     \caption*{}
 \end{figure}
 
@@ -64,24 +76,97 @@ I(\m{x}) = \frac{\Gamma[(\nu+p)/2]\nu^{-p/2}\pi^{-p/2}|\m{\Sigma}|^{-1/2}}{\Gamm
     \caption*{}
 \end{figure}
 
+\noindent The figure on the left is of the unnormalized target density (dotted blue) with the density estimation of $10,000$ draws from the Metropolis algorithm. The figure on the right has the target function scaled to some guesstimated value so the draws match up.
+\bigskip
+
+\begin{center}
+\begin{tabular}{ll}
+\multicolumn{2}{c}{Metropolis Settings} \\ \hline \smallskip
+nburn            & 5000 \\ \smallskip
+nmcmc            & 10000 \\ \smallskip
+$p(x, y)$ & $y\sim\mathcal{N}(x, \sigma_\mathrm{cand}^2)$ \\ \smallskip
+$\sigma_{\mathrm{cand}} $ & 5.77 \\ \smallskip
+acceptance rate  & 0.267 \\
+\end{tabular}
+\end{center}
+
+\newpage
+
 \section{Gibbs and M-H}
+
+\subsection{Likelihood and priors}
+
+\noindent We use the three parameter Weibull to model a single observation
+
+\begin{eqnarray*}
+f_*(y_i|\alpha, \beta, \mu) = \frac{\beta}{\alpha}(y_i-\mu)^{\beta-1}\exp\left(-\frac{(y_i-\mu)^\beta}{\alpha}\right) & -\infty < \mu < +\infty; & y_i \geq \mu; \\
+& \alpha, \beta > 0.
+\end{eqnarray*}
+
+\noindent Since the experts believe that no ball bearing should fail under $10$ revolutions (in $10^6$ units), we fix $\mu=10$. % For notational convenience, we omit the $\mu$ parameter hereafter, but the code and anaylsis incorporates this information.
+\bigskip
+
+\noindent The likelihood is given by
+
+\begin{eqnarray*}
+L(\m{y}|\alpha, \beta) &=& \prod_{i=1}^n\frac{\beta}{\alpha}(y_i-\mu)^{\beta-1}\exp\left(-\frac{(y_i-\mu)^\beta}{\alpha}\right)  \\
+ &=& \beta^n\alpha^{-n}\left(\prod (y_i-\mu)\right)^{\beta-1}\exp\left(-\frac{\sum (y_i-\mu)^\beta}{\alpha}\right)
+\end{eqnarray*}
+
+\noindent When holding $\beta$ constant, we recongize the likelihood to have the form of an inverse gamma (under the rate parametrization) in terms of $\alpha$. We assume $\alpha$ follows an $\mathcal{IG}(a, b)$. It can be shown that the distribution of $\alpha|\beta,\m{y}$ follows an $\mathcal{IG}(n+a,b+\sum(y_i-\mu)^\beta)$. The inverse gamma is decently flexible, so we feel that this is a reasonable assumption to make on $\alpha$ since we ought to be able to capture its behavior. Also, the conjugate prior gives us some computational convenience.
+\bigskip
+
+\noindent There is no conjugate prior for $\beta$. We assume $\beta$ is distributed $\Gamma(c, d)$, indepedent of $\alpha$. This (as does $\alpha$) has the right support.
+\bigskip
+
+\noindent We are told the ball bearings should average about $50-70$ revolutions. After playing around with some parameters in the Weibull, we find that a $\mathrm{Weibull}(800, 1.5)$ comes close to this prior knowledge. We choose $a=4$ and $b=2500$ which leads to a prior expectation of around $800$ and prior standard deviation of about $500$, which should capture that $800$ in the Weibull. We choose $c=3$ and $d=2$ which has prior mean and standard deviation of $1.5$ and $0.75$, respectively.
+
+\subsection{Posterior distributions}
+
+\begin{eqnarray*}
+\mathrm{E}(\alpha, \beta|\m{y}) &=& (893.9,~1.578) \\
+\mathrm{Var}(\alpha, \beta|\m{y}) &=& \left(\begin{array}{rr} 282800.0000 & 51.6600 \\ 51.6600 & 0.0134 \\ \end{array}\right) \\
+\end{eqnarray*}
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.50]{figs/gibb_joint.pdf}
-    \caption*{}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.50]{figs/gibb_marginal.pdf}
-    \caption*{}
 \end{figure}
+
+\begin{center}
+\begin{tabular}{l|rr}
+\multicolumn{3}{c}{97\% HPD Intervals} \\
+Param & \multicolumn{1}{l}{Lower} & \multicolumn{1}{l}{Upper} \\ \hline
+$\alpha$  & 227.00 & 2152.00 \\
+$\beta$   & 1.34 & 1.83 \\
+\end{tabular}
+\end{center}
+
+\subsection{Posterior predictive distribution}
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.50]{figs/gibb_pred.pdf}
-    \caption*{}
 \end{figure}
+
+\noindent The probability of a ball being superior is $0.127$. That is, $Pr(Y_{n+1} > 120|\m{y}) \approx 0.127$.
+
+\subsection{MCMC settings}
+
+\begin{center}
+\begin{tabular}{ll}
+\multicolumn{2}{c}{Metropolis Settings} \\ \hline \smallskip
+nburn            & 20000 \\ \smallskip
+nmcmc            & 100000 \\ \smallskip
+$p(x, y)$ & $y\sim\mathcal{N}(x, \sigma_\mathrm{cand}^2)$ \\ \smallskip
+$\sigma_{\mathrm{cand}} $ & 0.218 \\ \smallskip
+acceptance rate  & 0.253 \\
+\end{tabular}
+\end{center}
 
 \end{document}
