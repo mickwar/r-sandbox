@@ -200,7 +200,7 @@ calc.post = function(params){
 
 # some plots (get an idea for the prior specification)
 hist(dat, col='gray', freq=FALSE)
-curve(exp(dweib(x, 850, 1.60)), from = 10, to = 200, add = TRUE, lwd=2)
+curve(exp(dweib(x, 800, 1.50)), from = 10, to = 200, add = TRUE, lwd=2)
 abline(v=c(10, 50, 70), lty=c(2,1,1), lwd=2)
 
 # mean of inverse gamma to be around 800
@@ -211,8 +211,8 @@ b.ig/(a.ig-1)
 sqrt(b.ig^2/((a.ig-1)^2*(a.ig-2)))
 plot(density(1/rgamma(10000, a.ig, b.ig)), type='l')
 
-# mean of gamma to be around 2 (+/- 1)
-a.ga = 4.0
+# mean of gamma to be around 1.5 (+/- 1)
+a.ga = 3.0
 b.ga = 2.0
 a.ga/b.ga
 a.ga/b.ga^2
@@ -271,9 +271,11 @@ points(density(rgamma(10000, a.ga, b.ga)), type='l',
     col='red', lwd=2)
 legend("topright", legend = c("Prior", "Posterior"), col = c("red", "black"),
     lwd = c(2, 4), box.lty = 0, cex = 1.5)
+title("Marginals", outer = TRUE, line = -2, cex.main = 1.5)
 dev.off()
 
 apply(params, 2, mean)
+var(params)
 apply(params, 2, quantile, c(0.025, 0.5, 0.975))
 
 plot(params, pch=20)
@@ -320,4 +322,4 @@ mean(preds > 120)
 nburn
 nmcmc
 sig
-
+mean(accept)
