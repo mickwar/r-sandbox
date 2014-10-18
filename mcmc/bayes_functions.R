@@ -66,7 +66,7 @@ bound = function(x, dens, return.x=TRUE){
 # color.den()
 # (by Arthur Lui, editted by Mickey)
 # Colors area under a density within an interval
-# den has to be a density object
+# dens has to be a density object
 # (note: there seems to be an issue with values to close
 #        together, not sure exactly, but had errors)
 color.den = function(dens, from, to, col1 = 1, col2 = NULL){
