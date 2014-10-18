@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
 
+\usepackage{listings}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{amsmath}
@@ -10,6 +11,7 @@
 
 \newcommand{\m}[1]{\mathbf{\bm{#1}}}
 \newcommand{\R}{I\hspace{-4.4pt}R}
+
 
 \begin{document}
 
@@ -168,5 +170,12 @@ $\sigma_{\mathrm{cand}} $ & 0.218 \\ \smallskip
 acceptance rate  & 0.253 \\
 \end{tabular}
 \end{center}
+
+\newpage
+\section{R Code}
+\begin{tiny}
+\lstset{stepnumber=1, numbers=left}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single, language=R]{code.R}
+\end{tiny}
 
 \end{document}
