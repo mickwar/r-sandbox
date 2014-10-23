@@ -2099,7 +2099,7 @@ draws = mvrnorm(50, post.mu, post.sig)
 # transparent. the bg option in pdf changes the plotting region and the margins. i
 # change everything to gray86 and then use polygon to make the plotting region white
 # instead of gray86
-pdf ("~/files/R/figs/gp_data.pdf", bg = "gray86", width = 9, height = 9)
+pdf("~/files/R/figs/gp_data.pdf", bg = "gray86", width = 9, height = 9)
 par(mar=c(5.1, 4.6, 4.1, 2.1))
 plot(0, type='n',xlim=c(0,1), ylim=c(0, 1), xlab = "x", ylab = "y",
     cex.lab = 2.0, main = "GP conditioned on noise free observations", cex.main = 2)
