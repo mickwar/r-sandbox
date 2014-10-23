@@ -136,7 +136,10 @@ for (i in 2:(nmcmc+nburn)){
 params = params[(nburn+1):(nburn+nmcmc)]
 accept = accept[(nburn+1):(nburn+nmcmc)]
 
-plot(params, type='l')
+pdf("./figs/mh_trace.pdf")
+plot(params, type='l', ylab="x", cex.lab = 1.5, main = "Trace Plot", cex.main = 1.5)
+dev.off()
+
 mean(accept)
 sig
 
