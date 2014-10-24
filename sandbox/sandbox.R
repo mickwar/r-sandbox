@@ -2149,3 +2149,53 @@ points(density(x.draws, from=min(x.draws), to=max(x.draws)),
 points(x.seq, k(x.seq, x.draws), type='l', col='blue')
 
 ##########
+
+##########
+# visualing importance sampling
+g = function(x)
+    (3*exp(-0.5*(x-2)^2) + 2*exp(-1/64*(x-8)^2)) / 40
+I = function(x)
+    dt((x-5)/4, 2)/4
+
+xx = seq(-4, 22, length=100)
+w = g(xx)/I(xx) 
+
+par(mfrow=c(2,1), mar=c(3,3,1,1))
+plot(xx, g(xx), type='l')
+points(xx, I(xx), type='l', col='red')
+abline(v=(-5:25), col='gray', lty=2)
+abline(v=seq(-5, 25, by=5), col='gray30', lty=2)
+legend("topright", box.lty=0, legend=c("Unnormalized target density", "Importance function"),
+    col=c("black","red"), lty=1, lwd=2, bg="white"); box()
+
+plot(xx, w, type='l', col='blue'); abline(h=1)
+abline(v=(-5:25), col='gray', lty=2)
+abline(v=seq(-5, 25, by=5), col='gray30', lty=2)
+legend("topright", box.lty=0, legend="g(x) / I(x)", col="blue", lty=1, lwd=2, bg="white"); box()
+# Around x=5 we see a valley (below y=1), this means we are going to be getting
+# more draws than we should be in that region, so we need to downweight
+# those draws. Around x=15 (above y=1), we are getting less draws than we should,
+# so upweight those draws. This is akin to the probabilities when using
+# bootstrap importance. In the valleys we have low probability of keeping that
+# draw in the bootstrap because we will have more than enough draws in that
+# region because of the importance function.
+
+# bootstrapping
+n = 10000   # don't do too many
+theta = 4*rt(n, 2) + 5
+
+g.t = g(theta)
+i.t = I(theta)
+w.t = (g.t / i.t) / sum(g.t / i.t)
+
+par(mfrow=c(1,1), mar=c(5.1,4.1,2.1,2.1))
+plot(theta, w.t, pch=20, xlim=range(xx))
+
+par(mfrow=c(2,1), mar=c(3,3,1,1))
+plot(density(w.t))
+draws = sample(theta, replace = TRUE, prob = w.t)
+plot(density(draws), col='red')
+points(xx, g(xx), type='l')
+
+##########
+
