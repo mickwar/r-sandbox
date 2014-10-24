@@ -318,6 +318,24 @@ dev.off()
 (hpd.alpha = hpd.uni(params[,1], prob = 0.97))
 (hpd.beta = hpd.uni(params[,2], prob = 0.97))
 
+# joint 97% hpd
+plot(params, pch=20, cex=0.5)
+# evaluate the joint posterior density for each draws
+z = apply(params, 1, calc.post)
+h.ind = which(z > quantile(z, 1.00 - 0.97))
+p2 = params[h.ind,]
+points(p2, pch=20, cex=0.5, col='yellow')
+# marginals (notice that using the joint results in a bigger interval)
+c(hpd.alpha, diff(hpd.alpha))
+c(range(p2[,1]), diff(range(p2[,1])))
+c(hpd.beta, diff(hpd.beta))
+c(range(p2[,2]), diff(range(p2[,2])))
+# how to get marginal hpds using this density method? just use density function?
+# use the full conditional for each parameter? i would think either should
+# give about the same answer, but using the density function is less accurate,
+# but the full conditional might be harder to get?
+
+
 # probability of a superior ball bearing
 mean(preds > 120)
 
