@@ -2199,3 +2199,42 @@ points(xx, g(xx), type='l')
 
 ##########
 
+##########
+# drawing from a Dirichlet distribution
+
+# n is a scalar, alpha is a vector
+rdirichlet = function(n, alpha){
+    k = length(alpha)
+
+    # get all the chisq draws
+    x = matrix(rchisq(n*k, 2*alpha), n, k, byrow=TRUE)
+
+    # alternate form (the scale parameter doesn't matter, each
+    # draw just needs to have the same scale)
+    # x = matrix(rgamma(n*k, alpha, 1), n, k, byrow=TRUE)
+
+    # normalize
+    x / apply(x, 1, sum)
+    }
+
+alpha = c(1.5, 2.8, 7.6, 0.18)
+a0 = sum(alpha)
+x = rdirichlet(10000, alpha)
+
+# marginals (each is a beta)
+for (i in 1:length(alpha)){
+    plot(density(x[,i]))
+    curve(dbeta(x, alpha[i], a0 - alpha[i]), add=TRUE, col='red')
+    if (i < length(alpha))
+        readline()
+    }
+
+# dots and plots!
+plot(x[,c(1,2)], pch=20, cex = 0.1, col = 'black', xlim=c(0,1),
+    ylim=c(0,1))
+points(x[,c(1,3)], pch=20, cex = 0.1, col = 'blue')
+points(x[,c(1,4)], pch=20, cex = 0.1, col = 'red')
+points(x[,c(2,3)], pch=20, cex = 0.1, col = 'green')
+points(x[,c(2,4)], pch=20, cex = 0.1, col = 'yellow')
+points(x[,c(3,4)], pch=20, cex = 0.1, col = 'orange')
+##########
