@@ -2238,3 +2238,36 @@ points(x[,c(2,3)], pch=20, cex = 0.1, col = 'green')
 points(x[,c(2,4)], pch=20, cex = 0.1, col = 'yellow')
 points(x[,c(3,4)], pch=20, cex = 0.1, col = 'orange')
 ##########
+
+##########
+# random draws from a discrete
+# incomplete
+
+# log of sum identity
+# x is a vector for which we compute log(sum(x))
+lsum = function(x, method = 2){
+    if (method == 0)
+        return (log(sum(x)))
+    if (method == 1)
+        return (log(x[1]) + log(1 + sum(x[2:length(x)] / x[1]))) 
+    if (method == 2)
+        return (log(x[1]) + log(1 + sum(exp(log(x[2:length(x)]) - log(x[1])))))
+    return (0)
+    }
+
+x = dpois(0:50, 10)
+lx = ppois(0:50, 10, log = TRUE)
+y = double(51)
+y[1] = lsum(x[1], 0)
+for (i in 2:51)
+    y[i] = lsum(x[1:i], 2)
+cbind(log(cumsum(x)), y, lx)
+
+# n is number of draws
+# f is the density (assumed to start at 0)
+rdisc = function(n, f, use.log = TRUE){
+    x = log(runif(n))
+    y = cumsum( )
+    }
+
+##########
