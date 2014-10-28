@@ -2271,3 +2271,107 @@ rdisc = function(n, f, use.log = TRUE){
     }
 
 ##########
+
+##########
+# priors that have support outside of the parameters in the likelihood
+# y ~ Gamma(alpha, beta), alpha > 0, beta > 0
+# alpha ~ Normal(0, 1)
+# beta ~ Normal(0, 1)
+
+# new dgamma function to return 0 when given invalid parameter values
+df = function(y, a, b){
+    if (a > 0 && b > 0){
+        return (dgamma(y, shape = a, scale = b))
+    } else {
+        return (0)
+        }
+    }
+autotune = function(accept, target, k){
+    k = c((1-1/k)/(cosh(target)-1), (k-1)/(cosh(target-1)-1))
+    1+sign(accept-target)*(cosh(accept-target)-1)*
+        k[(sign(accept-target)+1)/2+1]
+    }
+calc.post = function(params){
+    a = params[1]
+    b = params[2]
+    # likelihood
+    out = sum(log(df(y, a, b)))
+    # priors
+    out = out + dnorm(a, 0, 1)
+    out = out + dnorm(b, 0, 1)
+    return (out)
+    }
+
+n = 1000
+set.seed(1)
+y = rgamma(n, shape = 0.5, scale = 0.2)
+
+# prior predictive
+m = 10000
+prior = rgamma(m, shape = rnorm(m), scale = rnorm(m))
+prior = prior[!is.na(prior)]
+hist(y, col='gray', freq = FALSE, breaks=50)
+points(density(prior), lwd=3, type='l')
+
+# calc.post(c(0,0))
+# calc.post(c(3,2))
+
+# metropolis settings
+nburn = 5000
+nmcmc = 10000
+window = 500
+
+params = matrix(0, nburn+nmcmc, 2)
+accept = matrix(0, nburn+nmcmc, 2)
+sig = c(1, 1)
+
+params[1,] = c(1,1)
+curr.post <- cand.post <- calc.post(params[1,])
+
+for (iter in 2:(nburn+nmcmc)){
+    params[iter,] = params[iter-1,]
+    cand.vec = params[iter,]
+    for (j in 1:2){
+        cand.vec[j] = rnorm(1, params[iter-1, j], sig[j])
+        cand.post = calc.post(cand.vec)
+        if (log(runif(1)) < cand.post - curr.post){
+            curr.post = cand.post
+            params[iter, j] = cand.vec[j]
+            accept[iter, j] = 1
+        } else {
+            cand.vec[j] = params[iter, j]
+            }
+        if (floor(iter/window) == iter/window && iter <= nburn)
+            sig[j] = sig[j] * autotune(mean(accept[(iter-window+1):iter,j]), 0.25, k = window/50)
+        }
+    }
+
+# remove the burn-in
+params = params[(nburn+1):(nburn+nmcmc),]
+accept = accept[(nburn+1):(nburn+nmcmc),]
+
+# some diagnostics
+rbind("sig"=sig, "accept"=apply(accept, 2, mean))
+apply(params, 2, range)
+
+# trace plots with mean (solid) and 2.5% and 97.5% quantiles (dotted)
+plot(params[,1], type='l')
+abline(h=mean(params[,1]))
+abline(h=quantile(params[,1], c(0.025, 0.975)), lty=2)
+
+plot(params[,2], type='l')
+abline(h=mean(params[,2]))
+abline(h=quantile(params[,2], c(0.025, 0.975)), lty=2)
+
+# bivariate
+plot(params, pch=20)
+
+# posterior predictive
+preds = double(nmcmc)
+for (i in 1:nmcmc)
+    preds[i] = rgamma(1, shape = params[i, 1], scale = params[i, 2])
+
+hist(y, col='gray', freq = FALSE, breaks=50)
+points(density(y), col='blue', lty=2, type='l', lwd=3)
+points(density(preds), type='l', lwd=3)
+##########
