@@ -2375,3 +2375,34 @@ hist(y, col='gray', freq = FALSE, breaks=50)
 points(density(y), col='blue', lty=2, type='l', lwd=3)
 points(density(preds), type='l', lwd=3)
 ##########
+
+##########
+# entropy
+# normal dist
+mu = 5
+sig = 7.2
+x = rnorm(100000, mu, sig)
+mean(-log(dnorm(x, mu, sig))) # sample entropy
+0.5*log(2*pi*exp(1)*sig^2) # theoretical
+
+# cauchy
+loc = 3
+sca = 2.7
+x = rcauchy(100000, loc, sca)
+mean(-log(dcauchy(x, loc, sca))) # sample entropy
+log(sca) + log(4*pi) # theoretical
+
+# beta
+a = 0.5
+b = 1.2
+x = rbeta(100000, a, b)
+mean(-log(dbeta(x, a, b)))
+lbeta(a, b) - (a-1)*digamma(a) -(b-1)*digamma(b) +
+    (a+b-2)*digamma(a+b)
+
+# uniform
+a = -2
+b = 7
+x = runif(100000, a, b)
+mean(-log(dunif(x, a, b)))
+##########
