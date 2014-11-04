@@ -1875,7 +1875,7 @@ xx = seq(-5, 5, length=100000)
 
 plot(xx, f(xx), type='l')
 
-yy = floor(f(xx) / min(dnorm(xx)))
+yy = f(xx)
 new.x = sample(xx, 100000, replace = TRUE, prob = yy/sum(yy))
 new.y = rnorm(100000)
 
@@ -1891,13 +1891,11 @@ xx = seq(0, 2*pi, length=100000)
 
 plot(xx, f(xx), type='l')
 
-yy = floor(f(xx) / min(dnorm(xx)))
+yy = f(xx)
 new.x = sample(xx, 100000, replace = TRUE, prob = yy/sum(yy))
-#new.y = rnorm(100000)
 
 hist(new.x, freq=FALSE, breaks=100, col='gray')
 curve(f(x), add=TRUE, col='red', lwd=2)
-#points(density(new.y), col='blue', type='l', lwd=2)
 points(density(new.x), col='green', type='l', lwd=2)
 ##########
 
@@ -2396,13 +2394,17 @@ log(sca) + log(4*pi) # theoretical
 a = 0.5
 b = 1.2
 x = rbeta(100000, a, b)
-mean(-log(dbeta(x, a, b)))
+mean(-log(dbeta(x, a, b))) # sample
 lbeta(a, b) - (a-1)*digamma(a) -(b-1)*digamma(b) +
-    (a+b-2)*digamma(a+b)
+    (a+b-2)*digamma(a+b) # theoretical
 
 # uniform
 a = -2
 b = 7
 x = runif(100000, a, b)
-mean(-log(dunif(x, a, b)))
+mean(-log(dunif(x, a, b))) # sample
+# the uniform entropy is constant for all x and
+# is equal to -log(1/(b-a))
+# Unif(0,1) is the only continuous probability
+# distribution with entropy 0. (i think anyway)
 ##########
