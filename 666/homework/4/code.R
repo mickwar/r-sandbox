@@ -121,3 +121,104 @@ Rb = solve(Rxx) %*% Rxy %*% solve(Ryy) %*% t(Rxy)
 
 eigen(Ra)$vectors[,1] # y
 as.numeric(eigen(Rb)$vectors[,1]) # x
+
+# backward selection that stuff
+lower.mod = lm(Y[,1] ~ 1, data = data.frame(X))
+upper.mod = lm(Y[,1] ~ ., data = data.frame(X))
+mod = step(lower.mod, scope = list(lower=lower.mod, upper=upper.mod),
+    k = log(n), direction = "both", data = data.frame(X))
+
+
+extractAIC(mod, k = log(n))
+
+# step function to work for mlm models, beginning with
+# only the intercept, ending with all column given in X
+mw.step = function(start.index, y, x, method = "both",
+    FUN = lm, k = 2, max.step = 1000, output = TRUE){
+    if (missing(start.index))
+        start.index = 1
+    x = as.matrix(x)
+    if (!all(x[,1] == 1))
+        x = cbind(1, x)
+    y = as.matrix(y)
+    n = nrow(x)
+    q = ncol(x)
+    p = ncol(y)
+
+    var.in = start.index
+    var.out = (1:q)[-var.in]
+
+    mod = FUN(y ~ 0 + x[,var.in])
+    aic = extractAIC(mod, k = k)[2L]
+    test.aic = rep(Inf, q)
+    if (output)
+        cat("\n    Starting AIC:", aic, "\n")
+
+    count = 0
+    while (count < max.step){
+        flag = 0
+        count = count + 1
+        if (output)
+            cat("\n    Iteration:", count, "\n")
+        # for forward selection
+        if (method == "forward" || method == "both"){
+            for (check in var.out){
+                test.aic[check] = extractAIC(FUN(y ~ 0 + x[,c(var.in, check)]))[2L]
+                }
+            if (min(test.aic) < aic){
+                var.out = var.out[-which(var.out == which.min(test.aic))]
+                var.in = c(var.in, which.min(test.aic))
+                aic = min(test.aic)
+                if (output){
+                    cat("        AIC:", aic, "\n")
+                    cat("        Add variable:", which.min(test.aic), "\n")
+                    }
+            } else {
+                flag = flag + 1
+                if (output){
+                    cat("        AIC:", aic, "\n")
+                    cat("        No variable added\n")
+                    }
+                }
+            test.aic = rep(Inf, q)
+            }
+        # backward selection
+        if (method == "backward" || method == "both"){
+            temp.in = var.in
+            if (method == "both")   # don't check the most recently added variable
+                temp.in = temp.in[-length(temp.in)]
+            for (check in temp.in){
+                test.aic[check] = extractAIC(FUN(y ~ 0 + x[,var.in[-which(check == temp.in)]]))[2L]
+                }
+            if (min(test.aic) < aic){
+                var.in = var.in[-which(var.in == which.min(test.aic))]
+                var.out = c(var.out, which.min(test.aic))
+                aic = min(test.aic)
+                if (output){
+                    cat("        AIC:", aic, "\n")
+                    cat("        Remove variable:", which.min(test.aic), "\n")
+                    }
+            } else {
+                flag = flag + 1
+                if (output){
+                    cat("        AIC:", aic, "\n")
+                    cat("        No variable removed\n")
+                    }
+                }
+            }
+        if ((method == "forward" || method == "backward") && flag == 1)
+            count = max.step
+        if (method == "both" && flag == 2)
+            count = max.step
+        }
+    var.in
+#    FUN(y ~ 0 + x[,var.in])
+    }
+
+out1 = mw.step(1:q, Y, X, k = log(n), method = "backward")
+out2 = mw.step(sample(q, sample(q, 1)), Y, X, k = log(n))
+
+sort(out1)
+sort(out2)
+
+
