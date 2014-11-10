@@ -2408,3 +2408,37 @@ mean(-log(dunif(x, a, b))) # sample
 # Unif(0,1) is the only continuous probability
 # distribution with entropy 0. (i think anyway)
 ##########
+
+##########
+# time difference between runif and rnorm
+
+# initialize
+system.time(runif(1))
+system.time(rnorm(1))
+
+m = 10
+nmcmc = 20000
+nparams = floor(seq(1, 1000, length = m))
+niter = nmcmc*nparams
+tunif = double(m)
+tnorm = double(m)
+
+# n is for number of repititions to be averaged over
+n = 10
+
+for (i in 1:m){
+    cat(nparams[i], "/", max(nparams), "\n")
+    for (j in 1:n){
+        tunif[i] = tunif[i] + system.time(runif(niter[i]))[3]/n
+        tnorm[i] = tnorm[i] + system.time(rnorm(niter[i]))[3]/n
+        }
+    }
+
+
+plot(nparams, tunif, type='l')
+points(nparams, tnorm, type='l', col='red')
+plot(nparams, tnorm, type='l')
+points(nparams, tunif, type='l', col='red')
+
+plot(tnorm/tunif, type='l')
+##########
