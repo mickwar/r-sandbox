@@ -1,3 +1,32 @@
+mw.pairs = function(x){
+    require(MASS)
+    require(fields)
+    par(mfrow=rep(ncol(x), 2), mar=rep(0, 4))
+    for (i in 1:ncol(x)){
+        for (j in 1:ncol(x)){
+            if (i == j){
+                #hist(x[,i], axes = FALSE, main = "", col = "gray")
+                plot(density(x[,i]), axes = FALSE, main = "")
+#               legend("topright", legend = i, box.lty = 0, cex = 1.5)
+            } else {
+                if (i > j){
+                    z = kde2d(x[,j], x[,i])
+                    plot(NA, xlim = range(z$x), ylim = range(z$y), axes = FALSE)
+#                   .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
+#                       col=gray(seq(0.0, 1.0, length=20)))
+                    .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
+                        col = tim.colors(20))
+#                   .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
+#                       col=two.colors(20, start="dodgerblue"))
+                } else {
+                    plot(x[,j], x[,i], type = 'l', axes = FALSE)
+                    }
+                }
+            box()
+            }
+        }
+    }
+
 y = scan("~/files/R/651/data/faculty.dat")
 
 k = length(y)
@@ -44,7 +73,7 @@ for (i in 2:(nburn+nmcmc)){
         (p.tau2[i-1] + p.sig2[i-1])))
 
     # update mu
-    p.mu[i] = rnorm(1, (mean(p.theta[i,])*k*s2 + 1*p.tau2[i-1]) /
+    p.mu[i] = rnorm(1, (mean(p.theta[i,])*k*s2 + m*p.tau2[i-1]) /
         (k*s2+p.tau2[i-1]), sqrt(s2*p.tau2[i-1] / (k*s2+p.tau2[i-1])))
 
     # update sigma^2
@@ -64,9 +93,13 @@ plot(p.mu, type='l')
 plot(p.sig2, type='l')
 plot(p.tau2, type='l')
 
+mw.pairs(cbind(p.mu, p.sig2, p.tau2))
+mw.pairs(p.theta[,1:5])
+
 rr = cor(cbind(p.theta, p.mu, p.sig2, p.tau2))
 
-filled.contour(1:26, 1:26, rr, zlim = c(-1, 1))
+library(fields)
+image.plot(abs(rr))
 
 preds = double(nburn + nmcmc)
 for (i in 1:(nburn+nmcmc)){
@@ -74,8 +107,8 @@ for (i in 1:(nburn+nmcmc)){
     preds[i] = rnorm(1, temp.theta, sqrt(p.sig2[i]))
     }
 
-plot(density(y), col='red', type='l')
-hist(y, col='gray', freq=FALSE, add=TRUE, breaks=6)
+hist(y, col='gray', freq=FALSE, breaks=6, ylim=c(0, 0.8), xlim=c(3.5,7.5))
+points(density(y), col='red', type='l', lwd=3)
 points(density(preds), col='black', type='l', lwd=3)
 plot(density(preds), col='red', type='l')
 
