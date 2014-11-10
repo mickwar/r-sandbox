@@ -17,12 +17,12 @@ m = 6       # prior mean
 s2 = 0.5^2  # prior variance on the prior mean
 
 # for sigma^2
-a = 1
-b = 1
+a = 3
+b = 2
 
 # for tau^2
-c = 1
-d = 1
+c = 3
+d = 2
 
 nburn = 1000
 nmcmc = 10000
@@ -44,7 +44,7 @@ for (i in 2:(nburn+nmcmc)){
         (p.tau2[i-1] + p.sig2[i-1])))
 
     # update mu
-    p.mu[i] = rnorm(1, (mean(p.theta[i,])*k*s2 + n*p.tau2[i-1]) /
+    p.mu[i] = rnorm(1, (mean(p.theta[i,])*k*s2 + 1*p.tau2[i-1]) /
         (k*s2+p.tau2[i-1]), sqrt(s2*p.tau2[i-1] / (k*s2+p.tau2[i-1])))
 
     # update sigma^2
@@ -63,20 +63,20 @@ for (i in 1:k)
 plot(p.mu, type='l')
 plot(p.sig2, type='l')
 plot(p.tau2, type='l')
-points(p.sig2, type='l', col='red')
-points(p.tau2, type='l', col='red')
 
-vv = var(cbind(p.theta, p.mu, p.sig2, p.tau2))
 rr = cor(cbind(p.theta, p.mu, p.sig2, p.tau2))
 
-filled.contour(1:26, 1:26, sign(vv)*log(1+abs(vv)))
-filled.contour(1:26, 1:26, rr)
+filled.contour(1:26, 1:26, rr, zlim = c(-1, 1))
 
 preds = double(nburn + nmcmc)
 for (i in 1:(nburn+nmcmc)){
-    preds[i] = rnorm(1, p.mu[i], sqrt(p.sig2[i]))
+    temp.theta = rnorm(1, p.mu[i], sqrt(p.tau2[i]))
+    preds[i] = rnorm(1, temp.theta, sqrt(p.sig2[i]))
     }
 
-hist(y, col='gray', freq=FALSE)
-points(density(preds), col='red', type='l')
+plot(density(y), col='red', type='l')
+hist(y, col='gray', freq=FALSE, add=TRUE, breaks=6)
+points(density(preds), col='black', type='l', lwd=3)
 plot(density(preds), col='red', type='l')
+
+
