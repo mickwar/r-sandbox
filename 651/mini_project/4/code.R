@@ -53,8 +53,19 @@ b = 2
 c = 3
 d = 2
 
-nburn = 1000
-nmcmc = 10000
+m = 5.5     # prior mean
+s2 = 0.5^2  # prior variance on the prior mean
+
+# for sigma^2
+a = 3
+b = 1/0.5
+
+# for tau^2
+c = 3
+d = 1/0.25
+
+nburn = 0000
+nmcmc = 1000000
 p.theta = matrix(0, nburn + nmcmc, k)
 p.mu = double(nburn + nmcmc)
 p.sig2 = double(nburn + nmcmc)
@@ -86,20 +97,20 @@ for (i in 2:(nburn+nmcmc)){
     }
 
 
-for (i in 1:k)
-    plot(p.theta[,i], type='l')
-
-plot(p.mu, type='l')
-plot(p.sig2, type='l')
-plot(p.tau2, type='l')
-
-mw.pairs(cbind(p.mu, p.sig2, p.tau2))
-mw.pairs(p.theta[,1:5])
-
-rr = cor(cbind(p.theta, p.mu, p.sig2, p.tau2))
-
-library(fields)
-image.plot(abs(rr))
+# for (i in 1:k)
+#     plot(p.theta[,i], type='l')
+# 
+# plot(p.mu, type='l')
+# plot(p.sig2, type='l')
+# plot(p.tau2, type='l')
+# 
+# mw.pairs(cbind(p.mu, p.sig2, p.tau2))
+# mw.pairs(p.theta[,1:5])
+# 
+# rr = cor(cbind(p.theta, p.mu, p.sig2, p.tau2))
+# 
+# library(fields)
+# image.plot(abs(rr))
 
 preds = double(nburn + nmcmc)
 for (i in 1:(nburn+nmcmc)){
@@ -110,6 +121,14 @@ for (i in 1:(nburn+nmcmc)){
 hist(y, col='gray', freq=FALSE, breaks=6, ylim=c(0, 0.8), xlim=c(3.5,7.5))
 points(density(y), col='red', type='l', lwd=3)
 points(density(preds), col='black', type='l', lwd=3)
-plot(density(preds), col='red', type='l')
+
+
+mean(preds)
+var(preds)
+quantile(preds)
+mean(preds > 5)
+
+
+#plot(density(preds), col='red', type='l')
 
 
