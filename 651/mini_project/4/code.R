@@ -135,5 +135,3 @@ for (i in 1:length(boot)){
 mean(boot)
 
 #plot(density(preds), col='red', type='l')
-
-
