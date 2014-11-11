@@ -33,6 +33,9 @@ k = length(y)
 n = k
 ybar = mean(y)
 
+igpdf=function(x, a, b)
+	(b^a)/gamma(a)*x^(-a-1)*exp(-b/x)
+
 # The model:
 # Y_i ~ N(theta_i, sigma^2)
 # theta_i ~ N(mu, tau^2)
@@ -43,29 +46,24 @@ ybar = mean(y)
 # priors
 # for mu
 m = 6       # prior mean
-s2 = 0.5^2  # prior variance on the prior mean
+s2 = 0.25^2  # prior variance on the prior mean
 
-# for sigma^2
-a = 3
-b = 2
+# for sigma^2 ("within" faculty variance)
+a = 4
+b = 1.5
+b/(a-1)
+b^2/((a-1)^2*(a-2))
+plot(density(sqrt(1/rgamma(10000, a, scale = b))), xlim=c(0, 2))
 
-# for tau^2
+# for tau^2 ("between" faculty variance)
 c = 3
 d = 2
+d/(c-1)
+d^2/((c-1)^2*(c-2))
+plot(density(sqrt(1/rgamma(10000, c, scale = d))), xlim=c(0, 2))
 
-m = 5.5     # prior mean
-s2 = 0.5^2  # prior variance on the prior mean
-
-# for sigma^2
-a = 3
-b = 1/0.5
-
-# for tau^2
-c = 3
-d = 1/0.25
-
-nburn = 0000
-nmcmc = 1000000
+nburn = 1000
+nmcmc = 100000
 p.theta = matrix(0, nburn + nmcmc, k)
 p.mu = double(nburn + nmcmc)
 p.sig2 = double(nburn + nmcmc)
@@ -96,6 +94,10 @@ for (i in 2:(nburn+nmcmc)){
         sum((p.theta[i,] - p.mu[i])^2)))
     }
 
+p.theta = p.theta[(nburn+1):(nburn+nmcmc),]
+p.mu = p.mu[(nburn+1):(nburn+nmcmc)]
+p.sig2 = p.sig2[(nburn+1):(nburn+nmcmc)]
+p.tau2 = p.tau2[(nburn+1):(nburn+nmcmc)]
 
 # for (i in 1:k)
 #     plot(p.theta[,i], type='l')
@@ -106,17 +108,13 @@ for (i in 2:(nburn+nmcmc)){
 # 
 # mw.pairs(cbind(p.mu, p.sig2, p.tau2))
 # mw.pairs(p.theta[,1:5])
-# 
-# rr = cor(cbind(p.theta, p.mu, p.sig2, p.tau2))
-# 
-# library(fields)
-# image.plot(abs(rr))
 
-preds = double(nburn + nmcmc)
-for (i in 1:(nburn+nmcmc)){
-    temp.theta = rnorm(1, p.mu[i], sqrt(p.tau2[i]))
-    preds[i] = rnorm(1, temp.theta, sqrt(p.sig2[i]))
-    }
+rr = cor(cbind(p.theta, p.mu, p.sig2, p.tau2))
+
+library(fields)
+image.plot(abs(rr))
+
+preds = rnorm(nmcmc, rnorm(nmcmc, p.mu, sqrt(p.tau2)), sqrt(p.sig2))
 
 hist(y, col='gray', freq=FALSE, breaks=6, ylim=c(0, 0.8), xlim=c(3.5,7.5))
 points(density(y), col='red', type='l', lwd=3)
@@ -127,7 +125,14 @@ mean(preds)
 var(preds)
 quantile(preds)
 mean(preds > 5)
+mean(preds > 7)
 
+boot = double(100)
+for (i in 1:length(boot)){
+    preds = rnorm(nmcmc, rnorm(nmcmc, p.mu, sqrt(p.tau2)), sqrt(p.sig2))
+    boot[i] = mean(preds > 7)
+    }
+mean(boot)
 
 #plot(density(preds), col='red', type='l')
 
