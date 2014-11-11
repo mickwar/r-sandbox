@@ -2442,3 +2442,25 @@ points(nparams, tunif, type='l', col='red')
 
 plot(tnorm/tunif, type='l')
 ##########
+
+##########
+# removing a variable is supposed to reduce variation in the betas?
+n = 200
+p = 1
+q = 11
+
+x = matrix(rnorm(n*q), n, q)
+x2 = x[,-1]
+y = matrix(rnorm(n*p), n, p)
+
+B = solve(t(x) %*% x) %*% t(x) %*% y
+s2 = as.vector(1/(n - q) * t(y - x %*% B) %*% (y - x %*% B))
+zz1 = diag(s2*solve(t(x) %*% x))
+
+q = 10
+B = solve(t(x2) %*% x2) %*% t(x2) %*% y
+s2 = as.vector(1/(n - q) * t(y - x2 %*% B) %*% (y - x2 %*% B))
+zz2 = c(Inf, diag(s2*solve(t(x2) %*% x2)))
+
+cbind(zz1, zz2, zz1 < zz2)
+##########
