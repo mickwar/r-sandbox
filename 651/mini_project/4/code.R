@@ -1,30 +1,44 @@
-mw.pairs = function(x){
-    require(MASS)
-    require(fields)
-    par(mfrow=rep(ncol(x), 2), mar=rep(0, 4))
-    for (i in 1:ncol(x)){
-        for (j in 1:ncol(x)){
-            if (i == j){
-                #hist(x[,i], axes = FALSE, main = "", col = "gray")
-                plot(density(x[,i]), axes = FALSE, main = "")
-#               legend("topright", legend = i, box.lty = 0, cex = 1.5)
-            } else {
-                if (i > j){
-                    z = kde2d(x[,j], x[,i])
-                    plot(NA, xlim = range(z$x), ylim = range(z$y), axes = FALSE)
-#                   .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
-#                       col=gray(seq(0.0, 1.0, length=20)))
-                    .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
-                        col = tim.colors(20))
-#                   .filled.contour(x=z$x, y=z$y, z=z$z, levels=seq(min(z$z), max(z$z), length=20),
-#                       col=two.colors(20, start="dodgerblue"))
-                } else {
-                    plot(x[,j], x[,i], type = 'l', axes = FALSE)
-                    }
-                }
-            box()
-            }
-        }
+# functions
+hpd.uni = function(x, prob = 0.95, precision = 1000){
+    range = seq(0, 1-prob, length=precision)
+    range = cbind(range, range+prob)
+    best = range[which.min(apply(range, 1, function(y)
+        diff(quantile(x, y)))),]
+    return (quantile(x, best))
+    }
+color.den = function(dens, from, to, col.inside = 1, col.border = NULL){
+    if (is.null(col.border))
+        col.border = col.inside
+    index = which(dens$x > from & dens$x < to)
+    polygon(c(dens$x[index][1], dens$x[index],
+        dens$x[index][length(index)]), c(0, dens$y[index], 0),
+        col=col.inside, border=col.border)
+    }
+col.mult = function(col1 = 0x000000, col2 = "black"){
+    if (is.character(col1))
+        val1 = t(col2rgb(col1) / 255)
+    if (is.numeric(col1))
+        val1 = t(int2rgb(col1) / 255)
+    if (is.character(col2))
+        val2 = t(col2rgb(col2) / 255)
+    if (is.numeric(col2))
+        val2 = t(int2rgb(col2) / 255)
+    rgb(val1 * val2)
+    }
+int2rgb = function(x){
+    hex = as.character(as.hexmode(x))
+    hex = paste0("#", paste0(rep("0", 6-nchar(hex)), collapse=""), hex)
+    col2rgb(hex)
+    }
+hpd.plot = function(dens, hpd, col1, col2 = NULL, multiply = TRUE, border = "black", ...){
+    if (is.null(col2))
+        col2 = "gray50"
+    if (multiply)
+        col2 = col.mult(col1, col2)
+    plot(dens, type='n', ...)
+    polygon(dens, col=col1)
+    color.den(dens, hpd[1], hpd[2], col2)
+    lines(dens, col = border)
     }
 
 y = scan("~/files/R/651/data/faculty.dat")
@@ -48,21 +62,23 @@ igpdf=function(x, a, b)
 m = 6       # prior mean
 s2 = 0.25^2  # prior variance on the prior mean
 
-# for sigma^2 ("within" faculty variance)
-a = 4
-b = 1.5
-b/(a-1)
-b^2/((a-1)^2*(a-2))
-plot(density(sqrt(1/rgamma(10000, a, scale = b))), xlim=c(0, 2))
-
 # for tau^2 ("between" faculty variance)
 c = 3
 d = 2
-d/(c-1)
-d^2/((c-1)^2*(c-2))
+d/(c+1) # mode
+d/(c-1) # mean
+d^2/((c-1)^2*(c-2)) # var
 plot(density(sqrt(1/rgamma(10000, c, scale = d))), xlim=c(0, 2))
 
-nburn = 1000
+# for sigma^2 ("within" faculty variance)
+a = 4
+b = 1.5
+b/(a+1) # mode
+b/(a-1) # mean
+b^2/((a-1)^2*(a-2)) # var
+plot(density(sqrt(1/rgamma(10000, a, scale = b))), xlim=c(0, 2))
+
+nburn = 100
 nmcmc = 100000
 p.theta = matrix(0, nburn + nmcmc, k)
 p.mu = double(nburn + nmcmc)
@@ -85,53 +101,102 @@ for (i in 2:(nburn+nmcmc)){
     p.mu[i] = rnorm(1, (mean(p.theta[i,])*k*s2 + m*p.tau2[i-1]) /
         (k*s2+p.tau2[i-1]), sqrt(s2*p.tau2[i-1] / (k*s2+p.tau2[i-1])))
 
-    # update sigma^2
-    p.sig2[i] = 1/rgamma(1, shape = a + n/2, scale = 1/(1/b + 0.5 *
-        sum((y - p.theta[i,])^2)))
-
     # update tau^2
     p.tau2[i] = 1/rgamma(1, shape = c + k/2, scale = 1/(1/d + 0.5 *
         sum((p.theta[i,] - p.mu[i])^2)))
+
+    # update sigma^2
+    p.sig2[i] = 1/rgamma(1, shape = a + n/2, scale = 1/(1/b + 0.5 *
+        sum((y - p.theta[i,])^2)))
     }
 
 p.theta = p.theta[(nburn+1):(nburn+nmcmc),]
 p.mu = p.mu[(nburn+1):(nburn+nmcmc)]
-p.sig2 = p.sig2[(nburn+1):(nburn+nmcmc)]
 p.tau2 = p.tau2[(nburn+1):(nburn+nmcmc)]
+p.sig2 = p.sig2[(nburn+1):(nburn+nmcmc)]
 
-# for (i in 1:k)
-#     plot(p.theta[,i], type='l')
-# 
-# plot(p.mu, type='l')
-# plot(p.sig2, type='l')
-# plot(p.tau2, type='l')
-# 
-# mw.pairs(cbind(p.mu, p.sig2, p.tau2))
-# mw.pairs(p.theta[,1:5])
+# display the parameters
+pdf("figs/post_theta.pdf")
+par(mar = c(5.1, 5.1, 4.1, 2.1))
+boxplot(p.theta, pch=20, cex=0.5, main="", ylab=expression(theta[i]), cex.lab=2,
+    xlab = "i", axes = FALSE, col='dodgerblue')
+box()
+axis(1, at = 1:23, labels = FALSE)
+axis(2)
+mtext(side = 1, line = 1, at = 1:23, text = as.character(1:23))
+dev.off()
 
-rr = cor(cbind(p.theta, p.mu, p.sig2, p.tau2))
+dens.mu = density(p.mu)
+hpd.mu = hpd.uni(p.mu)
 
+dens.tau = density(p.tau2)
+hpd.tau = hpd.uni(p.tau2)
+
+dens.sig = density(p.sig2)
+hpd.sig = hpd.uni(p.sig2)
+
+pdf("figs/post_other.pdf", width=12, height=4)
+par(mfrow=c(1,3))
+hpd.plot(dens.mu, hpd.mu, "dodgerblue", main="", ylab="", xlab=expression(mu), cex.lab=2)
+hpd.plot(dens.tau, hpd.tau, "dodgerblue", main="", ylab="", xlab=expression(tau^2), cex.lab=2)
+hpd.plot(dens.sig, hpd.sig, "dodgerblue", main="", ylab="", xlab=expression(sigma^2), cex.lab=2)
+dev.off()
+
+rr = cor(cbind(p.theta, "mu"=p.mu, "sig^2"=p.sig2, "tau^2"=p.tau2))
 library(fields)
-image.plot(abs(rr))
 
+pdf("figs/post_var.pdf")
+image.plot(rr)
+box()
+dev.off()
+
+library(corrplot)
+pdf("figs/post_var.pdf")
+corrplot(rr, method="color")
+dev.off()
+
+# posterior mean
+c(apply(p.theta, 2, mean), mean(p.mu), mean(p.tau2), mean(p.sig2))
+
+# posterior variance
+apply(cbind(p.theta, p.mu, p.tau2, p.sig2), 2, var)
+
+
+
+# posterior predictive
 preds = rnorm(nmcmc, rnorm(nmcmc, p.mu, sqrt(p.tau2)), sqrt(p.sig2))
 
-hist(y, col='gray', freq=FALSE, breaks=6, ylim=c(0, 0.8), xlim=c(3.5,7.5))
-points(density(y), col='red', type='l', lwd=3)
-points(density(preds), col='black', type='l', lwd=3)
+pdf("figs/pred.pdf")
+hist(y, col='gray', freq=FALSE, breaks=6, ylim=c(0, 0.8), xlim=c(3.8,7.2),
+    main="", ylab="", xlab="Faculty Rating", cex.lab=2)
+points(density(y), col="black", type='l', lwd=3)
+points(density(preds), col="chartreuse4", type='l', lwd=5)
+dev.off()
 
 
 mean(preds)
 var(preds)
 quantile(preds)
 mean(preds > 5)
+
+
+
 mean(preds > 7)
 
 boot = double(100)
+phil.boot = double(100)
 for (i in 1:length(boot)){
     preds = rnorm(nmcmc, rnorm(nmcmc, p.mu, sqrt(p.tau2)), sqrt(p.sig2))
-    boot[i] = mean(preds > 7)
+    phil.pred = rnorm(n*nmcmc, c(p.theta), sqrt(rep(p.sig2, times = n)))
+    boot[i] = mean(preds > 5)
+    phil.boot[i] = mean(phil.pred > 5)
     }
 mean(boot)
+mean(phil.boot)
+plot(density(boot), ylim=c(0, 2500))
+points(density(phil.boot), type='l', col='red')
+
+plot(density(preds))
+points(density(phil.pred), type='l', col='red')
 
 #plot(density(preds), col='red', type='l')

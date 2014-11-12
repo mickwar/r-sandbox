@@ -1,0 +1,150 @@
+\documentclass[12pt]{article}
+
+\usepackage{subfigure}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage[font=footnotesize]{caption}
+\usepackage{subcaption}
+\usepackage[margin=1.00in]{geometry}
+
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\newcommand{\R}{I\hspace{-4.4pt}R}
+
+
+\begin{document}
+
+\noindent Mickey Warner
+
+\noindent Stat 651 -- Mini Project 4
+
+\section{Statistical model}
+
+\noindent For the faculty dataset, $n=23$, we will let each faculty's rating come from it's own normal distribution with common variance. For faculty $i$ with score $y_i$, we let
+\[ y_i \sim N(\theta_i, \sigma^2). \]
+\noindent The likelihood is then a product of normals. Furthermore, we assume the following hierarchical structure:
+\begin{eqnarray*}
+\theta_i|\mu,\tau^2 &\sim& N(\mu, \tau^2),~~~~~\mathrm{for\ }i=1,\ldots,n \\
+\mu &\sim& N(m, s^2) \\
+\tau^2 &\sim& IG(a_\tau, b_\tau) \\
+\sigma^2 &\sim& IG(a_\sigma, b_\sigma) \\
+\end{eqnarray*}
+\noindent This model assumes that each faculty member has his or her own mean. However, each of these means comes from a larger normal distribution centered at $\mu$ with variance $\tau^2$. We assume $\mu$, $\tau^2$, and $\sigma^2$ are all independent of each other, so our joint posterior distribution is
+\[ \pi(\m{\theta}, \mu, \tau^2, \sigma^2|\m{y}) \propto \left[\prod_{i=1}^nf_*(y_i|\theta_i, \sigma^2)\right] \left[\prod_{i=1}^n\pi(\theta_i|\mu,\tau^2)\right]\pi(\mu)\pi(\tau^2)\pi(\sigma^2), \]
+\noindent where $f_*(\theta_i|\mu, \sigma^2)$ denotes the p.d.f. of the normal distribution.
+\bigskip
+
+\noindent These priors give rise to closed-form complete conditional distributions on each parameter. These are given by:
+\begin{eqnarray*}
+\left[\theta_i\right] &\sim& N\left(\frac{y_i\tau^2+\mu\sigma^2}{\tau^2+\sigma^2},\frac{\tau^2\sigma^2}{\tau^2+\sigma^2}\right) \\
+\left[\mu\right] &\sim& N\left(\frac{\overline{\theta}ns^2+m\tau^2}{ns^2+\tau^2},\frac{s^2\tau^2}{ns^2+\tau^2}\right) \\
+\left[\tau^2\right] &\sim& IG\left(a_\tau+\frac{n}{2}, \Big[\frac{1}{b_\tau}+\frac{1}{2}\sum_{i=1}^n(\theta_i-\mu)^2\Big]^{-1}\right) \\
+\left[\sigma^2\right] &\sim& IG\left(a_\sigma+\frac{n}{2}, \Big[\frac{1}{b_\sigma}+\frac{1}{2}\sum_{i=1}^n(y_i-\theta_i)^2\Big]^{-1}\right) \\
+\end{eqnarray*}
+\noindent The notation $[X]$ means the distribution of parameter $X$ given the data $\m{y}$ and all model parameters. The inverse gamma distributions use the scale parametrization (i.e. the second parameter is in the denominator). Note that our choice of likelihood can result in predictions outside the range of possible scores (from 1 to 7), but we will ignore this so we can have computational convenience.
+
+\subsection{Prior specification}
+
+\noindent We believe that faculty should generally receive positive reviews (they probably should not have been hired otherwise). We let $m=6$ and $s^2=0.25^2$ which is to say we believe that the population mean could be anywhere from $5.25$ and $6.75$.
+\bigskip
+
+\noindent We are a little less confident on how the faculty vary from each other, but they difference ought not to be too drastic. We let $a_\tau=3$ and $b_\tau=2$. This gives a mode, mean, and variance of $0.5$, $1$, and $1$, respectively. This is quite non-informative and allows for a wide range of true teacher abilities.
+\bigskip
+
+\noindent The faculty ratings $y_i$ should not be too far from the teacher's true ability $\theta_i$. Thus, we set $a_\sigma=4$ and $b_\sigma=1.5$ which result in a mode, mean, and variance of $0.3$, $0.5$, and $0.125$, respectively. These are fairly small and accurately represent our prior belief.
+
+\section{Gibbs sampling}
+
+\noindent Having known, closed-form complete conditionals (given above) allow us to use Gibbs sampling to obtain draws from the joint posterior distribution. We obtain 100,000 draws (with a burn-in of 100) by iteratively drawing random samples from each conditional given the previous draws of the other parameters.
+
+\section{Posterior analysis and predictions}
+
+\noindent Figure 1 shows box plots of the 100,000 posterior draws of each $\theta_i$, in decreasing order. Figure 2 shows posterior density estimates for $\mu$, $\tau^2$, and $\sigma^2$ with the 95\% highest posterior density regions shaded.
+\bigskip
+
+\noindent The means and variances of each parameter are given in Table 1.
+\bigskip
+
+\noindent In Figure 3 we show a heat map of the correlations. We choose to display correlation over covariance since the heat map would have difficulty in showing the relevant information. The correlation with the highest magnitude is between $\theta_{23}$ (the true ability corresponding to the faculty with the lowest average rating) and $\sigma^2$ at $0.40$. As expected, we see slight correlations between all $\theta_i$'s with $\mu$ and each $\theta_i$ is positively correlated with nearby $\theta$'s but negatively correlated with ones further away.
+\bigskip
+
+\noindent To calculate the posterior predictive distribution we generate $\theta_*$ using our posterior draws for $\mu$ and $\tau^2$. Then we use these $\theta_*$ and $\sigma^2$ to generate future teacher ratings. The predictive distribution is given in Figure 4.
+\bigskip
+
+\noindent We calculate $Pr(y > 5) \approx 0.924$, which is the probability of scoring a 5 or better on the next evaluation for a randomly selected professor. This is so since we are first drawing a random faculty's ability from the overall population and then generating a random score from that ability.
+
+\newpage
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.38]{figs/post_theta.pdf}
+\caption{Box plots of each posterior distribution for $\theta_i$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.43]{figs/post_other.pdf}
+\caption{Posterior distributions of $\mu$, $\tau^2$, and $\sigma^2$.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{figs/post_var.pdf}
+\caption{Joint posterior correlation. From the bottom left, the first 23 are the $\m{\theta}$ parameters. The last three rows and columns are of $\mu$, $\tau^2$, and $\sigma^2$, respectively.}
+\end{figure}
+
+
+\begin{table}
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \begin{tabular}{l|rr}
+    Param. & \multicolumn{1}{l}{Mean} & \multicolumn{1}{l}{Variance} \\ \hline
+    $\theta_{ 1}$ & 6.08 & 0.079 \\  
+    $\theta_{ 2}$ & 6.05 & 0.077 \\
+    $\theta_{ 3}$ & 6.01 & 0.076 \\
+    $\theta_{ 4}$ & 6.01 & 0.076 \\
+    $\theta_{ 5}$ & 6.00 & 0.075 \\
+    $\theta_{ 6}$ & 5.98 & 0.075 \\
+    $\theta_{ 7}$ & 5.97 & 0.076 \\
+    $\theta_{ 8}$ & 5.95 & 0.075 \\
+    $\theta_{ 9}$ & 5.89 & 0.073 \\
+    $\theta_{10}$ & 5.89 & 0.073 \\
+    $\theta_{11}$ & 5.88 & 0.073 \\
+    $\theta_{12}$ & 5.81 & 0.072 \\
+    $\theta_{13}$ & 5.80 & 0.072 \\
+    \end{tabular}
+\end{minipage}%
+\begin{minipage}{0.5\textwidth}
+    \centering
+    \begin{tabular}{l|rr}
+    Param. & \multicolumn{1}{l}{Mean} & \multicolumn{1}{l}{Variance} \\ \hline
+    $\theta_{14}$ & 5.75 & 0.073 \\
+    $\theta_{15}$ & 5.67 & 0.074 \\
+    $\theta_{16}$ & 5.65 & 0.075 \\
+    $\theta_{17}$ & 5.59 & 0.076 \\
+    $\theta_{18}$ & 5.58 & 0.076 \\
+    $\theta_{19}$ & 5.57 & 0.076 \\
+    $\theta_{20}$ & 5.55 & 0.078 \\
+    $\theta_{21}$ & 5.53 & 0.078 \\
+    $\theta_{22}$ & 5.38 & 0.087 \\
+    $\theta_{23}$ & 5.16 & 0.106 \\
+    $\mu$         & 5.79 & 0.010 \\
+    $\tau^2$      & 0.15 & 0.004 \\
+    $\sigma^2$    & 0.15 & 0.003 \\
+    \end{tabular}
+\end{minipage}
+\end{center}
+\caption{Posterior means and variances.}
+\end{table}
+                                                                        
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{figs/pred.pdf}
+\caption{Posterior predictive distribution (green) and a histogram of the data. The black line is a smooth representation of the data.}
+\end{figure}
+
+
+
+\end{document}
