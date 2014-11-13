@@ -13,7 +13,7 @@ y = as.vector(dat)
 
 # inverse gamma density
 igpdf=function(x, a, b)
-	(b^a)/gamma(a)*x^(-a-1)*exp(-b/x)
+    (b^a)/gamma(a)*x^(-a-1)*exp(-b/x)
 
 cross = function(...){
     vec = list(...)
