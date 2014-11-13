@@ -26,13 +26,13 @@ postB=priorB+n-y
 
 pdf(paste(path,"figs/1postplot.pdf",sep=""), 9, 5)
 curve(dbeta(x,postA,postB),n=1001,main="",
-	ylab="",xlab="", from=0, to=0.4)
+    ylab="",xlab="", from=0, to=0.4)
 polygon(x=seq(0,0.4,0.001),
-	y=dbeta(seq(0,0.4,0.001),postA,postB),
-	col='darkgray',border='black')
+    y=dbeta(seq(0,0.4,0.001),postA,postB),
+    col='darkgray',border='black')
 curve(dbeta(x,priorA,priorB),n=1001,ylim=c(0,25),
-	main="", add=TRUE,
-	ylab="",xlab="", lty=2)
+    main="", add=TRUE,
+    ylab="",xlab="", lty=2)
 abline(v=y/n, col='red')
 legend(0.3, 25, c("Prior", "Posterior", "MLE"), lty=c(2,1,1), col=c("black","black","red"), cex=1.5)
 dev.off()
@@ -62,18 +62,18 @@ n=10000
 p=0.95
 ints=matrix(NA,n,2)
 for (i in 0:(n-1)){
-	l=(1-p)/(n-1)*i
-	ints[i+1,1]=qbeta(l,postA,postB)
-	ints[i+1,2]=qbeta(l+p,postA,postB)
-	}
+    l=(1-p)/(n-1)*i
+    ints[i+1,1]=qbeta(l,postA,postB)
+    ints[i+1,2]=qbeta(l+p,postA,postB)
+    }
 len=ints[,2]-ints[,1]
 pdf(paste(path,"figs/1intervals.pdf",sep=""), 9, 5)
 plot(seq(1,n,1)/n*(1-p),len[seq(1,n,1)],ylim=c(0,0.1),type='l',
-	main="",
-	ylab="Interval Length",
-	xlab="Starting Interval Value")
+    main="",
+    ylab="Interval Length",
+    xlab="Starting Interval Value")
 dev.off()
-ints[which.min(len),]	#this is the approximation of the narrowest interval
+ints[which.min(len),]    #this is the approximation of the narrowest interval
 min(len)
 
 ### Other priors
@@ -93,7 +93,7 @@ n=sum(bonds$V2)
 y=sum(bonds$V3)
 pdf(paste(path,"figs/1otherpriors.pdf",sep=""), 9, 5)
 curve(dbeta(x,priorA+y,priorB+n-y),lwd=2,xlim=c(0,.30),ylim=c(0,30),
-	main="",xlab="",ylab="")
+    main="",xlab="",ylab="")
 curve(dbeta(x,a1+y,b1+n-y),lwd=2,col='red',add=T)
 curve(dbeta(x,a2+y,b2+n-y),lwd=2,col='blue',add=T)
 curve(dbeta(x,a3+y,b3+n-y),lwd=3,col='green',add=T)

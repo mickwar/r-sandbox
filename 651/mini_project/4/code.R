@@ -48,7 +48,7 @@ n = k
 ybar = mean(y)
 
 igpdf=function(x, a, b)
-	(b^a)/gamma(a)*x^(-a-1)*exp(-b/x)
+    (b^a)/gamma(a)*x^(-a-1)*exp(-b/x)
 
 # The model:
 # Y_i ~ N(theta_i, sigma^2)
@@ -183,6 +183,7 @@ mean(preds > 5)
 
 mean(preds > 7)
 
+# "bootstrap"
 boot = double(100)
 phil.boot = double(100)
 for (i in 1:length(boot)){

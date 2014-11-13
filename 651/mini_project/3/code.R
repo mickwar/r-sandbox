@@ -4,7 +4,7 @@ y = scan("~/files/R/651/data/faculty.dat")
 
 # inverse gamma density
 igpdf=function(x, a, b)
-	(b^a)/gamma(a)*x^(-a-1)*exp(-b/x)
+    (b^a)/gamma(a)*x^(-a-1)*exp(-b/x)
 
 g = function(x, m = 5, s2 = 100, a = 2.5, b = 1.5){
     require(truncnorm)
