@@ -2464,3 +2464,51 @@ zz2 = c(Inf, diag(s2*solve(t(x2) %*% x2)))
 
 cbind(zz1, zz2, zz1 < zz2)
 ##########
+
+##########
+system.time(for (i in 1:5000000) a = 5)
+system.time(for (i in 1:5000000) a <- 5)
+
+niter = 5000000
+nloop = 250
+
+# for any preprocessing problems
+nburn = 5
+
+t1 = double(nloop+nburn)
+t2 = double(nloop+nburn)
+
+for (i in 1:(nburn+nloop)){
+    t1[i] = system.time(for (j in 1:niter) a = 5)[3]
+    t2[i] = system.time(for (j in 1:niter) a <- 5)[3]
+    cat("\rIteration:", i)
+    }
+t1 = t1[-(1:nburn)]
+t2 = t2[-(1:nburn)]
+plot(t1, type='l')
+points(t2, type='l', col='red')
+c(mean(t1), mean(t2))
+
+
+t3 = double(nloop+nburn)
+t4 = double(nloop+nburn)
+
+for (i in 1:(nburn+nloop)){
+    t4[i] = system.time(for (j in 1:niter) a <- 5)[3]
+    t3[i] = system.time(for (j in 1:niter) a = 5)[3]
+    cat("\rIteration:", i)
+    }
+t3 = t3[-(1:nburn)]
+t4 = t4[-(1:nburn)]
+plot(t3, type='l')
+points(t4, type='l', col='red')
+c(mean(t3), mean(t4))
+
+matrix(c(mean(t1), mean(t3), mean(t2), mean(t4)), 2, 2)
+
+plot(t1, type='l', col='blue', lty=2)
+points(t3, type='l', col='blue')
+
+points(t2, type='l', col='red', lty=2)
+points(t4, type='l', col='red')
+##########
