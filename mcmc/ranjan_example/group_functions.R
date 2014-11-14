@@ -4,7 +4,7 @@ new.seq = function(x, back){
     }
 last.na = function(x) # not really, more like last non na
     x[max(which(!is.na(x)))]
-covmat = function(i = NA){ # computer sigma_z_hat
+covmat = function(i = NA){ # compute sigma_z_hat
     LAMW = last.na(draws[["lamW"]])
     LAMV = last.na(draws[["lamV"]])
     LAMY = last.na(draws[["lamY"]])

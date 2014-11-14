@@ -85,3 +85,6 @@ s8.4 = mw.tree(x, 4, scores, "centroid"); s8.4$counts
 s8.5 = mw.tree(x, 5, scores, "centroid"); s8.5$counts
 s8.6 = mw.tree(x, 6, scores, "centroid"); s8.6$counts
 s8.7 = mw.tree(x, 7, scores, "centroid"); s8.7$counts
+
+library(rgl)
+plot3d(scores, col=s4.7$cutree, size=5)
