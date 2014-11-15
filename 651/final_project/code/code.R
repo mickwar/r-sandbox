@@ -34,3 +34,12 @@ apply(sdat.t, 2, range)
 
 params = c(1, rep(0.5, 10))
 cov.simul(params, 
+
+
+x = matrix(runif(n*px), n, px)
+theta = matrix(runif(pt), pt, 1)
+y = matrix(runif(m*pt), m, pt)
+
+x = runif(px)
+t = runif(pt)
+
