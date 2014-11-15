@@ -14,10 +14,12 @@ n = nrow(field)
 m = nrow(simul)
 px = 1
 pt = ncol(simul.t)
+p = px + pt
 
 # transform the data
 fdat.y = logit(field.y)
 sdat.y = logit(simul.y)
+
 
 xmin = min(field.x)
 xmax = max(field.x)
@@ -29,17 +31,9 @@ tmax = apply(simul.t, 2, max)
 
 sdat.t = simul.t - matrix(rep(tmin, m), m, pt, byrow=TRUE)
 sdat.t = sdat.t / (matrix(rep(tmax, m), m, pt, byrow=TRUE) - matrix(rep(tmin, m), m, pt, byrow=TRUE))
-
-apply(sdat.t, 2, range)
-
-params = c(1, rep(0.5, 10))
-cov.simul(params, 
+sdat.xt = cbind(sdat.x, sdat.t)
 
 
-x = matrix(runif(n*px), n, px)
-theta = matrix(runif(pt), pt, 1)
-y = matrix(runif(m*pt), m, pt)
 
-x = runif(px)
-t = runif(pt)
+0.001^y.dist[[1]]
 
