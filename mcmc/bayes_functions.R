@@ -126,6 +126,30 @@ col.gray = function(rgb, method="yprime"){
         return (rep(mean(range(rgb)), 3))
         }
     }
+# hpd.plot()
+# plot a univariate density with its hpd shaded
+# dens     - density object to be plotted
+# hpd      - vector containing end points of the hpd region, must
+#            satisfy length(hpd) %% 2 == 0
+# col1     - the color of the non-shaded portion of the plot
+# col2     - the color of the shaded portion, defaults to gray50
+# multiply - logical, if true multiply col1 with col2 and set new
+#            color to col2, otherwise don't
+# border   - color of the density border
+# requires color.den() and col.mult(), which requires int2rgb()
+# note: the use of the border argument could be improved (i don't think
+#       null would disable the border color if desired)
+hpd.plot = function(dens, hpd, col1, col2 = NULL, multiply = TRUE, border = "black", ...){
+    if (is.null(col2))
+        col2 = "gray50"
+    if (multiply)
+        col2 = col.mult(col1, col2)
+    plot(dens, type='n', ...)
+    polygon(dens, col=col1)
+    for (i in 1:(length(hpd)/2))
+        color.den(dens, hpd[2*i-1], hpd[2*i], col2)
+    lines(dens, col = border)
+    }
 
 # hpd.uni()
 # functions to compute highest posterior density regions
