@@ -29,17 +29,69 @@ mw.tree = function(x, k, scores, method = "complete", dist = "euclidean"){
     par(mfrow=c(1,1))
     return (list("cluster"=clust.out, "cutree"=cutree.out, "counts"=table.out))
     }
-classify = function(data, mw.tree, seed = 1){
+classify = function(data, mw.tree, k = 5, seed = 1){
     set.seed(seed)
     x = data
     y = mw.tree
-    xbar = matrix(0, length(y$counts), ncol(x))
-    for (i in 1:length(y$counts))
-        xbar[i,] = apply(x[y$cutree == i,], 2, mean)
-#   xbar = tapply(x, y$cutree, mean)
-    xbar
+    n = y$counts
+    g = length(n)
+
+    # get index groups for each variable for each sample k
+    index.k = matrix(0, g, k+1)
+    for (i in 1:g)
+        for (j in 2:(k+1))
+            index.k[i,j] = index.k[i,j-1] + round((n[i] - index.k[i,j-1])/(k+2-j))
+    
+    # randomize the samples
+    groups = NULL
+    for (i in 1:g)
+        groups[[i]] = sample(which(y$cutree == i))
+
+    error = double(k)
+    for (i in 1:k){
+        cat("\rFold:",i,"/",k)   
+        # retrieve indices for test and training cases
+        test.index = NULL
+        train.index = NULL
+        for (j in 1:g){
+            test.index = c(test.index, groups[[j]][(index.k[j,i]+1):index.k[j,i+1]])
+            train.index = c(train.index, groups[[j]][(1:n[j])[-((index.k[j,i]+1):index.k[j,i+1])]])
+            }
+#       test.index = sort(test.index)
+#       train.index = sort(train.index)
+
+        # compute xbars and S_i on training set
+        xbar = matrix(0, g, ncol(x))
+        S = NULL
+        for (j in 1:g){
+            xbar[j,] = apply(x[train.index[y$cutree[train.index] == j],], 2, mean)
+            S[[j]] = var(x[train.index[y$cutree[train.index] == j],])
+#           xbar[j,] = apply(x[y$cutree == j,], 2, mean)
+#           S[[j]] = var(x[y$cutree == j,])
+            }
+#       Spl = var(x[train.index,])
+        # calculate distance and put into class
+        m = length(test.index)
+        pred.class = double(m)
+        d = double(g)
+        for (j in 1:m){
+            for (l in 1:g){
+                d[l] = as.double(x[test.index[j],] - xbar[l,]) %*% solve(S[[l]]) %*%
+                    t(x[test.index[j],] - xbar[l,]) + determinant(S[[l]])$modulus[1]
+#               d[l] = as.double(x[test.index[j],] - xbar[l,]) %*% solve(S[[l]]) %*%
+#                   t(x[test.index[j],] - xbar[l,])
+#               d[l] = as.double(x[test.index[j],] - xbar[l,]) %*% solve(Spl) %*%
+#                   t(x[test.index[j],] - xbar[l,])
+                }
+            pred.class[j] = which.min(d)
+            }
+        error[i] = 1-sum(pred.class == y$cutree[test.index])/m
+        }
+    cat("\n")
+    mean(error)
     }
-classify(x, s5.7)
+#classify(x, s4.3); classify(x, s4.4); classify(x, s4.5); classify(x, s4.6); classify(x, s4.7)
+
 
 ### read in the data
 dat = read.table("~/files/R/666/data/collins.txt", header = TRUE)
@@ -81,11 +133,11 @@ s4.5 = mw.tree(x, 5, scores, "ward.D"); s4.5$counts
 s4.6 = mw.tree(x, 6, scores, "ward.D"); s4.6$counts
 s4.7 = mw.tree(x, 7, scores, "ward.D"); s4.7$counts
 
-#s5.3 = mw.tree(x, 3, scores, "ward.D2"); s5.3$counts
-#s5.4 = mw.tree(x, 4, scores, "ward.D2"); s5.4$counts
-#s5.5 = mw.tree(x, 5, scores, "ward.D2"); s5.5$counts
-#s5.6 = mw.tree(x, 6, scores, "ward.D2"); s5.6$counts
-#s5.7 = mw.tree(x, 7, scores, "ward.D2"); s5.7$counts
+s5.3 = mw.tree(x, 3, scores, "ward.D2"); s5.3$counts
+s5.4 = mw.tree(x, 4, scores, "ward.D2"); s5.4$counts
+s5.5 = mw.tree(x, 5, scores, "ward.D2"); s5.5$counts
+s5.6 = mw.tree(x, 6, scores, "ward.D2"); s5.6$counts
+s5.7 = mw.tree(x, 7, scores, "ward.D2"); s5.7$counts
 
 #s6.3 = mw.tree(x, 3, scores, "mcquitty"); s6.3$counts
 #s6.4 = mw.tree(x, 4, scores, "mcquitty"); s6.4$counts
@@ -104,6 +156,12 @@ s4.7 = mw.tree(x, 7, scores, "ward.D"); s4.7$counts
 #s8.5 = mw.tree(x, 5, scores, "centroid"); s8.5$counts
 #s8.6 = mw.tree(x, 6, scores, "centroid"); s8.6$counts
 #s8.7 = mw.tree(x, 7, scores, "centroid"); s8.7$counts
+
+classify(x, s4.3); classify(x, s5.3)
+classify(x, s4.4); classify(x, s5.4)
+classify(x, s4.5); classify(x, s5.5)
+classify(x, s4.6); classify(x, s5.6)
+classify(x, s4.7); classify(x, s5.7)
 
 library(rgl)
 plot3d(scores, col=s4.7$cutree, size=5)
