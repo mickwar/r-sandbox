@@ -1,0 +1,155 @@
+get.pc.scores = function(x, k = 1, p = NULL){
+    # x is the data
+    # k is the _index_ of eigenvectors to use
+    # if p is given, set k to be the number of eigenvalues which
+    # cumulative proportion greater than p (overrides k)
+    S = var(x)
+    eigS = eigen(S)
+    lam = eigS$values
+    if (!is.null(p)){
+        k = 1:which.max(cumsum(lam) / sum(lam))
+        }
+    # proportion of variance explained by this set of eigenvectors
+    prop = sum(lam[k]) / sum(lam)
+    scores = as.matrix(x) %*% eigS$vectors[,k]
+    return (list("p"=prop, "scores"=scores))
+    }
+
+# create and cut a tree, returns the hclust object, the vector
+# of cluster numbers when cutting, and a count for the groups
+# also plots the tree and the first two principal components
+# marked by group
+mw.tree = function(x, k, scores, method = "ward.D2", dist = "euclidean"){
+    # x is data
+    # k is number of groups to obtain when cutting the tree
+    # method is the linkage used in creating the tree (see hclust())
+    # dist is for the distance metric to be used (see dist())
+    par(mfrow=c(2,1))
+    clust.out = hclust(dist(x, dist), method)
+    plot(clust.out)
+    cutree.out = cutree(clust.out, k)
+    table.out = table(cutree.out)
+    center = matrix(0, length(table.out), 2)
+    for (i in 1:length(table.out))
+        center[i,] = apply(as.matrix(scores[cutree.out == i, 1:2]), 2, mean)
+    plot(scores[,1], scores[,2], col = cutree.out,
+        pch = as.character(cutree.out), cex = 1.5)
+    points(center, pch=as.character(1:length(table.out)), cex = 5, col="gray50")
+    par(mfrow=c(1,1))
+    return (list("cluster"=clust.out, "cutree"=cutree.out, "counts"=table.out))
+    }
+
+# get cross-validated error rates using linear/quadratic
+# discriminant (analysis?)
+classify = function(data, mw.tree, method, k = 5, seed = 1){
+    # method is one of: linear, quadratic, quadnormal
+    set.seed(seed)
+    x = data
+    y = mw.tree
+    n = y$counts
+    g = length(n)
+
+    # get index groups for each variable for each sample k
+    index.k = matrix(0, g, k+1)
+    for (i in 1:g)
+        for (j in 2:(k+1))
+            index.k[i,j] = index.k[i,j-1] + round((n[i] - index.k[i,j-1])/(k+2-j))
+    
+    # randomize the samples
+    groups = NULL
+    for (i in 1:g)
+        groups[[i]] = sample(which(y$cutree == i))
+
+    error = double(k)
+    for (i in 1:k){
+        cat("\rFold:",i,"/",k)   
+        # retrieve indices for test and training cases
+        test.index = NULL
+        train.index = NULL
+        for (j in 1:g){
+            test.index = c(test.index, groups[[j]][(index.k[j,i]+1):index.k[j,i+1]])
+            train.index = c(train.index, groups[[j]][(1:n[j])[-((index.k[j,i]+1):index.k[j,i+1])]])
+            }
+
+        # compute xbars and S_i on training set
+        if (method == "quadratic" || method == "quadnormal"){
+            xbar = matrix(0, g, ncol(x))
+            S = NULL
+            for (j in 1:g){
+                xbar[j,] = apply(x[train.index[y$cutree[train.index] == j],], 2, mean)
+                S[[j]] = var(x[train.index[y$cutree[train.index] == j],])
+                }
+            }
+        if (method == "linear")
+            Spl = var(x[train.index,])
+        # calculate distance and put into class
+        pred.class = double(length(test.index))
+        d = double(g)
+        for (j in 1:length(test.index)){
+            for (l in 1:g){
+                if (method == "linear")
+                    d[l] = as.double(x[test.index[j],] - xbar[l,]) %*% solve(Spl) %*%
+                        t(x[test.index[j],] - xbar[l,])
+                if (method == "quadratic")
+                    d[l] = as.double(x[test.index[j],] - xbar[l,]) %*% solve(S[[l]]) %*%
+                        t(x[test.index[j],] - xbar[l,])
+                if (method == "quadnormal")
+                    d[l] = as.double(x[test.index[j],] - xbar[l,]) %*% solve(S[[l]]) %*%
+                        t(x[test.index[j],] - xbar[l,]) + determinant(S[[l]])$modulus[1]
+                }
+            pred.class[j] = which.min(d)
+            }
+        error[i] = 1-mean(pred.class == y$cutree[test.index])
+        }
+    cat("\n")
+    mean(error)
+    }
+
+# get a cross-validated error rate using k-nearest neighbors
+knearest = function(data, mw.tree, kfold, knear, seed = 1){
+    set.seed(seed)
+    k = kfold
+    x = data
+    nr = nrow(x)
+    y = mw.tree
+    n = y$counts
+    g = length(n)
+
+    # get index groups for each variable for each sample k
+    index.k = matrix(0, g, k+1)
+    for (i in 1:g)
+        for (j in 2:(k+1))
+            index.k[i,j] = index.k[i,j-1] + round((n[i] - index.k[i,j-1])/(k+2-j))
+    
+    # randomize the samples
+    groups = NULL
+    for (i in 1:g)
+        groups[[i]] = sample(which(y$cutree == i))
+
+    error = double(k)
+    for (i in 1:k){
+        cat("\rFold:",i,"/",k)   
+        # retrieve indices for test and training cases
+        test.index = NULL
+        train.index = NULL
+        for (j in 1:g){
+            test.index = c(test.index, groups[[j]][(index.k[j,i]+1):index.k[j,i+1]])
+            train.index = c(train.index, groups[[j]][(1:n[j])[-((index.k[j,i]+1):index.k[j,i+1])]])
+            }
+        m = length(test.index)
+
+        # calculate distance matrix
+        d = as.matrix(dist(rbind(x[test.index,], x[train.index,])))
+        # only consider a partition of the matrix
+        d = d[1:m, (m+1):nr]
+
+        # get predicted classes for the test set
+        pred.class = double(m)
+        for (j in 1:m){
+            pred.class[j] = as.numeric(names(which.max(table(y$cutree[train.index[order(d[j,])[1:knear]]]))))
+            }
+        error[i] = 1-mean(pred.class == y$cutree[test.index])
+        }
+    cat("\n")
+    mean(error)
+    }
