@@ -153,3 +153,15 @@ knearest = function(data, mw.tree, kfold, knear, seed = 1){
     cat("\n")
     mean(error)
     }
+
+# for knearest, calculate error.rates and a range of k values
+get.error = function(data, mw.tree, k, kfold){
+    if (missing(k))
+        k = 1:10
+    error.rates = double(length(k))
+    for (i in 1:length(k))
+        error.rates[i] = knearest(x, mw.tree, kfold = kfold, knear = k[i])
+    plot(k, error.rates, type='l')
+    return(error.rates)
+    }
+
