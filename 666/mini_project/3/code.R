@@ -129,6 +129,7 @@ kmeans = function(data, mw.tree, kfold, knear, seed = 1){
         # only consider a partition of the matrix
         d = d[1:m, (m+1):nr]
 
+        # get predicted classes for the test set
         pred.class = double(m)
         for (j in 1:m){
             pred.class[j] = as.numeric(names(which.max(table(y$cutree[train.index[order(d[j,])[1:knear]]]))))
@@ -203,12 +204,6 @@ s5.7 = mw.tree(x, 7, scores, "ward.D2"); s5.7$counts
 #s8.5 = mw.tree(x, 5, scores, "centroid"); s8.5$counts
 #s8.6 = mw.tree(x, 6, scores, "centroid"); s8.6$counts
 #s8.7 = mw.tree(x, 7, scores, "centroid"); s8.7$counts
-
-classify(x, s4.3); classify(x, s5.3)
-classify(x, s4.4); classify(x, s5.4)
-classify(x, s4.5); classify(x, s5.5)
-classify(x, s4.6); classify(x, s5.6)
-classify(x, s4.7); classify(x, s5.7)
 
 classify(x, s5.7, "linear", k = 2)
 classify(x, s5.7, "linear", k = 3)
