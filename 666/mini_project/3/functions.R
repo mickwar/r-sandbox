@@ -19,7 +19,7 @@ get.pc.scores = function(x, k = 1, p = NULL){
 # of cluster numbers when cutting, and a count for the groups
 # also plots the tree and the first two principal components
 # marked by group
-mw.tree = function(x, k, scores, method = "ward.D2", dist = "euclidean"){
+mw.tree = function(x, k, scores, method = "ward.D", dist = "euclidean"){
     # x is data
     # k is number of groups to obtain when cutting the tree
     # method is the linkage used in creating the tree (see hclust())
@@ -167,3 +167,52 @@ get.error = function(data, mw.tree, k, kfold){
     return(error.rates)
     }
 
+# check cluster validity
+validate = function(data, k, scores, method = "ward.D", dist = "euclidean", seed = 1){
+    set.seed(seed)
+    x = data
+    temp.index = sample(1:nrow(x))
+    m = floor(nrow(x)/2)
+    A.ind = temp.index[1:m]
+    B.ind = temp.index[-(1:m)]
+    A = x[A.ind,]
+    B = x[B.ind,]
+
+    A.clust = hclust(dist(A, dist), method)
+    A.cut = cutree(A.clust, k)
+    A.centroids = matrix(0, k, ncol(x))
+    for (i in 1:k)
+        A.centroids[i,] = apply(A[A.cut == i,], 2, mean)
+
+    B1.clust = hclust(dist(B, dist), method)
+    B1.cut = cutree(B1.clust, k)
+
+    B2.cut = double(length(B.ind))
+    bdist = as.matrix(dist(rbind(B, A.centroids), dist))[1:m,1:k]
+    for (i in 1:length(B.ind))
+        B2.cut[i] = which.min(bdist[i,])
+
+    temp.g = order(table(B1.cut))
+    temp.cut = B1.cut
+    for (i in 1:k)
+        temp.cut[B1.cut == temp.g[i]] = i
+    B1.cut = temp.cut
+    temp.g = order(table(B2.cut))
+    temp.cut = B2.cut
+    for (i in 1:k)
+        temp.cut[B2.cut == temp.g[i]] = i
+    B2.cut = temp.cut
+    
+
+    par(mfrow=c(2,1), mar=c(2.1,4.1,4.1,2.1))
+    plot(scores[B.ind,1], scores[B.ind,2], pch=as.character(B1.cut),
+        col=B1.cut, cex=1.5)
+    plot(scores[B.ind,1], scores[B.ind,2], pch=as.character(B2.cut),
+        col=B2.cut, cex=1.5)
+    par(mfrow=c(1,1), mar=c(5.1,4.1,4.1,2.1))
+    
+    # returns the error rate, but don't put too much stock in this, the
+    # cluster labels won't necessarily agree; look at the positions of
+    # the clusters
+    return(1 - mean(B1.cut == B2.cut))
+    }
