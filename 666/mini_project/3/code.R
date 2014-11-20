@@ -7,7 +7,7 @@ dat = dat[,-which(apply(dat, 2, function(x) length(unique(x))) == nrow(dat))]
 
 ### Step 1
 # use only first 18 variables
-x = dat[,1:18]
+x = scale(dat[,1:18])
 
 # get principal component scores
 scores = get.pc.scores(x, k = 1:3)
@@ -23,10 +23,10 @@ s4.7 = mw.tree(x, 7, scores, "ward.D"); s4.7$counts
 
 
 errors = double(5)
-errors[1] = knearest(x, s4.3, kfold = 10, floor(sqrt(min(s4.3$counts))))
-errors[2] = knearest(x, s4.4, kfold = 10, floor(sqrt(min(s4.4$counts))))
-errors[3] = knearest(x, s4.5, kfold = 10, floor(sqrt(min(s4.5$counts))))
-errors[4] = knearest(x, s4.6, kfold = 10, floor(sqrt(min(s4.6$counts))))
-errors[5] = knearest(x, s4.7, kfold = 10, floor(sqrt(min(s4.7$counts))))
+errors[1] = knearest(x,s4.3, kfold = 20, floor(sqrt(min(s4.3$counts))))
+errors[2] = knearest(x,s4.4, kfold = 20, floor(sqrt(min(s4.4$counts))))
+errors[3] = knearest(x,s4.5, kfold = 20, floor(sqrt(min(s4.5$counts))))
+errors[4] = knearest(x,s4.6, kfold = 20, floor(sqrt(min(s4.6$counts))))
+errors[5] = knearest(x,s4.7, kfold = 20, floor(sqrt(min(s4.7$counts))))
 
 errors

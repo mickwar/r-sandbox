@@ -24,9 +24,10 @@ mw.tree = function(x, k, scores, method = "ward.D2", dist = "euclidean"){
     # k is number of groups to obtain when cutting the tree
     # method is the linkage used in creating the tree (see hclust())
     # dist is for the distance metric to be used (see dist())
+#   par(mfrow=c(2,1), mar=c(1.1, 4.1, 1.1, 2.1))
     par(mfrow=c(2,1))
     clust.out = hclust(dist(x, dist), method)
-    plot(clust.out)
+    plot(clust.out, xlab="")
     cutree.out = cutree(clust.out, k)
     table.out = table(cutree.out)
     center = matrix(0, length(table.out), 2)
@@ -35,6 +36,7 @@ mw.tree = function(x, k, scores, method = "ward.D2", dist = "euclidean"){
     plot(scores[,1], scores[,2], col = cutree.out,
         pch = as.character(cutree.out), cex = 1.5)
     points(center, pch=as.character(1:length(table.out)), cex = 5, col="gray50")
+#   par(mfrow=c(1,1), mar=c(5.1,4.1,4.1,2.1))
     par(mfrow=c(1,1))
     return (list("cluster"=clust.out, "cutree"=cutree.out, "counts"=table.out))
     }
