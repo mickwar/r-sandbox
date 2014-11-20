@@ -29,14 +29,13 @@ validate(x, 5, scores, seed = 3)
 validate(x, 6, scores, seed = 53)
 validate(x, 7, scores, seed = 13)
 
-errors = double(5)
-errors[1] = knearest(x,s4.3, kfold = 20, floor(sqrt(min(s4.3$counts))))
-errors[2] = knearest(x,s4.4, kfold = 20, floor(sqrt(min(s4.4$counts))))
-errors[3] = knearest(x,s4.5, kfold = 20, floor(sqrt(min(s4.5$counts))))
-errors[4] = knearest(x,s4.6, kfold = 20, floor(sqrt(min(s4.6$counts))))
-errors[5] = knearest(x,s4.7, kfold = 20, floor(sqrt(min(s4.7$counts))))
-
-errors
+# use k-nearest neighbors, with k-fold cross-validation, to estimate
+# error rates for newly acquired data
+(errors = c(knearest(x,s4.3, kfold = 20, floor(sqrt(min(s4.3$counts)))),
+    knearest(x,s4.4, kfold = 20, floor(sqrt(min(s4.4$counts)))),
+    knearest(x,s4.5, kfold = 20, floor(sqrt(min(s4.5$counts)))),
+    knearest(x,s4.6, kfold = 20, floor(sqrt(min(s4.6$counts)))),
+    knearest(x,s4.7, kfold = 20, floor(sqrt(min(s4.7$counts))))))
 
 # using super genre to see how well the genres can group writing styles
 genre = dat$Genre
