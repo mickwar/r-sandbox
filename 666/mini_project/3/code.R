@@ -21,6 +21,10 @@ s4.5 = mw.tree(x, 5, scores, "ward.D"); s4.5$counts
 s4.6 = mw.tree(x, 6, scores, "ward.D"); s4.6$counts
 s4.7 = mw.tree(x, 7, scores, "ward.D"); s4.7$counts
 
+pdf("figs/dendrogram.pdf", width = 18, height = 9)
+s4.3 = mw.tree(x, 3, scores, "ward.D"); s4.3$counts
+dev.off()
+
 # don't worry about the error rates so much, but ask, "are the clusters
 # roughly in the same location in both plots?"
 validate(x, 3, scores, seed = 11)

@@ -24,20 +24,21 @@ mw.tree = function(x, k, scores, method = "ward.D", dist = "euclidean"){
     # k is number of groups to obtain when cutting the tree
     # method is the linkage used in creating the tree (see hclust())
     # dist is for the distance metric to be used (see dist())
-#   par(mfrow=c(2,1), mar=c(1.1, 4.1, 1.1, 2.1))
-    par(mfrow=c(2,1))
+    par(mfrow=c(1,2), mar=c(5.1, 5.5, 4.1, 2.1))
+#   par(mfrow=c(1,2))
     clust.out = hclust(dist(x, dist), method)
-    plot(clust.out, xlab="")
+    plot(clust.out, sub="", cex.main=1.5, labels=FALSE, cex.lab = 1.5,
+        xlab = "Writing Samples")
     cutree.out = cutree(clust.out, k)
     table.out = table(cutree.out)
     center = matrix(0, length(table.out), 2)
     for (i in 1:length(table.out))
         center[i,] = apply(as.matrix(scores[cutree.out == i, 1:2]), 2, mean)
-    plot(scores[,1], scores[,2], col = cutree.out,
+    plot(scores[,1], scores[,2], col = cutree.out, xlab="PC1", ylab="PC2", cex.lab=1.5,
         pch = as.character(cutree.out), cex = 1.5)
-    points(center, pch=as.character(1:length(table.out)), cex = 5, col="gray50")
-#   par(mfrow=c(1,1), mar=c(5.1,4.1,4.1,2.1))
-    par(mfrow=c(1,1))
+    points(center, pch=as.character(1:length(table.out)), cex = 5, col="dodgerblue")
+    par(mfrow=c(1,1), mar=c(5.1,4.1,4.1,2.1))
+#   par(mfrow=c(1,1))
     return (list("cluster"=clust.out, "cutree"=cutree.out, "counts"=table.out))
     }
 
@@ -148,7 +149,9 @@ knearest = function(data, mw.tree, kfold, knear, seed = 1){
         # get predicted classes for the test set
         pred.class = double(m)
         for (j in 1:m){
-            pred.class[j] = as.numeric(names(which.max(table(y$cutree[train.index[order(d[j,])[1:knear]]]))))
+            pred.class[j] = as.numeric(names(which.max(table(
+                y$cutree[train.index[order(d[j,])[1:knear]]]) /
+                n[as.numeric(names(table(y$cutree[train.index[order(d[j,])[1:knear]]])))])))
             }
         error[i] = 1-mean(pred.class == y$cutree[test.index])
         }
