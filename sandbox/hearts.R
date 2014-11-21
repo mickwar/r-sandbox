@@ -109,7 +109,7 @@ simulate.round = function(hands){
     }
 
 hands = deal(cards)
-simulate.round(hands)[[1]]
+simulate.round(hands)
 
 ##### Main simulation
 ### Data to collect
