@@ -24,7 +24,7 @@ s4.7 = mw.tree(x, 7, scores, "ward.D"); s4.7$counts
 pdf("figs/dendrogram.pdf", width = 18, height = 9)
 s4.5 = mw.tree(x, 5, scores, "ward.D")
 dev.off()
-
+1
 # don't worry about the error rates so much, but ask, "are the clusters
 # roughly in the same location in both plots?"
 validate(x, 3, scores, seed = 11)
@@ -35,11 +35,11 @@ validate(x, 7, scores, seed = 13)
 
 # use k-nearest neighbors, with k-fold cross-validation, to estimate
 # error rates for newly acquired data
-(errors = c(knearest(x,s4.3, kfold = 20, floor(sqrt(min(s4.3$counts)))),
-    knearest(x,s4.4, kfold = 20, floor(sqrt(min(s4.4$counts)))),
-    knearest(x,s4.5, kfold = 20, floor(sqrt(min(s4.5$counts)))),
-    knearest(x,s4.6, kfold = 20, floor(sqrt(min(s4.6$counts)))),
-    knearest(x,s4.7, kfold = 20, floor(sqrt(min(s4.7$counts))))))
+(errors = c(knearest(x,s4.3, kfold = 10, floor(sqrt(min(s4.3$counts)))),
+    knearest(x,s4.4, kfold = 10, floor(sqrt(min(s4.4$counts)))),
+    knearest(x,s4.5, kfold = 10, floor(sqrt(min(s4.5$counts)))),
+    knearest(x,s4.6, kfold = 10, floor(sqrt(min(s4.6$counts)))),
+    knearest(x,s4.7, kfold = 10, floor(sqrt(min(s4.7$counts))))))
 round(errors, 3)
 
 # using super genre to see how well the genres can group writing styles
@@ -55,7 +55,7 @@ G = NULL
 G$cutree = super.genre
 G$counts = table(super.genre)
 
-knearest(x, G, 20, floor(sqrt(min(G$counts))))
+knearest(x, G, 10, floor(sqrt(min(G$counts))))
 # An error rate of about 0.36, compared with the 5-cluster error
 # rate of about 0.10. So writing styles aren't compared best using
 # the super genre.
