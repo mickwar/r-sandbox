@@ -2512,3 +2512,30 @@ points(t3, type='l', col='blue')
 points(t2, type='l', col='red', lty=2)
 points(t4, type='l', col='red')
 ##########
+
+##########
+# max of a matrix
+
+mat.max = function(x){
+    dir = which.min(dim(x))
+    d = double(2)
+    apply(x, dir, which.max)
+    x
+    
+
+
+    }
+
+
+x = matrix(rnorm(50), 10, 5)
+which.max(x)
+which.max(x) %% 10
+which.max(x) %% 5
+
+
+x = matrix(rnorm(1000000), 100000, 10)
+system.time(apply(x, 2, which.max))
+system.time(apply(x, 1, which.max))
+
+
+##########
