@@ -1,10 +1,21 @@
 \section{Introduction} % and motivating example
 
-A decision tree is a convenient tool for making decisions or predictions based on simple divisions in the predictor space. 
+A \emph{decision tree} is a convenient tool for making decisions or predictions based on simple divisions in the feature space. Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. Predictions for region $j$ are typically based on the mean (regression) or mode (classification) of the responses in $R_j$. This allows for easily interpretable results.
 
-Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. Predictions for region $j$ are typically based on the mean or mode of the responses in $R_j$. This allows for easily interpretable results
+To illustrate, we consider the \texttt{Hitters} dataset from the \texttt{ISLR} package in \texttt{R}. The dataset contains performance measurements on $322$ baseball players as well as their \texttt{Salary} in 1,000's of dollars. We \emph{grow a tree} by partitioning the variables \texttt{Hits} and \texttt{Years} into three regions (see Figure \ref{tree1}). Predictions are made based on the mean $\log(\mathtt{Salary})$ for each region. Hence, we predict players in $R_1$ (having less than 4.5 years of experience) will have a mean salary of $\$1,000\times e^{5.107}=\$165,174.10$, those in $R_2$ (more than 4.5 years experience, but less than 117.5 hits) will have mean salary \$402,622.70, and those in $R_3$ (more than 4.5 years experience, more than 117.5 hits) with mean salary \$845,560.70.
+
+When the response is categorical, we take the predictive value to be that category having the highest number of observations found in the region.
+
 
 Let $\m{y}_i$ denote the $q$-vector of responses for observation $i$ and $\m{x}_i$ as the $p$-vector of corresponding features.
 
 Random forests are used for both regression and classification.
 
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.3]{figs/ex_tree.pdf}
+\caption{Left: A regression tree with three terminal nodes, or leaves. Right: The divisions in the predictor space where each $R_j$ represents one of the leaves. Using two variables (\texttt{Years} and \texttt{Hits}) from the \texttt{Hitters} dataset in the \texttt{R} package \texttt{ISLR}. The response is $\log(\mathtt{Salary})$.}
+\label{tree1}
+\end{center}
+\end{figure}
