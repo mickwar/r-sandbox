@@ -1,27 +1,28 @@
 \documentclass[12pt]{article}
 
-\input{setup.tex}
+\input{setup}
 
 \begin{document}
 
-\input{header.tex}
+\input{header}
 
-\input{intro.tex}
+\input{intro}
 
-\input{method.tex}
+\input{method}
 
-\input{example.tex}
+\input{example}
 
-\input{conclusion.tex}
+\input{conclusion}
 
+% %%% input R code in the appendix
+% \newpage
+% \section{Appendix}
+% \subsection{R Code}
+% \begin{tiny}
+% \lstinputlisting[breaklines,framerule = .03mm,frame = single]{code.R}
+% \end{tiny}
 
-%%% input R code in the appendix
-\newpage
-\section{Appendix}
-\subsection{R Code}
-\begin{tiny}
-\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code.R}
-\end{tiny}
-
+\bibliography{refs}
+\bibliographystyle{asa}
 
 \end{document}
