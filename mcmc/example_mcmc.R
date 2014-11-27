@@ -30,6 +30,7 @@ calc.post = function(params){
     return (out)
     }
 
+
 ind.beta = 1:2
 ind.eps = 3
 nparams = 3
@@ -110,14 +111,51 @@ post.mat[1, -nparams] = -Inf
 # check acceptance rates
 apply(accept, 2, mean)
 
-mat.max = function(x, method = 1){
-    index = double(2)
-    if (method == 1){
-        n = nrow(x)
-        w = which.max(x) - 1
-        index[1] = 1 + w %% n
-        index[2] = 1 + w %/% n
+sig2^(-n/2) * exp(-1/(2*params[ind.eps]) *
+    t(y - x %*% params[ind.beta]) %*% (y - x %*% params[ind.beta]))
+
+cdf = function(data, theta){
+    y = data[1]
+    x = data[2:3]
+    pnorm(y, x %*% theta[1:2], sqrt(theta[3]))
+    }
+
+bayes.gof = function(data, params, cdf, K, a){
+    y = as.matrix(data)
+    n = nrow(y)
+    M = nrow(params)
+    nparams = ncol(params)
+    if (missing(K) && missing(a))
+        K = round(n ^ 0.4)
+    if (missing(a))
+        a = seq(0, 1, length = K + 1)
+    K = length(a) - 1 # for when only a is given
+    p = diff(a) # need to check this for other values of a
+
+    z = matrix(0, n, K)
+    m = matrix(0, M, K)
+    for (l in 1:M){
+        for (j in 1:n)
+            for (k in 1:K)
+                z[j, k] = ifelse(cdf(data[j,], params[l,]) > a[k] &&
+                    cdf(data[j,], params[l,]) <= a[k+1], 1, 0)
+        m[l,] = apply(z, 2, sum)
         }
+
+    chi = double(M)
+    for (l in 1:M)
+        chi[l] = sum((m[l,] - n*p)^2 / (n*p))
+
+    pvals = pchisq(chi, K - 1, lower.tail = FALSE)
+
+    }
+
+mat.max = function(x){
+    index = double(2)
+    n = nrow(x)
+    w = which.max(x) - 1
+    index[1] = 1 + w %% n
+    index[2] = 1 + w %/% n
     return(index)
     }
 
