@@ -2514,7 +2514,7 @@ points(t4, type='l', col='red')
 ##########
 
 ##########
-# max of a matrix
+# which.max of a matrix
 
 mat.max = function(x, method = 1){
     index = double(2)
