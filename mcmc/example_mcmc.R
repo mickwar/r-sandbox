@@ -48,8 +48,9 @@ sig_0 = 100
 sig_1 = 100
 
 nburn = 10000
-nmcmc = 20000
+nmcmc = 50000
 params = matrix(0, nburn+nmcmc, nparams)
+post.mat = matrix(-Inf, nburn+nmcmc, nparams)
 # starting values
 params[1, ind.eps] = 2.5
 sigs = rep(1, nparams)
@@ -62,16 +63,18 @@ sigs = rep(1, nparams)
 # initialize log posterior value
 post = calc.post(params[1,])
 cand.param = params[1,]
+post.mat[1, 1] = post
 
 # confidence intervals on acceptance rates?
 accept = matrix(0, nburn+nmcmc, nparams)
 window = 100
 
 # mcmc loop
-dir = "ex_mcmc"
+dir = "example_mcmc_output"
 prefix = "mcmc_"
-mcmc_time(iter = 0, dir = dir, prefix = prefix)
 for (i in 2:(nburn+nmcmc)){
+    if (i == 2)
+        mcmc_time(iter = 0, dir = dir, prefix = prefix)
     params[i,] = params[i-1,]
     for (j in 1:nparams){
         cand = rnorm(1, params[i,j], sigs[j])
@@ -89,6 +92,7 @@ for (i in 2:(nburn+nmcmc)){
         } else {
             cand.param[j] = params[i,j]
             }
+        post.mat[i, j] = post
         }
         # adjust the candidate sigma
     if (floor(i/window) == i/window && i <= nburn)
@@ -98,15 +102,37 @@ for (i in 2:(nburn+nmcmc)){
         sigs, nburn, nmcmc, dir = dir, prefix = prefix)
     }
 
-
-
-
-
 params = params[(nburn+1):(nburn+nmcmc),]
 accept = accept[(nburn+1):(nburn+nmcmc),]
+post.mat = post.mat[(nburn+1):(nburn+nmcmc),]
+post.mat[1, -nparams] = -Inf
 
 # check acceptance rates
 apply(accept, 2, mean)
+
+mat.max = function(x, method = 1){
+    index = double(2)
+    if (method == 1){
+        n = nrow(x)
+        w = which.max(x) - 1
+        index[1] = 1 + w %% n
+        index[2] = 1 + w %/% n
+        }
+    return(index)
+    }
+
+maxx = mat.max(post.mat)[1]
+modemx = optim(params[maxx,], function(x) -calc.post(x))$par
+modemy = optim(params[maxx,], function(x) -calc.post(x))$value
+abs(post.mat[maxx, 3])
+params[maxx,]
+
+calc.post(modemx)
+calc.post(params[maxx,])
+
+plot(as.numeric(post.mat), pch=20, cex=0.1, ylim=c(-9.5, -9))
+abline(h = -modemy)
+abline(v = which.max(as.numeric(post.mat)), col='blue')
 
 # loop the posterior density of each parameter
 names.VAR = c("b0", "b1", "sigma")
@@ -131,6 +157,8 @@ for (i in 1:nparams){
     lines(rep(bound(at.x, dens), 2), c(0, bound(at.x,
         dens, FALSE)), col='black', lwd=2, lty=2)
     # pause and wait for user input (hit enter)
+    abline(v = params[maxx, i], col='blue')
+    abline(v = modemx[i], lty=2)
     if (i < nparams)
         readline()
     }
