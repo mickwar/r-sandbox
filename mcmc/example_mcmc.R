@@ -135,11 +135,14 @@ bayes.gof = function(data, params, cdf, K, a){
     z = matrix(0, n, K)
     m = matrix(0, M, K)
     for (l in 1:M){
+        cat("\rIteration:",l,"/",M)
         for (j in 1:n)
             for (k in 1:K)
                 z[j, k] = ifelse(cdf(data[j,], params[l,]) > a[k] &&
                     cdf(data[j,], params[l,]) <= a[k+1], 1, 0)
         m[l,] = apply(z, 2, sum)
+        if (l == M)
+            cat("\n")
         }
 
     chi = double(M)
@@ -147,7 +150,6 @@ bayes.gof = function(data, params, cdf, K, a){
         chi[l] = sum((m[l,] - n*p)^2 / (n*p))
 
     pvals = pchisq(chi, K - 1, lower.tail = FALSE)
-
     }
 
 mat.max = function(x){
