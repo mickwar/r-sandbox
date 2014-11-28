@@ -4,12 +4,15 @@ source("./bayes_functions.R")
 
 # generate some data
 set.seed(1)
-n = 20
+n = 500
 datx = runif(n, 0, 10)
 b0 = 2
 b1 = 1.2
 sig2 = 1
-daty = b0 + b1*datx + rnorm(n, 0, sqrt(sig2))
+# wrong model
+ daty = b0 + b1*datx - 0.2*datx^2 + rnorm(n, 0, sqrt(sig2))
+# true model
+#daty = b0 + b1*datx + rnorm(n, 0, sqrt(sig2))
 plot(datx, daty, pch=20)
 
 # into vectors
@@ -75,6 +78,7 @@ window = 100
 for (i in 2:(nburn+nmcmc)){
 #   if (i == 2)
 #       mcmc_time(iter = 0, dir = dir, prefix = prefix)
+    cat("\rIteration",i,"/",nburn+nmcmc)
     params[i,] = params[i-1,]
     for (j in 1:nparams){
         cand = rnorm(1, params[i,j], sigs[j])
@@ -100,6 +104,8 @@ for (i in 2:(nburn+nmcmc)){
             mean), k = max(window/50, 1.1))
 #   mcmc_time(do = TRUE, iter = i, every = 100, params, accept,
 #       sigs, nburn, nmcmc, dir = dir, prefix = prefix)
+    if (i == (nburn+nmcmc))
+        cat("\n")
     }
 
 params = params[(nburn+1):(nburn+nmcmc),]
@@ -116,51 +122,37 @@ cdf = function(data, theta){
     pnorm(y, x %*% theta[1:2], sqrt(theta[3]))
     }
 
-data = cbind(y, x)
-
-cdf(matrix(data[2,], 1, 3), params[1,])
-
-z = cdf(data, params[9,])
-kk = rep(K, n)
-kk = kk - ifelse(z <= a[2], 1, 0)
-kk = kk - ifelse(z <= a[3], 1, 0)
-kk[kk == 3] = 2
-
-as.numeric(names(table(kk)))
-as.numeric(table(kk))
-
-x %*% params[1:2]
-
-system.time(pvals <- bayes.gof(cbind(y, x), params, cdf))
-
-pvals == pvals2
-head(pvals)
-head(pvals2)
+pvals = bayes.gof(cbind(y, x), params, cdf)
 
 plot(density(pvals))
 mean(pvals < 0.05)
 
-mat.max = function(x){
-    index = double(2)
-    n = nrow(x)
-    w = which.max(x) - 1
-    index[1] = 1 + w %% n
-    index[2] = 1 + w %/% n
-    return(index)
+# get an estimate of the mode using the parameter draws and the calculated
+# (log) posterior. only works if the joint posterior is calculated for every
+# parameter as opposed to using the marginals
+est.mode = function(params, post){
+    # params, post are nparams x nmcmc
+    # the first nparams - 1 columns in the first row
+    # of post should be -Inf
+    nparams = nrow(params)
+    maxx = which.max(as.numeric(post))
+    end = 1 + ((maxx - 1) %% nparams) # the index of the ending parameter
+    if (end != nparams)
+        order = c(end:nparams, 1:(end-1))
+    vec = as.numeric(params)[(maxx-nparams+1):maxx]
+    return(list("mode"=vec[order], "height"=post[maxx]))
     }
 
-maxx = mat.max(post.mat)[1]
-modemx = optim(params[maxx,], function(x) -calc.post(x))$par
-modemy = optim(params[maxx,], function(x) -calc.post(x))$value
-abs(post.mat[maxx, 3])
-params[maxx,]
+modemx = optim(params[1,], function(x) -calc.post(x))$par
+modemy = -optim(params[1,], function(x) -calc.post(x))$value
+modee = est.mode(t(params), t(post.mat))
 
 calc.post(modemx)
-calc.post(params[maxx,])
+calc.post(modee$mode)
 
-plot(as.numeric(post.mat), pch=20, cex=0.1, ylim=c(-9.5, -9))
-abline(h = -modemy)
-abline(v = which.max(as.numeric(post.mat)), col='blue')
+plot(as.numeric(post.mat), pch=20, cex=0.1)#, ylim=c(-9.5, -9))
+abline(h = modemy, lwd=2)
+abline(v = which.max(as.numeric(post.mat)), col='blue', lwd=2)
 
 # loop the posterior density of each parameter
 names.VAR = c("b0", "b1", "sigma")
@@ -185,7 +177,7 @@ for (i in 1:nparams){
     lines(rep(bound(at.x, dens), 2), c(0, bound(at.x,
         dens, FALSE)), col='black', lwd=2, lty=2)
     # pause and wait for user input (hit enter)
-    abline(v = params[maxx, i], col='blue')
+    abline(v = modee$mode[i], col='blue')
     abline(v = modemx[i], lty=2)
     if (i < nparams)
         readline()
