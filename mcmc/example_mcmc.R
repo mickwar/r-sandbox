@@ -4,7 +4,7 @@ source("./bayes_functions.R")
 
 # generate some data
 set.seed(1)
-n = 12
+n = 120
 datx = runif(n, 0, 10)
 b0 = 2
 b1 = 1.2
@@ -29,7 +29,6 @@ calc.post = function(params){
     out = out-1/2*log(sig_1)-1/(2*sig_1)*(params[ind.beta][2]-mu_1)^2
     return (out)
     }
-
 
 ind.beta = 1:2
 ind.eps = 3
@@ -111,9 +110,6 @@ post.mat[1, -nparams] = -Inf
 # check acceptance rates
 apply(accept, 2, mean)
 
-sig2^(-n/2) * exp(-1/(2*params[ind.eps]) *
-    t(y - x %*% params[ind.beta]) %*% (y - x %*% params[ind.beta]))
-
 cdf = function(data, theta){
     y = data[1]
     x = data[2:3]
@@ -151,6 +147,11 @@ bayes.gof = function(data, params, cdf, K, a){
 
     pvals = pchisq(chi, K - 1, lower.tail = FALSE)
     }
+
+pvals = bayes.gof(cbind(y, x), params, cdf)
+
+plot(density(pvals))
+mean(pvals < 0.05)
 
 mat.max = function(x){
     index = double(2)
