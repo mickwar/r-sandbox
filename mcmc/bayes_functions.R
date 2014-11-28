@@ -349,16 +349,15 @@ bayes.gof = function(data, params, cdf, K, a){
     K = length(a) - 1 # for when only a is given
     p = diff(a) # need to check this for other values of a
 
-    z = matrix(0, n, K)
     m = matrix(0, M, K)
-    for (l in 1:M){
-        cat("\rIteration:",l,"/",M)
-        for (j in 1:n)
-            for (k in 1:K)
-                z[j, k] = ifelse(cdf(data[j,], params[l,]) > a[k] &&
-                    cdf(data[j,], params[l,]) <= a[k+1], 1, 0)
-        m[l,] = apply(z, 2, sum)
-        if (l == M)
+    for (j in 1:M){
+        cat("\rIteration:",j,"/",M)
+        z = cdf(data, params[j,])
+        temp.m = rep(K, n)
+        for (k in 2:K)
+            temp.m = temp.m - ifelse(z <= a[k], 1, 0)
+        m[j,as.numeric(names(table(temp.m)))] = as.numeric(table(temp.m))
+        if (j == M)
             cat("\n")
         }
 
