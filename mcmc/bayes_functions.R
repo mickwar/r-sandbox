@@ -328,4 +328,44 @@ mcmc_time = function(do = TRUE, iter, every = 100, params, accept,
             }
         }
     }
+
+### bayes chi^2 goodness of fit given by V.E.Johnson (2004)
+# so far assumes y is univariate, i.e. data = cbind(y, x)
+# params are mcmc draws from the joint posterior
+# cdf(data, params) is a function for the cdf of the likelihood
+# K is the number of bins to use for the chi2 gof test
+# alternatively, a can be given which contains the endpoints
+# for a_0 to a_K
+# returns the pvalues
+bayes.gof = function(data, params, cdf, K, a){
+    y = as.matrix(data)
+    n = nrow(y)
+    M = nrow(params)
+    nparams = ncol(params)
+    if (missing(K) && missing(a))
+        K = round(n ^ 0.4)
+    if (missing(a))
+        a = seq(0, 1, length = K + 1)
+    K = length(a) - 1 # for when only a is given
+    p = diff(a) # need to check this for other values of a
+
+    z = matrix(0, n, K)
+    m = matrix(0, M, K)
+    for (l in 1:M){
+        cat("\rIteration:",l,"/",M)
+        for (j in 1:n)
+            for (k in 1:K)
+                z[j, k] = ifelse(cdf(data[j,], params[l,]) > a[k] &&
+                    cdf(data[j,], params[l,]) <= a[k+1], 1, 0)
+        m[l,] = apply(z, 2, sum)
+        if (l == M)
+            cat("\n")
+        }
+
+    chi = double(M)
+    for (l in 1:M)
+        chi[l] = sum((m[l,] - n*p)^2 / (n*p))
+
+    pvals = pchisq(chi, K - 1, lower.tail = FALSE)
+    }
 ##### END OTHER FUNCTIONS #####
