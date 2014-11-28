@@ -4,7 +4,7 @@ source("./bayes_functions.R")
 
 # generate some data
 set.seed(1)
-n = 120
+n = 20
 datx = runif(n, 0, 10)
 b0 = 2
 b1 = 1.2
@@ -48,7 +48,7 @@ sig_0 = 100
 sig_1 = 100
 
 nburn = 10000
-nmcmc = 50000
+nmcmc = 20000
 params = matrix(0, nburn+nmcmc, nparams)
 post.mat = matrix(-Inf, nburn+nmcmc, nparams)
 # starting values
@@ -111,44 +111,31 @@ post.mat[1, -nparams] = -Inf
 apply(accept, 2, mean)
 
 cdf = function(data, theta){
-    y = data[1]
-    x = data[2:3]
+    y = data[,1]
+    x = data[,2:3]
     pnorm(y, x %*% theta[1:2], sqrt(theta[3]))
     }
 
-bayes.gof = function(data, params, cdf, K, a){
-    y = as.matrix(data)
-    n = nrow(y)
-    M = nrow(params)
-    nparams = ncol(params)
-    if (missing(K) && missing(a))
-        K = round(n ^ 0.4)
-    if (missing(a))
-        a = seq(0, 1, length = K + 1)
-    K = length(a) - 1 # for when only a is given
-    p = diff(a) # need to check this for other values of a
+data = cbind(y, x)
 
-    z = matrix(0, n, K)
-    m = matrix(0, M, K)
-    for (l in 1:M){
-        cat("\rIteration:",l,"/",M)
-        for (j in 1:n)
-            for (k in 1:K)
-                z[j, k] = ifelse(cdf(data[j,], params[l,]) > a[k] &&
-                    cdf(data[j,], params[l,]) <= a[k+1], 1, 0)
-        m[l,] = apply(z, 2, sum)
-        if (l == M)
-            cat("\n")
-        }
+cdf(matrix(data[2,], 1, 3), params[1,])
 
-    chi = double(M)
-    for (l in 1:M)
-        chi[l] = sum((m[l,] - n*p)^2 / (n*p))
+z = cdf(data, params[9,])
+kk = rep(K, n)
+kk = kk - ifelse(z <= a[2], 1, 0)
+kk = kk - ifelse(z <= a[3], 1, 0)
+kk[kk == 3] = 2
 
-    pvals = pchisq(chi, K - 1, lower.tail = FALSE)
-    }
+as.numeric(names(table(kk)))
+as.numeric(table(kk))
 
-pvals = bayes.gof(cbind(y, x), params, cdf)
+x %*% params[1:2]
+
+system.time(pvals <- bayes.gof(cbind(y, x), params, cdf))
+
+pvals == pvals2
+head(pvals)
+head(pvals2)
 
 plot(density(pvals))
 mean(pvals < 0.05)
@@ -204,3 +191,4 @@ for (i in 1:nparams){
         readline()
     }
  
+
