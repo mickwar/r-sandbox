@@ -74,3 +74,12 @@ lines(c(14.894, 25), c(10.610, 10.610), lwd=2, col='blue')
 plot(x, y, pch=20, cex = 1.5)
 abline(coef(gen.lm), col='red', lwd=3)
 dev.off()
+
+### 
+library(mvpart) # multivariate regression trees
+                # multivariate partitioning
+
+data(car.test.frame)
+
+z.auto = rpart(Mileage ~ Weight, car.test.frame)
+summary(z.auto)
