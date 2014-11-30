@@ -7,7 +7,6 @@ dat = Hitters # Hitters is from ISLR package
 dat = dat[!is.na(dat$Salary),]
 names(dat)
 
-
 pdf("./figs/ex_tree.pdf", width = 18, height = 9)
 par(mfrow=c(1,2), mar=c(5.1,4.6,4.1,1.6))
 # figure 8.1
@@ -25,7 +24,6 @@ text(11.8, 170.5, expression(R[3]), cex = 3)
 abline(v=4.5, lwd=3, col="darkgreen")
 lines(c(4.5, 50), c(117.5, 117.5), lwd=3, col="darkgreen")
 dev.off()
-
 
 ### comparison of linear models and random forests
 set.seed(1)
@@ -75,11 +73,13 @@ plot(x, y, pch=20, cex = 1.5)
 abline(coef(gen.lm), col='red', lwd=3)
 dev.off()
 
-### 
+### multivariate tree stuff
 library(mvpart) # multivariate regression trees
                 # multivariate partitioning
 
-data(car.test.frame)
+data(spider) # what does this do?
+mvpart(data.matrix(spider[,1:12]) ~ twigs + water,
+    data = spider, method = "mrt", dissim = "euc")
 
-z.auto = rpart(Mileage ~ Weight, car.test.frame)
-summary(z.auto)
+mvpart(data.matrix(spider[,1:12]) ~ water + sand + moss +
+    reft + twigs + herbs, data = spider)#, method = "mrt", dissim = "euc")
