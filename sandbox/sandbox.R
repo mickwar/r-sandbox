@@ -2527,3 +2527,37 @@ mat.max = function(x, method = 1){
     return(index)
     }
 ##########
+
+##########
+# cdf of multivariate normal
+library(MASS)
+
+mu = c(2, 5)
+sigma = matrix(c(1, 0.8, 0.8, 2), 2, 2)
+
+n = 5000
+x = mvrnorm(n, mu, sigma)
+
+xbar = apply(x, 2, mean)
+S = var(x)
+
+plot(x, pch=20)
+
+dis = x - matrix(mu, n, length(mu), byrow = TRUE)
+inv = solve(S)
+
+mal = -0.5*diag(dis %*% (inv %*% t(dis)))
+
+# uniform?
+plot(seq(0, 1, length=n), sort(exp(mal)), pch=20, cex = 0.5)
+abline(0, 1)
+
+pmin = which.min(mal)
+pmax = which.max(mal)
+
+x[pmin,]
+x[pmax,]
+plot(x, pch=20)
+points(x[pmin, 1], x[pmin, 2], col='red', pch=20, cex=2)
+points(x[pmax, 1], x[pmax, 2], col='green', pch=20, cex=2)
+##########
