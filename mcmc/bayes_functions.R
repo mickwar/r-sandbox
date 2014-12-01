@@ -336,7 +336,8 @@ mcmc_time = function(do = TRUE, iter, every = 100, params, accept,
 # K is the number of bins to use for the chi2 gof test
 # alternatively, a can be given which contains the endpoints
 # for a_0 to a_K
-# returns the pvalues
+# returns the pvals
+# (the null is that the model fits)
 bayes.gof = function(data, params, cdf, K, a){
     y = as.matrix(data)
     n = nrow(y)

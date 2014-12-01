@@ -4,7 +4,7 @@ source("./bayes_functions.R")
 
 # generate some data
 set.seed(1)
-n = 500
+n = 10
 datx = runif(n, 0, 10)
 b0 = 2
 b1 = 1.2
@@ -12,7 +12,7 @@ sig2 = 1
 # wrong model
  daty = b0 + b1*datx - 0.2*datx^2 + rnorm(n, 0, sqrt(sig2))
 # true model
-#daty = b0 + b1*datx + rnorm(n, 0, sqrt(sig2))
+ daty = b0 + b1*datx + rnorm(n, 0, sqrt(sig2))
 plot(datx, daty, pch=20)
 
 # into vectors
@@ -122,10 +122,12 @@ cdf = function(data, theta){
     pnorm(y, x %*% theta[1:2], sqrt(theta[3]))
     }
 
-pvals = bayes.gof(cbind(y, x), params, cdf)
+pvals = bayes.gof(cbind(y, x), params, cdf, K = 2)
+
+mean(pvals <= 0.05)
+mean(pvals <= 0.01)
 
 plot(density(pvals))
-mean(pvals < 0.05)
 
 # get an estimate of the mode using the parameter draws and the calculated
 # (log) posterior. only works if the joint posterior is calculated for every
@@ -137,8 +139,7 @@ est.mode = function(params, post){
     nparams = nrow(params)
     maxx = which.max(as.numeric(post))
     end = 1 + ((maxx - 1) %% nparams) # the index of the ending parameter
-    if (end != nparams)
-        order = c(end:nparams, 1:(end-1))
+    order = c((nparams - end + 1):nparams, 1:(nparams - end))[1:nparams]
     vec = as.numeric(params)[(maxx-nparams+1):maxx]
     return(list("mode"=vec[order], "height"=post[maxx]))
     }
