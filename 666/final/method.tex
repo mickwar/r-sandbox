@@ -4,7 +4,7 @@ Random forests can be used for both regression and classification problems. I wi
 
 \subsection{Growing a tree}
 
-Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. Predictions for region $j$ are typically based on the mean (regression) or mode (classification) of the responses in $R_j$. This allows for easily interpretable results 
+Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting as mentioned in the introduction.
 
 When the response is categorical, we take the predictive value to be that category having the highest number of observations found in the region, i.e. the mode.
 
