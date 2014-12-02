@@ -63,3 +63,35 @@ mvpart(data.matrix(spider[,1:12]) ~ twigs + water,
 
 mvpart(data.matrix(spider[,1:12]) ~ water + sand + moss +
     reft + twigs + herbs, data = spider)#, method = "mrt", dissim = "euc")
+
+
+### read in ben's movie data
+source("./read_data.R")
+
+
+n = nrow(X)
+p = ncol(X)
+
+# divide into training and test sets (the random forest
+# mechanism will do a bootstrap sample on the training set)
+set.seed(1)
+train.ind = sample(n, floor(n*0.5))
+
+mod = randomForest(factor(Y) ~ ., data = X, importance = TRUE,
+    ntree=500, mtry=floor(sqrt(p)), subset=train.ind)
+
+plot(mod$err[,1], type='l')
+yhat = predict(mod, newdata = data.frame(X[-train.ind,]))
+1-mean(yhat == Y[-train.ind])
+
+barplot(sort(importance(mod)[,4]), horiz = TRUE, las = 1,
+    xlab = "Mean Decrease Gini Index", cex.names = 1,
+    col = "dodgerblue", main = "Variable Importance")
+
+# error rate for a single tree
+tre = tree(factor(Y) ~ ., data = data.frame(X), subset = train.ind)
+plot(tre)
+text(tre)
+
+yhat.tre = predict(tre, newdata = data.frame(X[-train.ind,]))
+1-mean(yhat.tre == Y[-train.ind])
