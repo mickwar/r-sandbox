@@ -1,4 +1,5 @@
 ### Multivariate random forests
+### (as explained by Segal and Xiao (2011))
 
 
 library(mvpart)
@@ -38,27 +39,27 @@ mrf = function(y, x, mtry, ntree, subset){
     get.node.obs = function(which.node){
         if (which.node == 1)
             return (subset)
-        keep = NULL
+        keep.bool = rep(TRUE, nodes[1, 5])
         current = which.node
         while (current > 0){
             if (nodes[current, 6] == 1)
-                keep = c(keep, which(x[,nodes[current, 2]] <= nodes[current, 3]))
+                keep.bool = keep.bool & x[,nodes[current, 2]] <= nodes[current, 3]
             if (nodes[current, 6] == 2)
-                keep = c(keep, which(x[,nodes[current, 2]] > nodes[current, 3]))
+                keep.bool = keep.bool & x[,nodes[current, 2]] > nodes[current, 3]
             # current is now the parent node
             current = nodes[current, 4]
             }
-        return (keep)
+        return (which(keep.bool))
         }
 
     # assumes numeric for now (binary will also work)
     # assumes euclidaen distance
     split.node = function(var, which.node){
+        t.obs = get.node.obs(which.node)
         temp = matrix(0, length(var), 5)
         temp[,1] = var
         for (v in var){
             # get obs inside
-            t.obs = get.node.obs(which.node)
 
             yv = y[t.obs,]
             xv = x[t.obs, v]
@@ -66,7 +67,7 @@ mrf = function(y, x, mtry, ntree, subset){
             V = diag(q)
             SSt = 0
             for (i in t.obs)
-                SSt = SSt + t(yv[i,] - mu) %*% solve(V) %*% (yv[i,] - mu)
+                SSt = SSt + t(y[i,] - mu) %*% solve(V) %*% (y[i,] - mu)
         
             # where to try the splits
             s = sort(unique(xv))
@@ -89,10 +90,12 @@ mrf = function(y, x, mtry, ntree, subset){
 
                 phi[j] = SSt - SSL - SSR
                 }
-            temp[temp[,1] == v, 2] = s[which.max(phi)]
-            temp[temp[,1] == v, 3] = length(which(xv <= s[which.max(phi)]))
-            temp[temp[,1] == v, 4] = length(which(xv > s[which.max(phi)]))
-            temp[temp[,1] == v, 5] = max(phi)
+            temp[temp[,1] == v, 2] = s[which.max(phi)]                      # the cutoff
+            temp[temp[,1] == v, 3] = length(which(xv <= s[which.max(phi)])) # nobs to the left
+            temp[temp[,1] == v, 4] = length(which(xv > s[which.max(phi)]))  # nobs to the right
+            temp[temp[,1] == v, 5] = max(phi)                               # optimzation functional
+            if (is.na(temp[temp[,1] == v, 2]))
+                temp[temp[,1] == v, 2:5] = -Inf
             }
         return (temp[which.max(temp[,5]),])
         }
@@ -104,10 +107,16 @@ mrf = function(y, x, mtry, ntree, subset){
             temp[j,] = c(split.node(1:p, n.ind[j]), n.ind[j])
             }
         newsplit = temp[which.max(temp[,5]),]
-        nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], newsplit[6], newsplit[3]), 1)
-        nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], newsplit[6], newsplit[4]), 2)
-
+        nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], newsplit[6], newsplit[3], 1))
+        nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], newsplit[6], newsplit[4], 2))
         }
+
+    # check
+#   j = get.terminal.nodes(nodes)
+#   index = NULL
+#   for (i in 1:length(j))
+#       index = c(index, get.node.obs(j[i]))
+#   
     
 
     }
