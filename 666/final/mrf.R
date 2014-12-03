@@ -7,7 +7,7 @@ library(mvpart)
 y = spider[,1:12]
 x = spider[,13:18]
 
-mrf = function(y, x, mtry, ntree, subset, minnodesize, V){
+mrf = function(y, x, mtry, ntree, subset, minnodesize, maxnodesize, V){
     p = ncol(x)
 
     if (missing(mtry))
