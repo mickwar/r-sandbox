@@ -33,40 +33,62 @@ mrf = function(y, x, mtry, ntree, subset){
         return (1)
         }
 
-    # assumes numeric for now (binary will also work)
-    # assumes euclidaen distance
-    split = function(var, which.nodes){
-        # vector of the terminal node indicators
-        t.vec = which.nodes
-        for (t in t.vec){
-            mu = apply(y, 2, mean)
-            V = diag(q)
-            SSt = 0
-            for (i in 1:n)
-                SSt = SSt + t(y[i,] - mu) %*% solve(V) %*% (y[i,] - mu)
-        
-        # where to try the splits
-        s = sort(unique(var))
-        s = diff(s)/2 + s[-length(s)]
-
-
-        SStL.1 = 0
-        muL.1 = apply(y[tL,], 2, mean)
-        for (i in tL)
-            SStL.1 = SStL.1 + t(y[i,] - muL.1) %*% solve(V) %*% (y[i,] - muL.1)
-
-        SStR.1 = 0
-        muR.1 = apply(y[tR,], 2, mean)
-        for (i in tR)
-            SStR.1 = SStR.1 + t(y[i,] - muR.1) %*% solve(V) %*% (y[i,] - muR.1)
-
-(       phi1.1 = SSt.1 - SStL.1 - SStR.1)
-
-        for (i in 1:length(s)){
-            tL = which(var <= s[i])
-            tR = which(var > s[i])
-            SSt = 
+    # get the index of observations in node "which"
+    get.node.obs = function(nodes, which){
+        if (which == 1)
+            return (subset)
+        keep = NULL
+        current = which
+        while (current > 0){
+            keep = c(keep, 1)
             }
         }
+
+    # assumes numeric for now (binary will also work)
+    # assumes euclidaen distance
+    split.node = function(var, which.node){
+        temp = matrix(0, length(var), 5)
+        temp[,1] = var
+        for (v in var){
+            # get obs inside
+            t.obs = get.node.obs(nodes, which.node)
+
+            yv = y[t.obs,]
+            xv = x[t.obs, v]
+            mu = apply(y[t.obs,], 2, mean)
+            V = diag(q)
+            SSt = 0
+            for (i in t.obs)
+                SSt = SSt + t(yv[i,] - mu) %*% solve(V) %*% (yv[i,] - mu)
+        
+            # where to try the splits
+            s = sort(unique(xv))
+            s = diff(s)/2 + s[-length(s)]
+            phi = double(length(s))
+
+            for (j in 1:length(s)){
+                tL = which(xv <= s[j])
+                tR = which(xv > s[j])
+
+                SSL = 0
+                muL = apply(matrix(yv[tL,], nrow = length(tL)), 2, mean)
+                for (i in tL)
+                    SSL = SSL + t(yv[i,] - muL) %*% solve(V) %*% (yv[i,] - muL)
+
+                SSR = 0
+                muR = apply(matrix(yv[tR,], nrow = length(tR)), 2, mean)
+                for (i in tR)
+                    SSR = SSR + t(yv[i,] - muR) %*% solve(V) %*% (yv[i,] - muR)
+
+                phi[j] = SSt - SSL - SSR
+                }
+            temp[temp[,1] == v, 2] = s[which.max(phi)]
+            temp[temp[,1] == v, 3] = length(which(xv <= s[which.max(phi)]))
+            temp[temp[,1] == v, 4] = length(which(xv > s[which.max(phi)]))
+            temp[temp[,1] == v, 5] = max(phi)
+            }
+        temp[which.max(temp[,5]),]
+        }
+    
 
     }
