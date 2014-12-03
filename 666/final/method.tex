@@ -25,15 +25,16 @@ and would thus want to maximize $\phi(s, t)$ for choosing the next split. Pure n
 SS(t) = \sum_{i\in t}(y_i-\mu(t))^\top V^{-1} (y_i-\mu(t))
 \label{reg_ss}
 \end{eqnarray}
-where the response $y_i$ is a vector of length $q$, $\mu(t)$ is the mean response of every observation in node $t$, and the $q\times q$ matrix $V$ is a weighting ``covariance'' matrix. When $V=I_q$, the impurity of a node is the sum of squared Euclidean distances. When $q=1$ and $V=1$, then (\ref{reg_ss}) reduces to $SS(t) = \sum_{i\in t}(y_i-\mu(t))^2$, the univariate sums of the squares.
+where the response $y_i$ is a vector of length $q$, $\mu(t)$ is the mean response of every observation in node $t$, and the $q\times q$ matrix $V$ is a weighting ``covariance'' matrix. When $V=I_q$, the impurity of a node is the sum of squared Euclidean distances. When $q=1$ and $V=1$, (\ref{reg_ss}) reduces to $SS(t) = \sum_{i\in t}(y_i-\mu(t))^2$, the univariate sums of the squares.
 
 For $K$ categorical responses, a common impurity measure is the Gini index defined by
 \begin{eqnarray}
 G(t) = \sum_{k=1}^K\hat{p}_{tk}(1-\hat{p}_{tk})
 \label{cla_gini}
 \end{eqnarray}
-where $\hat{p}_{jk}$ is the proportion of observations in class $k$ found in node $t$.
+where $\hat{p}_{tk}$ is the proportion of observations in class $k$ found in node $t$. Smaller $G(t)$ indicate purer nodes, and $G(t)$ is close to zero when all of the $\hat{p}_{tk}$'s are close to zero or one. Growing trees using the Gini index would maximize $\phi(s, t)=G(t) - G(t_L) - G(t_R)$.
 
+Alternatives to the Gini index include the classification error rate, using the most common class in the region as the prediction, and cross-entropy defined as $D(t) = -\sum_{k=1}^K\hat{p}_{tk}\mathrm{log}(\hat{p}_{tk})$. The Gini index and cross-entropy very similar numerically and both emphasize node purity, whereas classification error rate emphasizes prediction accuracy.
 
 
 
@@ -46,6 +47,5 @@ where $\hat{p}_{jk}$ is the proportion of observations in class $k$ found in nod
 For correlated random variables:
 
 \[ \mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{1}{n^2}\sum_{i=1}^n\mathrm{Var}(X_i) + \frac{1}{n^2}\sum_{i=1}^{n-1}\sum_{j=i+1}^n\mathrm{Cov}(X_i,X_j) \]
-
 
 \subsection{Variable importance}
