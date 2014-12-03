@@ -62,7 +62,7 @@ mvpart(data.matrix(spider[,1:12]) ~ twigs + water,
     data = spider, method = "mrt", dissim = "euc", xval = 100, xvmult = 100)
 
 mvpart(data.matrix(spider[,1:12]) ~ water + sand + moss +
-    reft + twigs + herbs, data = spider)#, method = "mrt", dissim = "euc")
+    reft + twigs + herbs, data = spider, method = "mrt", dissim = "euc")
 
 randomForest(data.matrix(spider[,1:12]) ~ twigs + water, data = spider)
 
