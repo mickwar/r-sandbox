@@ -11,11 +11,13 @@ Let $t$ be the set of observations within the terminal node being considered for
 \begin{enumerate}
 \item Have every observation begin in the same node.
 \item For every terminal node $t$ and every split $s$ compute $\phi(s, t)$.
-\item Create two new terminal nodes $t_L$ and $t_R$ at split $s$ when $\phi(s, t)$ is optimized. The split node $t$ is no longer terminal.
+\item Create two new terminal nodes $t_L$ and $t_R$ at split $s$ when $\phi(s, t)$ is optimized. The split node $t$ is now termed a parent node.
 \item Repeat steps 2 and 3 until some stopping rule is met; for example, until no node contains more than five observations.
 \end{enumerate}
 
-The function $\phi(s, t)$ is some optimization function that 
+The function $\phi(s, t)$ is some optimization function that results in the most homogenous children nodes. Homogeneity is assessed via some impurity measure. In the regression case we may let
+\[\phi(s, t) = SS(t) - SS(t_L) - SS(t_R)\]
+and would thus want to maximize $\phi(s, t)$ for choosing the next split. The multivarite weighted sums of squares $SS(t) = \sum_{i\in t}(y_i-\mu(t))^\top V^{-1}(y_i-\mu(t))$
 
 
 
