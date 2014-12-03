@@ -140,7 +140,7 @@ dmvnorm = function(X, mu, Sigma)
     1/(2*pi)^(length(X)/2) * det(Sigma)^(-1/2) * exp(-1/2*t(X - mu) %*% solve(Sigma) %*% (X - mu))
 dmvnorm = function(X)
     1/(2*pi)^(length(X)/2) * exp(-1/2*t(X) %*% (X))
-cross = function(...){
+cross = function(...){ # also see expand.grid()
     vec = list(...)
     d = length(vec)
     N = double(d+2) + 1
