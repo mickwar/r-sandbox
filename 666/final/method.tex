@@ -6,14 +6,26 @@ Random forests are constructed using an ensemble of trees from bootstrap samples
 
 Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting. The resulting regions are called terminal nodes, or leaves, and contain a subset of observations not found in any other terminal node.
 
-We must define a function $\phi(s, t)$ to calculate all possible splits $s$ in the predictor space for terminal node $t$. 
+Let $t$ be the set of observations within the terminal node being considered for splitting and $s=(j, c)$ denote the variable $j$ and cutoff $c$ as the corresponding split in the predictor space. That is, at split $s$ we separate the observations $i\in t$ into ``left'' and ``right'' groups, $t_L=\{i:x_{ji}\leq c, i\in t\}$ and $t_R=\{i:x_{ji} > c, i\in t\}$. Then grow a tree according the following algorithm:
+
+\begin{enumerate}
+\item Have every observation begin in the same node.
+\item For every terminal node $t$ and every split $s$ compute $\phi(s, t)$.
+\item Create two new terminal nodes $t_L$ and $t_R$ at split $s$ when $\phi(s, t)$ is optimized. The split node $t$ is no longer terminal.
+\item Repeat steps 2 and 3 until some stopping rule is met; for example, until no node contains more than five observations.
+\end{enumerate}
+
+The function $\phi(s, t)$ is some optimization function that 
+
+
+
+
+
 
 When the response is categorical, we take the predictive value to be that category having the highest number of observations found in the region, i.e. the mode.
 
 Trees are grown by repeatedly splitting the feature space such that some function is optimized. For regression, the residual sums of squares is typically used. In the univariate case,
 \[ RSS=\sum_{j=1}^J\sum_{i\in R_j}(y_i - \hat{y}_{R_j})^2 \]
-
-
 
 For small $p$, taking $F$ random linear combinations of $L$ variables to define new inputs can lead to an increase in strength but higher correlation \citep{breiman:2001}. \cite{segal:2011} \cite{death:2002}
 
@@ -21,6 +33,10 @@ For small $p$, taking $F$ random linear combinations of $L$ variables to define 
 
 
 \subsection{Random forests}
+
+For correlated random variables:
+
+\[ \mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{1}{n^2}\sum_{i=1}^n\mathrm{Var}(X_i) + \frac{1}{n^2}\sum_{i=1}^{n-1}\sum_{j=i+1}^n\mathrm{Cov}(X_i,X_j) \]
 
 
 \subsection{Variable importance}
