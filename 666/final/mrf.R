@@ -22,7 +22,7 @@ mrf = function(y, x, mtry, ntree, subset){
     # column 2: which variable was split
     # column 3: where the variable was split
     # column 4: parent node
-    # column 5: number of observations inside the number
+    # column 5: number of observations inside the node
     nodes = matrix(0, 1, 5)
     nodes[1,1] = 1  # first parent node
     nodes[1,5] = n
@@ -88,6 +88,17 @@ mrf = function(y, x, mtry, ntree, subset){
             temp[temp[,1] == v, 5] = max(phi)
             }
         temp[which.max(temp[,5]),]
+        }
+
+    for (i in 1:3){
+        n.ind = get.terminal.nodes(nodes)
+        temp = matrix(0, length(n.ind), 6)
+        for (j in 1:length(n.ind)){
+            temp[j,] = c(split.node(1:p, n.ind[j]), n.ind[j])
+            }
+        newsplit = temp[which.max(temp[,5]),]
+        nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], 
+
         }
     
 
