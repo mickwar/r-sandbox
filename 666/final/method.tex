@@ -6,7 +6,7 @@ Random forests are constructed using an ensemble of trees from bootstrap samples
 
 Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting. The resulting regions are called terminal nodes, or leaves, and contain a subset of observations not found in any other terminal node.
 
-Let $t$ be the set of observations within the terminal node being considered for splitting and $s=(j, c)$ denote the variable $j$ and cutoff $c$ as the corresponding split in the predictor space. That is, at split $s$ we separate the observations $i\in t$ into ``left'' and ``right'' groups, $t_L=\{i:x_{ji}\leq c, i\in t\}$ and $t_R=\{i:x_{ji} > c, i\in t\}$. Then grow a tree according the following algorithm:
+Let $t$ be the set of observations within the terminal node being considered for splitting and $s=(v, c)$ denote the variable $v$ and cutoff $c$ as the corresponding split in the predictor space. That is, at split $s$ we separate the observations $i\in t$ into ``left'' and ``right'' groups, $t_L=\{i:x_{vi}\leq c, i\in t\}$ and $t_R=\{i:x_{vi} > c, i\in t\}$. Then grow a tree according the following algorithm:
 
 \begin{enumerate}
 \item Have every observation begin in the same node.
@@ -16,20 +16,27 @@ Let $t$ be the set of observations within the terminal node being considered for
 \end{enumerate}
 
 The function $\phi(s, t)$ is some optimization function that results in the most homogenous children nodes. Homogeneity is assessed via some impurity measure. In the regression case we may let
-\[\phi(s, t) = SS(t) - SS(t_L) - SS(t_R)\]
-and would thus want to maximize $\phi(s, t)$ for choosing the next split. The multivarite weighted sums of squares $SS(t) = \sum_{i\in t}(y_i-\mu(t))^\top V^{-1}(y_i-\mu(t))$
+\begin{eqnarray}
+\phi(s, t) = SS(t) - SS(t_L) - SS(t_R)
+\label{reg_phi}
+\end{eqnarray}
+and would thus want to maximize $\phi(s, t)$ for choosing the next split. Pure nodes, those containing closely related observations, will have minimum sums of squares $SS(t_L) + SS(t_R)$. The multivariate analog of sums of squares is given by
+\begin{eqnarray}
+SS(t) = \sum_{i\in t}(y_i-\mu(t))^\top V^{-1} (y_i-\mu(t))
+\label{reg_ss}
+\end{eqnarray}
+where the response $y_i$ is a vector of length $q$, $\mu(t)$ is the mean response of every observation in node $t$, and the $q\times q$ matrix $V$ is a weighting ``covariance'' matrix. When $V=I_q$, the impurity of a node is the sum of squared Euclidean distances. When $q=1$ and $V=1$, then (\ref{reg_ss}) reduces to $SS(t) = \sum_{i\in t}(y_i-\mu(t))^2$, the univariate sums of the squares.
+
+For $K$ categorical responses, a common impurity measure is the Gini index defined by
+\begin{eqnarray}
+G(t) = \sum_{k=1}^K\hat{p}_{tk}(1-\hat{p}_{tk})
+\label{cla_gini}
+\end{eqnarray}
+where $\hat{p}_{jk}$ is the proportion of observations in class $k$ found in node $t$.
 
 
 
 
-
-
-When the response is categorical, we take the predictive value to be that category having the highest number of observations found in the region, i.e. the mode.
-
-Trees are grown by repeatedly splitting the feature space such that some function is optimized. For regression, the residual sums of squares is typically used. In the univariate case,
-\[ RSS=\sum_{j=1}^J\sum_{i\in R_j}(y_i - \hat{y}_{R_j})^2 \]
-
-For small $p$, taking $F$ random linear combinations of $L$ variables to define new inputs can lead to an increase in strength but higher correlation \citep{breiman:2001}. \cite{segal:2011} \cite{death:2002}
 
 \subsection{Bootstrapping}
 
