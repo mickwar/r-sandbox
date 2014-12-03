@@ -100,7 +100,11 @@ mrf = function(y, x, mtry, ntree, subset){
         return (temp[which.max(temp[,5]),])
         }
 
-    for (i in 1:3){
+    # todo: need a stopping rule for when to stop growing the tree
+    #       min node size?
+
+    # grow the tree
+    for (i in 1:10){
         n.ind = get.terminal.nodes(nodes)
         temp = matrix(0, length(n.ind), 6)
         for (j in 1:length(n.ind)){
@@ -111,12 +115,11 @@ mrf = function(y, x, mtry, ntree, subset){
         nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], newsplit[6], newsplit[4], 2))
         }
 
-    # check
+    # check index should contain every observation in subset
 #   j = get.terminal.nodes(nodes)
 #   index = NULL
 #   for (i in 1:length(j))
 #       index = c(index, get.node.obs(j[i]))
-#   
     
 
     }
