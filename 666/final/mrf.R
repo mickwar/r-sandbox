@@ -23,7 +23,8 @@ mrf = function(y, x, mtry, ntree, subset){
     # column 3: where the variable was split
     # column 4: parent node
     # column 5: number of observations inside the node
-    nodes = matrix(0, 1, 5)
+    # column 6: 1 for left, 2 for right
+    nodes = matrix(0, 1, 6)
     nodes[1,1] = 1  # first parent node
     nodes[1,5] = n
 
@@ -34,14 +35,20 @@ mrf = function(y, x, mtry, ntree, subset){
         }
 
     # get the index of observations in node "which"
-    get.node.obs = function(nodes, which){
-        if (which == 1)
+    get.node.obs = function(which.node){
+        if (which.node == 1)
             return (subset)
         keep = NULL
-        current = which
+        current = which.node
         while (current > 0){
-            keep = c(keep, 1)
+            if (nodes[current, 6] == 1)
+                keep = c(keep, which(x[,nodes[current, 2]] <= nodes[current, 3]))
+            if (nodes[current, 6] == 2)
+                keep = c(keep, which(x[,nodes[current, 2]] > nodes[current, 3]))
+            # current is now the parent node
+            current = nodes[current, 4]
             }
+        return (keep)
         }
 
     # assumes numeric for now (binary will also work)
@@ -51,7 +58,7 @@ mrf = function(y, x, mtry, ntree, subset){
         temp[,1] = var
         for (v in var){
             # get obs inside
-            t.obs = get.node.obs(nodes, which.node)
+            t.obs = get.node.obs(which.node)
 
             yv = y[t.obs,]
             xv = x[t.obs, v]
@@ -87,7 +94,7 @@ mrf = function(y, x, mtry, ntree, subset){
             temp[temp[,1] == v, 4] = length(which(xv > s[which.max(phi)]))
             temp[temp[,1] == v, 5] = max(phi)
             }
-        temp[which.max(temp[,5]),]
+        return (temp[which.max(temp[,5]),])
         }
 
     for (i in 1:3){
@@ -97,7 +104,8 @@ mrf = function(y, x, mtry, ntree, subset){
             temp[j,] = c(split.node(1:p, n.ind[j]), n.ind[j])
             }
         newsplit = temp[which.max(temp[,5]),]
-        nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], 
+        nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], newsplit[6], newsplit[3]), 1)
+        nodes = rbind(nodes, c(nrow(nodes)+1, newsplit[1], newsplit[2], newsplit[6], newsplit[4]), 2)
 
         }
     
