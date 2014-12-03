@@ -1,12 +1,13 @@
 ### Multivariate random forests
 ### (as explained by Segal and Xiao (2011))
+### (for regression)
 
 
 library(mvpart)
 y = spider[,1:12]
 x = spider[,13:18]
 
-mrf = function(y, x, mtry, ntree, subset){
+mrf = function(y, x, mtry, ntree, subset, minnodesize, V){
     p = ncol(x)
 
     if (missing(mtry))
@@ -17,6 +18,9 @@ mrf = function(y, x, mtry, ntree, subset){
     y = as.matrix(y[subset,])
     n = nrow(y)
     q = ncol(y)
+
+    if (missing(V))
+        V = diag(q)
 
     # initialize nodes, each row indicates a split
     # column 1: node indicator
