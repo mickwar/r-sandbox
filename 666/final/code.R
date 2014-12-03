@@ -59,10 +59,12 @@ library(mvpart) # multivariate regression trees
 
 data(spider) # what does this do?
 mvpart(data.matrix(spider[,1:12]) ~ twigs + water,
-    data = spider, method = "mrt", dissim = "euc")
+    data = spider, method = "mrt", dissim = "euc", xval = 100, xvmult = 100)
 
 mvpart(data.matrix(spider[,1:12]) ~ water + sand + moss +
     reft + twigs + herbs, data = spider)#, method = "mrt", dissim = "euc")
+
+randomForest(data.matrix(spider[,1:12]) ~ twigs + water, data = spider)
 
 
 ### read in ben's movie data
@@ -95,3 +97,24 @@ text(tre)
 
 yhat.tre = predict(tre, newdata = data.frame(X[-train.ind,]))
 1-mean(yhat.tre == Y[-train.ind])
+
+
+### comparison of gini index and cross-entropy
+p1 = seq(0.01, 0.99, length=100)
+p2 = 1 - p1
+
+gini = p1*(1-p1) + p2*(1-p2)
+entr = -p1*log(p1) - p2*log(p2)
+
+pdf("./figs/gini_entropy.pdf", width = 9, height = 9)
+# gini
+plot(p1, gini, type='l', ylim=c(0, 0.6), lwd=3, col="red", ylab="",
+    xlab = expression(p[1]), cex.lab = 2, cex.main = 2,
+    main = "Gini index and cross-entropy \n measures for K=2 classes")
+# cross-entropy
+lines(p1, entr*max(gini)/max(entr), type='l', col="blue", lwd=3)
+legend("topleft", box.lty=0, legend=c("Gini index", "cross-entropy"),
+    col=c("red","blue"), lty=1, lwd=3, cex = 2)
+dev.off()
+# cross-entropy penalizes slightly more, but levels out similarly,
+# note that entropy is scaled down to have the maximums match
