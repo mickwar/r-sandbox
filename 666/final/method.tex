@@ -1,10 +1,12 @@
-\section{Method}
+\section{Methods}
 
-Random forests can be used for both regression and classification problems. I will focus on regression (continuous response), but the methods apply just as well to the classification case.
+Random forests are constructed using an ensemble of trees from bootstrap samples. In this section I describe how to grow random forests and the rationale behind them.
 
-\subsection{Growing a tree}
+\subsection{Growing a single tree}
 
-Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting as mentioned in the introduction.
+Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting. The resulting regions are called terminal nodes, or leaves, and contain a subset of observations not found in any other terminal node.
+
+We must define a function $\phi(s, t)$ to calculate all possible splits $s$ in the predictor space for terminal node $t$. 
 
 When the response is categorical, we take the predictive value to be that category having the highest number of observations found in the region, i.e. the mode.
 
