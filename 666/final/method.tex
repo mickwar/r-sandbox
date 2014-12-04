@@ -4,7 +4,7 @@ Random forests are constructed using an ensemble of trees from bootstrap samples
 
 \subsection{Growing a single tree}
 
-Tree-based methods involve dividing the predictor variables, or feature space, $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting. The resulting regions are called terminal nodes, or leaves, and contain a subset of observations not found in any other terminal node.
+Tree-based methods involve dividing the predictor variables $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting. The resulting regions are called terminal nodes, or leaves, and contain a subset of observations not found in any other terminal node.
 
 Let $t$ be the set of observations within the terminal node being considered for splitting and $s=(v, c)$ denote the variable $v$ and cutoff $c$ as the corresponding split in the predictor space. That is, at split $s$ we separate the observations $i\in t$ into ``left'' and ``right'' groups, $t_L=\{i:x_{vi}\leq c, i\in t\}$ and $t_R=\{i:x_{vi} > c, i\in t\}$. Then grow a tree according the following algorithm:
 
@@ -25,7 +25,7 @@ and would thus want to maximize $\phi(s, t)$ for choosing the next split. Pure n
 SS(t) = \sum_{i\in t}(y_i-\mu(t))^\top V^{-1} (y_i-\mu(t))
 \label{reg_ss}
 \end{eqnarray}
-where the response $y_i$ is a vector of length $q$, $\mu(t)$ is the mean response of every observation in node $t$, and the $q\times q$ matrix $V$ is a weighting ``covariance'' matrix. When $V=I_q$, the impurity of a node is the sum of squared Euclidean distances. When $q=1$ and $V=1$, (\ref{reg_ss}) reduces to $SS(t) = \sum_{i\in t}(y_i-\mu(t))^2$, the univariate sums of the squares.
+where the response $y_i$ is a vector of length $q$, $\mu(t)$ is the mean response of every observation in node $t$, and the $q\times q$ matrix $V$ is a weighting ``covariance'' matrix. When $V=I_q$, the impurity of a node is the sum of squared Euclidean distances. When $q=1$ and $V=1$, (\ref{reg_ss}) reduces to $SS(t) = \sum_{i\in t}(y_i-\mu(t))^2$, the univariate sum of the squares.
 
 For $K$ categorical responses, a common impurity measure is the Gini index defined by
 \begin{eqnarray}
