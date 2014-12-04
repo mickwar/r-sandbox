@@ -4,18 +4,18 @@ Random forests are constructed using an ensemble of trees from bootstrap samples
 
 \subsection{Growing a single tree}
 
-Tree-based methods involve dividing the predictor variables $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting. The resulting regions are called terminal nodes, or leaves, and contain a subset of observations not found in any other terminal node.
+Tree-based methods involve dividing the predictor variables $X_1,\ldots,X_p$ into $J$ distinct and non-overlapping regions $R_1,\ldots,R_J$. These regions may be any shape but are most often hyperrectangles formed by recursive binary splitting. The resulting regions are called terminal nodes, or leaves, and contain a subset of observations not found in any other terminal node. 
 
-Let $t$ be the set of observations within the terminal node being considered for splitting and $s=(v, c)$ denote the variable $v$ and cutoff $c$ as the corresponding split in the predictor space. That is, at split $s$ we separate the observations $i\in t$ into ``left'' and ``right'' groups, $t_L=\{i:x_{vi}\leq c, i\in t\}$ and $t_R=\{i:x_{vi} > c, i\in t\}$. Then grow a tree according the following algorithm:
-
+Let $t$ be the set of observations within the terminal node being considered for splitting and $s=(v, c)$ denote the variable $v$ and cutoff $c$ as the corresponding split in the predictor space. That is, at split $s$ we separate the observations $i\in t$ into ``left'' and ``right'' groups, $t_L=\{i:x_{vi}\leq c, i\in t\}$ and $t_R=\{i:x_{vi} > c, i\in t\}$. Then grow a tree according to the following algorithm:
 \begin{enumerate}
 \item Have every observation begin in the same node.
 \item For every terminal node $t$ and every split $s$ compute $\phi(s, t)$.
 \item Create two new terminal nodes $t_L$ and $t_R$ at split $s$ when $\phi(s, t)$ is optimized. The split node $t$ is now termed a parent node.
 \item Repeat steps 2 and 3 until some stopping rule is met.%; for example, until no node contains more than five observations.
 \end{enumerate}
+This algorithm requires that the predictor variables either be continuous, binary , or ordered categorical measurements. For unordered categories (discrete variables where one value is no ``greater'' than another), splits are considered at every possible separation of the factor levels into two distinct groups.
 
-The function $\phi(s, t)$ is some optimization function that results in the most homogenous children nodes. Homogeneity is assessed via some impurity measure. In the regression case we may let
+The function $\phi(s, t)$ is some optimization function that results in the most homogenous children nodes. Homogeneity is assessed via some node impurity measure. In the regression case we may let
 \begin{eqnarray}
 \phi(s, t) = SS(t) - SS(t_L) - SS(t_R)
 \label{reg_phi}
@@ -34,7 +34,9 @@ G(t) = \sum_{k=1}^K\hat{p}_{tk}(1-\hat{p}_{tk})
 \end{eqnarray}
 where $\hat{p}_{tk}$ is the proportion of observations in class $k$ found in node $t$. Smaller $G(t)$ indicate purer nodes, and $G(t)$ is close to zero when all of the $\hat{p}_{tk}$'s are close to zero or one. Growing trees using the Gini index would maximize $\phi(s, t)=G(t) - G(t_L) - G(t_R)$. 
 
-Alternatives to the Gini index include the classification error rate, using the most common class in the region as the prediction, and cross-entropy defined as $D(t) = -\sum_{k=1}^K\hat{p}_{tk}\mathrm{log}(\hat{p}_{tk})$. The Gini index and cross-entropy very similar numerically and both emphasize node purity, whereas classification error rate emphasizes prediction accuracy.
+Alternatives to the Gini index include the classification error rate, using the most common class in the region as the prediction, and cross-entropy defined as
+\[D(t) = -\sum_{k=1}^K\hat{p}_{tk}\mathrm{log}(\hat{p}_{tk}).\]
+The Gini index and cross-entropy are very similar numerically and both emphasize node purity, whereas classification error rate emphasizes prediction accuracy.
 
 A common stopping rule (step 4 in the algorithm) is to stop splitting nodes when each node has less observations than some pre-determined quantity. Another rule might be to place a lower limit on the node size, placing a constraint on the tree size.
 
@@ -44,14 +46,14 @@ A random forest is constructed by growing $T$ trees on a boostrapped sample (dis
 
 For a sequence $X_1,\ldots,X_n$ of random variables, the following is true:
 \begin{eqnarray}
-\mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{1}{n^2}\sum_{i=1}^n\mathrm{Var}(X_i) + \frac{1}{n^2}\sum_{i=1}^{n-1}\sum_{j=i+1}^n\mathrm{Cov}(X_i,X_j).
+\mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{1}{n^2}\sum_{i=1}^n\mathrm{Var}(X_i) + \frac{2}{n^2}\sum_{i=1}^{n-1}\sum_{j=i+1}^n\mathrm{Cov}(X_i,X_j).
 \label{var}
 \end{eqnarray}
-When $X_1,\ldots,X_n$ are identically distributed with $\mathrm{Var}(X_i)=\sigma^2$, (\ref{var}) reduces to
+When $X_1,\ldots,X_n$ are distributed such that $\mathrm{Var}(X_i)=\sigma^2$ and $\mathrm{Cor}(X_i, X_j)=\rho$, then (\ref{var}) reduces to
 \begin{eqnarray}
 \mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{\sigma^2}{n} + \frac{n-1}{n}\rho\sigma^2
 \end{eqnarray}
-where $\rho$ is the correlation between the random variables. Hence, for correlated random variables, taking an average will reduce variance, but the decrease is hampered by the positive correlation. When trees are grown on bootstrap samples, there will typically be some dominating variables that show up most often and possibly other variables never being used for a split. This causes the trees to be positively correlated.
+where $\rho$ is the average correlation of distinct variables. Hence, for correlated random variables, taking an average will reduce variance, but the decrease is hampered by the positive correlation. When trees are grown on bootstrap samples, there will typically be some dominating variables that show up most often and possibly other variables never being used for a split. This causes the trees to be positively correlated.
 
 By forcing a random sample of $m\ll p$ predictors to be used in a split will allow those less important variables to show up more often and the more important ones to show up less than they normally would. Thus the trees will be less correlated and the predictive accuracy of the random forest will increase. Typical choices for $m$ include $m=p/3$, $m=\sqrt{p}$, and $m=\log_2(p + 1)$.
 
