@@ -32,19 +32,15 @@ For $K$ categorical responses, a common impurity measure is the Gini index defin
 G(t) = \sum_{k=1}^K\hat{p}_{tk}(1-\hat{p}_{tk})
 \label{cla_gini}
 \end{eqnarray}
-where $\hat{p}_{tk}$ is the proportion of observations in class $k$ found in node $t$. Smaller $G(t)$ indicate purer nodes, and $G(t)$ is close to zero when all of the $\hat{p}_{tk}$'s are close to zero or one. Growing trees using the Gini index would maximize $\phi(s, t)=G(t) - G(t_L) - G(t_R)$.
+where $\hat{p}_{tk}$ is the proportion of observations in class $k$ found in node $t$. Smaller $G(t)$ indicate purer nodes, and $G(t)$ is close to zero when all of the $\hat{p}_{tk}$'s are close to zero or one. Growing trees using the Gini index would maximize $\phi(s, t)=G(t) - G(t_L) - G(t_R)$. 
 
 Alternatives to the Gini index include the classification error rate, using the most common class in the region as the prediction, and cross-entropy defined as $D(t) = -\sum_{k=1}^K\hat{p}_{tk}\mathrm{log}(\hat{p}_{tk})$. The Gini index and cross-entropy very similar numerically and both emphasize node purity, whereas classification error rate emphasizes prediction accuracy.
 
 A common stopping rule (step 4 in the algorithm) is to stop splitting nodes when each node has less observations than some pre-determined quantity. Another rule might be to place a lower limit on the node size, placing a constraint on the tree size.
 
-\subsection{Bootstrapping}
-
-To obtain a \emph{bootstrap} sample, randomly draw $n$ observations (\emph{with} replacement) from a data set. On average, $n/3$ of the observations will not be part of the bootstrap sample. These are termed \emph{out-of-bag} (OOB) and are used as a test set.
-
 \subsection{Random forests}
 
-A random forest is constructed by growing $T$ trees on a boostrapped sample while only using $m\ll p$ variables to perform a node split. The predictions across all $T$ trees are averaged. For each tree, step 2 of the algorithm in section 2.1 is modified so a random sample of $m$ predictors are considered for splitting. This serves to decorrelated the trees.
+A random forest is constructed by growing $T$ trees on a boostrapped sample (discussed in section 2.3) while only using $m\ll p$ variables to perform a node split. The predictions across all $T$ trees are averaged. For each tree, step 2 of the algorithm in section 2.1 is modified so a random sample of $m$ predictors are considered for splitting. This serves to decorrelated the trees.
 
 For a sequence $X_1,\ldots,X_n$ of random variables, the following is true:
 \begin{eqnarray}
@@ -55,9 +51,16 @@ When $X_1,\ldots,X_n$ are identically distributed with $\mathrm{Var}(X_i)=\sigma
 \begin{eqnarray}
 \mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{\sigma^2}{n} + \frac{n-1}{n}\rho\sigma^2
 \end{eqnarray}
-where $\rho$ is the correlation between the random variables. Hence, for correlated random variables, taking an average will reduce variance, but the decrease is hampered by the positive correlation. When a tree is grown on one bootstrap sample, the splits will be similar to a tree grown on another bootstrap sample, causing individual trees to be positively correlated.
+where $\rho$ is the correlation between the random variables. Hence, for correlated random variables, taking an average will reduce variance, but the decrease is hampered by the positive correlation. When trees are grown on bootstrap samples, there will typically be some dominating variables that show up most often and possibly other variables never being used for a split. This causes the trees to be positively correlated.
 
-By forcing a random sample of $m\ll p$.
+By forcing a random sample of $m\ll p$ predictors to be used in a split will allow those less important variables to show up more often and the more important ones to show up less than they normally would. Thus the trees will be less correlated and the predictive accuracy of the random forest will increase. Typical choices for $m$ include $m=p/3$, $m=\sqrt{p}$, and $m=\log_2(p + 1)$.
 
+\subsection{Bootstrapping}
+
+To obtain a \emph{bootstrap} sample, randomly draw $n$ observations (\emph{with} replacement) from a data set. On average, $n/3$ of the observations will not be part of the bootstrap sample. These are termed \emph{out-of-bag} (OOB) and are used as a test set. Predictions are made on each OOB observation for each of the $T$ trees. We will thus have about $T/3$ predictions for observation $i$, and an overall prediction for $i$ can be made using the average of the predicted responses.
 
 \subsection{Variable importance}
+
+Since we no longer have a single tree, interpretation is much more difficult. However, it is still possible to measure the ``importance'' of a variable: how influential a variable is on dividing the predictor space to improve predictability.
+
+We compute the importance for a variable by averaging the decrease in (\ref{reg_ss}) or (\ref{cla_gini}) caused by splitting the variable. Influential variables will have the greatest decreases in these impurity measures while less importance ones will have minimally decreased the impurity.
