@@ -1,6 +1,6 @@
 \section{Methods}
 
-Random forests are constructed using an ensemble of trees from bootstrap samples. In this section I describe how to grow random forests and the rationale behind them.
+Random forests are constructed using an ensemble of trees from bootstrap samples. In this section I describe how to grow random forests and the rationale behind them. The details come from \cite{segal:2011} and \cite{james:2013}.
 
 \subsection{Growing a single tree}
 
@@ -12,7 +12,7 @@ Let $t$ be the set of observations within the terminal node being considered for
 \item Have every observation begin in the same node.
 \item For every terminal node $t$ and every split $s$ compute $\phi(s, t)$.
 \item Create two new terminal nodes $t_L$ and $t_R$ at split $s$ when $\phi(s, t)$ is optimized. The split node $t$ is now termed a parent node.
-\item Repeat steps 2 and 3 until some stopping rule is met; for example, until no node contains more than five observations.
+\item Repeat steps 2 and 3 until some stopping rule is met.%; for example, until no node contains more than five observations.
 \end{enumerate}
 
 The function $\phi(s, t)$ is some optimization function that results in the most homogenous children nodes. Homogeneity is assessed via some impurity measure. In the regression case we may let
@@ -36,16 +36,28 @@ where $\hat{p}_{tk}$ is the proportion of observations in class $k$ found in nod
 
 Alternatives to the Gini index include the classification error rate, using the most common class in the region as the prediction, and cross-entropy defined as $D(t) = -\sum_{k=1}^K\hat{p}_{tk}\mathrm{log}(\hat{p}_{tk})$. The Gini index and cross-entropy very similar numerically and both emphasize node purity, whereas classification error rate emphasizes prediction accuracy.
 
-
-
+A common stopping rule (step 4 in the algorithm) is to stop splitting nodes when each node has less observations than some pre-determined quantity. Another rule might be to place a lower limit on the node size, placing a constraint on the tree size.
 
 \subsection{Bootstrapping}
 
+To obtain a \emph{bootstrap} sample, randomly draw $n$ observations (\emph{with} replacement) from a data set. On average, $n/3$ of the observations will not be part of the bootstrap sample. These are termed \emph{out-of-bag} (OOB) and are used as a test set.
 
 \subsection{Random forests}
 
-For correlated random variables:
+A random forest is constructed by growing $T$ trees on a boostrapped sample while only using $m\ll p$ variables to perform a node split. The predictions across all $T$ trees are averaged. For each tree, step 2 of the algorithm in section 2.1 is modified so a random sample of $m$ predictors are considered for splitting. This serves to decorrelated the trees.
 
-\[ \mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{1}{n^2}\sum_{i=1}^n\mathrm{Var}(X_i) + \frac{1}{n^2}\sum_{i=1}^{n-1}\sum_{j=i+1}^n\mathrm{Cov}(X_i,X_j) \]
+For a sequence $X_1,\ldots,X_n$ of random variables, the following is true:
+\begin{eqnarray}
+\mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{1}{n^2}\sum_{i=1}^n\mathrm{Var}(X_i) + \frac{1}{n^2}\sum_{i=1}^{n-1}\sum_{j=i+1}^n\mathrm{Cov}(X_i,X_j).
+\label{var}
+\end{eqnarray}
+When $X_1,\ldots,X_n$ are identically distributed with $\mathrm{Var}(X_i)=\sigma^2$, (\ref{var}) reduces to
+\begin{eqnarray}
+\mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^nX_i\right) = \frac{\sigma^2}{n} + \frac{n-1}{n}\rho\sigma^2
+\end{eqnarray}
+where $\rho$ is the correlation between the random variables. Hence, for correlated random variables, taking an average will reduce variance, but the decrease is hampered by the positive correlation. When a tree is grown on one bootstrap sample, the splits will be similar to a tree grown on another bootstrap sample, causing individual trees to be positively correlated.
+
+By forcing a random sample of $m\ll p$.
+
 
 \subsection{Variable importance}
