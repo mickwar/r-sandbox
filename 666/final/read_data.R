@@ -3,6 +3,18 @@ ben = read.table("~/files/R/data/movie_ben.txt", header=T)
 ben[,1] = as.character(ben[,1])
 movies = ben[,1]
 
+# combine reponses into one category
+new = double(length(movies))
+new[apply(ben[,2:3], 1, function(x) all(x == c(1, 1)))] = 1 # liked and well executed
+new[apply(ben[,2:3], 1, function(x) all(x == c(1, 0)))] = 2 # liked but not well executed
+new[apply(ben[,2:3], 1, function(x) all(x == c(0, 1)))] = 3 # disliked, but well executed
+new[apply(ben[,2:3], 1, function(x) all(x == c(0, 0)))] = 4 # disliked and not well executed
+ben = ben[,-3]
+ben[,2] = new
+
+# remove the classes with few observations (i.e., liked but not well executed only has 2)
+ben = ben[-which(ben[,2] == 4),]
+
 movie.dat[,1] = as.character(movie.dat[,1])
 movie.dat$MPAA = as.character(movie.dat$MPAA)
 
