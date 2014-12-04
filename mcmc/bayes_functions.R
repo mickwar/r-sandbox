@@ -139,10 +139,12 @@ col.gray = function(rgb, method="yprime"){
 # multiply - logical, if true multiply col1 with col2 and set new
 #            color to col2, otherwise don't
 # border   - color of the density border
+# ...      - arguments to pass to plot()
 # requires color.den() and col.mult(), which requires int2rgb()
 # note: the use of the border argument could be improved (i don't think
 #       null would disable the border color if desired)
-hpd.plot = function(dens, hpd, col1, col2 = NULL, multiply = TRUE, border = "black", ...){
+hpd.plot = function(dens, hpd, col1 = "dodgerblue", col2 = NULL,
+    multiply = TRUE, border = "black", ...){
     if (is.null(col2))
         col2 = "gray50"
     if (multiply)
@@ -153,6 +155,60 @@ hpd.plot = function(dens, hpd, col1, col2 = NULL, multiply = TRUE, border = "bla
         color.den(dens, hpd[2*i-1], hpd[2*i], col2)
     lines(dens, col = border)
     }
+
+# plot.post() original by Arthur Lui (github.com/luiarthur)
+# adapted by mickey to work with hpd.plot()
+# Plots a shaded posterior density with hpd.plot() and adds a trace
+# plot in the corner.
+# x          - 
+# dens       - density object: density(x)
+# hpd        - vector containing end points of the hpd region, must
+#              satisfy length(hpd) %% 2 == 0
+# right      - logical. should the trace plot be in the top right corner?
+#              if false, place in top left corner.
+# subfig.mar - margins for the subfigure
+# ...        - arguments to pass to hpd.plot() (and plot())
+#        hpd.plot() takes arguments hpd, col1, col2, multiply, and border
+#        (see hpd.plot() for more information), these must be named
+plot.post = function(x, dens, hpd, right = TRUE,
+    subfig.mar = c(0.1, 0.1, 1.0, 0.1), ...) {
+    if (missing(dens))
+        dens = density(x)
+
+    rng = range(dens$y)
+    diff = diff(rng)
+
+    # first plot the hpd
+    hpd.plot(dens, hpd, ylim = c(rng[1], rng[2] + diff * 0.3), ...)
+
+    rng.x = range(dens$x)
+    x.diff = diff(rng.x)
+  
+    opts = par(no.readonly = TRUE)
+    if (right){
+        left = rng.x[1] + x.diff*2/3
+        right = rng.x[2]
+        right = opts$usr[2]
+    } else {
+        left = rng.x[1]
+        left = opts$usr[1]
+        right = rng.x[2] - x.diff*2/3
+        }
+    par(fig = c(grconvertX(c(left, right), from="user", to="ndc"),
+        grconvertY(c(rng[2], rng[2] + diff * 0.3), from="user", to="ndc")),
+        mar = subfig.mar, new = TRUE)
+    #plot(density(x),col="blue",cex.main=.5,lwd=3)
+    plot(x, type="l", col="gray20", cex.main=.5, axes=F, main="Trace Plot")
+    axis(1, cex.axis=.5)
+    axis(2, cex.axis=.5)
+    par(opts)
+    }
+
+# need to remove eventually, testing out the plot.post() function
+# y = rnorm(10000)
+# dens = density(y)
+# hpd = hpd.uni(y)
+# plot.post(y, dens, hpd, right = F, subfig.mar = c(0,0,0,.1), main = "Posterior for y", xlab = "")
 
 # hpd.uni()
 # functions to compute highest posterior density regions
