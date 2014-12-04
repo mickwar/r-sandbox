@@ -33,6 +33,9 @@ for (i in 1:nrow(ben)){
 
 names(dat) = c("ben", names(movie.dat))
 
+# remove nas
+dat = dat[-which(apply(dat, 1, function(x) any(is.na(x)))),]
+
 dat = cbind(dat, "kids_I"=is.na(dat$kids_S)*1)
 for (i in 3:5)
     dat[,i] = ifelse(is.na(dat[,i]), 0, dat[,i])
@@ -63,3 +66,5 @@ X[,8] = ifelse(is.na(X[,8]), 0, X[,8])
 var.names = c(names(dat)[3:5], as.character(unique(dat[,6])[1:3]),
     "rot_crit", "rot_top", names(dat)[11:15], "rot_I")
 colnames(X) = var.names
+
+X = X[,-c(8, 9, 11, 13, 14)]
