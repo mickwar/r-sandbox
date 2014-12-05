@@ -5,7 +5,7 @@
 library(randomForest)
 library(tree)
 
-dat = read.csv("tornados.csv",header=TRUE)
+dat = read.csv("~/files/R/data/tornados_data.csv",header=TRUE)
 
 dat = dat[-c(120,122,113,116,158,168,148,149,
     400,187,188,200,202,209,179,180,936),]
@@ -38,7 +38,7 @@ for (i in 1:(ncol(dat)-1)){ # ncol(dat)-1 is max number of predictors
     error[i] = mod$err[500,1]
     }
 which.min(error)
-# m = 2
+  m = 3
 mod = randomForest(factor(Fscale) ~ ., data=dat,
     importance=TRUE, ntree=500, mtry=3, subset=train)
 yhat = predict(mod, newdata = dat[-train,])
@@ -76,4 +76,4 @@ pdf("./figs/pairs.pdf")
 pairs(dat[,5:9])
 dev.off()
 
-summary(tree.dat)
+summary(tree)
