@@ -1,0 +1,68 @@
+\documentclass[mathserif, 11pt, t]{beamer}
+
+\let\Tiny=\tiny
+\usepackage{xcolor}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{bm}
+\geometry{vmargin=0.5in}
+
+%colors
+\definecolor{blue}{rgb}{0.05, 0.05, 0.9}
+\definecolor{bluegreen}{rgb}{0.05, 0.4, 0.6}
+
+%commands
+\newcommand{\lra}{\longrightarrow}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\renewcommand{\frametitle}[1]{\bigskip\textcolor{blue}{%
+    \LARGE{\textbf{#1}}}\vspace{0.15cm}\newline}
+\renewcommand{\subtitle}[1]{\vspace{0.45cm}\textcolor{bluegreen}{
+    {\textbf{#1}}}\vspace{0.15cm}\newline}
+\newcommand{\tlb}[1]{\large{\textbf{#1}}}
+
+%slide colors
+\pagecolor{green!20}
+
+\begin{document}
+
+% Title frame
+\begin{center}
+\ \\ [-0.5in]
+\vfill
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+
+\begin{LARGE}
+Multivariate Random Forests
+\end{LARGE}
+\vfill
+\center{
+Mickey Warner
+}
+\vfill
+5 December 2014
+\bigskip
+\bigskip
+\bigskip
+\vfill
+\ \\ [-0.5in]
+\end{center}
+
+% Body frames
+\begin{frame}
+\subtitle{Comparison of trees and linear regression}
+\begin{center}
+\includegraphics[scale=0.20]{../figs/compare_tree_lm.pdf}
+\end{center}
+\end{frame}
+
+
+\end{document}

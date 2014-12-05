@@ -43,7 +43,7 @@ gen.lm = lm(y ~ x)
 pdf("figs/compare_tree_lm.pdf", width = 18, height = 9)
 par(mfrow=c(1,2))
 plot(x, y, pch=20, cex = 1.5, cex.lab = 1.5, cex.main = 2.5,
-    main = "Random forest model")
+    main = "Tree-based model")
 abline(v = c(5.03505, 10.1633, 14.894), col = 'darkgreen', lwd=3, lty=2)
 lines(c(-5, 5.03505), c(7.297, 7.297), lwd=2, col='blue')
 lines(c(5.03505, 10.1633), c(2.979, 2.979), lwd=2, col='blue')
