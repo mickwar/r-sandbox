@@ -42,14 +42,16 @@ gen.lm = lm(y ~ x)
 
 pdf("figs/compare_tree_lm.pdf", width = 18, height = 9)
 par(mfrow=c(1,2))
-plot(x, y, pch=20, cex = 1.5)
+plot(x, y, pch=20, cex = 1.5, cex.lab = 1.5, cex.main = 2.5,
+    main = "Random forest model")
 abline(v = c(5.03505, 10.1633, 14.894), col = 'darkgreen', lwd=3, lty=2)
 lines(c(-5, 5.03505), c(7.297, 7.297), lwd=2, col='blue')
 lines(c(5.03505, 10.1633), c(2.979, 2.979), lwd=2, col='blue')
 lines(c(10.1633, 14.894), c(12.170, 12.170), lwd=2, col='blue')
 lines(c(14.894, 25), c(10.610, 10.610), lwd=2, col='blue')
 
-plot(x, y, pch=20, cex = 1.5)
+plot(x, y, pch=20, cex = 1.5, cex.lab = 1.5, cex.main = 2.5,
+    main = "Linear regression model")
 abline(coef(gen.lm), col='red', lwd=3)
 dev.off()
 
@@ -112,29 +114,32 @@ p = ncol(X)
 set.seed(1)
 train.ind = sample(n, floor(n*0.57))
 
+set.seed(8)
 mod = randomForest(factor(Y) ~ ., data = X, importance = TRUE,
-    ntree=100000, mtry=floor(sqrt(p)), subset=train.ind)
-
-pdf("./figs/forest_error.pdf")
-par(mar = c(5.1,5.1,4.1,2.1))
-plot(mod$err[1:500,1], type='l', xlab = "Tree", ylab = "OOB error rate",
-    cex.lab = 1.5, main = "Average classification error rate", cex.main = 2,
-    lwd = 2)
+    ntree=500, mtry=floor(sqrt(p)), subset=train.ind)
 yhat = predict(mod, newdata = data.frame(X[-train.ind,]))
-
 # test set error rate
 (test.error = 1-mean(yhat == Y[-train.ind]))
-abline(h = test.error, col='red', lwd=2, lty=2)
+
+pdf("./figs/forest_error.pdf", height = 7.5, width = 7.5)
+par(mar = c(5.1,5.1,4.1,4.1))
+plot(mod, type='l', cex.lab = 1.5, cex.main = 2, lwd = 1.5,
+    main = "Average classification error rate")
+abline(h = test.error, lwd=2, lty=2)
+mtext("OOB", 1, at = 548, line = -8.5)
+mtext("Test set", 1, at = 555, line = -10.5)
+mtext("Class 1", 1, at = 555, line = -1.5)
+mtext("Class 3", 1, at = 555, line = -27.5)
+mtext("Class 4", 1, at = 555, line = -21.0)
 dev.off()
 
 # confusion matrix
 mod$conf
 
 # variable importance
-pdf("./figs/importance.pdf")
+pdf("./figs/importance.pdf", height = 7.5, width = 7.5)
 par(mar=c(5.1,5.1,4.1,2.1))
 barplot(sort(importance(mod)[,4]), horiz = TRUE, las = 1,
-    xlab = "Mean Decrease in Gini Index", cex.names = 1,
-    col = "dodgerblue", main = "Variable Importance")
+    xlab = "Mean Decrease in Gini Index", cex.names = 1, cex.main = 2,
+    col = "dodgerblue", main = "Variable Importance", cex.lab = 1.5)
 dev.off()
-
