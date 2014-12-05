@@ -7,4 +7,8 @@ The methods in section 2 are applied to a movie preference data set. A willing s
 \item Disliked, but well-executed
 \item Disliked, and not well-executed
 \end{enumerate}
-As is expected, there are few movies (only two in this dataset) that were liked but the subject did not think were well-made. We remove those movies from the data set and consider only the movies in classes 1, 3, and 4.
+As is expected, there are few movies (only two in this dataset) that the subject liked but did not think were well-made. We remove those movies from the data set and consider only the movies in classes 1, 3, and 4.
+
+Movie attributes are Rotten Tomato scores (\texttt{rot\_crit}), Kids in Mind ratings (violence \texttt{kids\_V}, sexual \texttt{kids\_S}, and profanity \texttt{kids\_P}), year of release (\texttt{year}), MPAA rating (\texttt{G}, \texttt{PG}, and \texttt{PG13}), and an indicator for whether the movie was animated or not (\texttt{live\_action}). Some movies do not have a Rotten Tomatoes score and others do not have Kids in Mind ratings; these movies were also removed from the data set. We are left with $n=71$ observations.
+
+We randomly set aside 40 observations for a training set and the remaining 31 as a test set. A large number of trees are grown on bootstrap samples of the training set where at each node a random sample of $m=\sqrt{9}=3$ predictors are chosen to split the node.
