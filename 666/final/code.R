@@ -131,7 +131,10 @@ dev.off()
 mod$conf
 
 # variable importance
+pdf("./figs/importance.pdf")
+par(mar=c(5.1,5.1,4.1,2.1))
 barplot(sort(importance(mod)[,4]), horiz = TRUE, las = 1,
-    xlab = "Mean Decrease Gini Index", cex.names = 1,
+    xlab = "Mean Decrease in Gini Index", cex.names = 1,
     col = "dodgerblue", main = "Variable Importance")
+dev.off()
 
