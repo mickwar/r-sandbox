@@ -53,42 +53,42 @@ plot(x, y, pch=20, cex = 1.5)
 abline(coef(gen.lm), col='red', lwd=3)
 dev.off()
 
-### multivariate tree stuff
-library(mvpart) # multivariate regression trees
-                # multivariate partitioning
-
-data(spider) # what does this do?
-mvpart(data.matrix(spider[,1:12]) ~ twigs + water,
-    data = spider, method = "mrt", dissim = "euc", xval = 100, xvmult = 100)
-
-mvpart(data.matrix(spider[,1:12]) ~ water + sand + moss +
-    reft + twigs + herbs, data = spider, method = "mrt", dissim = "euc")
-
-randomForest(data.matrix(spider[,1:12]) ~ twigs + water, data = spider)
 
 
+### illustrating the need to have uncorrelated variables
 ### read in ben's movie data
 source("./read_data.R")
-
 
 n = nrow(X)
 p = ncol(X)
 
-# divide into training and test sets (the random forest
-# mechanism will do a bootstrap sample on the training set)
+### effect on correlated variables
+pdf("./figs/corr_var.pdf")
+par(mfrow=c(2,2), mar=c(5.1,5.1,4.1,2.1))
 set.seed(1)
 train.ind = sample(n, floor(n*0.5))
-
+set.seed(1)
 mod = randomForest(factor(Y) ~ ., data = X, importance = TRUE,
-    ntree=500, mtry=floor(sqrt(p)), subset=train.ind)
-
-plot(mod$err[,1], type='l')
-yhat = predict(mod, newdata = data.frame(X[-train.ind,]))
-1-mean(yhat == Y[-train.ind])
-
+    ntree=100000, mtry=floor(sqrt(p)), subset=train.ind)
 barplot(sort(importance(mod)[,4]), horiz = TRUE, las = 1,
     xlab = "Mean Decrease Gini Index", cex.names = 1,
     col = "dodgerblue", main = "Variable Importance")
+mod = randomForest(factor(Y) ~ ., data = X, importance = TRUE,
+    ntree=100000, mtry=floor(sqrt(p)), subset=train.ind)
+barplot(sort(importance(mod)[,4]), horiz = TRUE, las = 1,
+    xlab = "Mean Decrease Gini Index", cex.names = 1,
+    col = "dodgerblue", main = "Variable Importance")
+mod = randomForest(factor(Y) ~ ., data = X, importance = TRUE,
+    ntree=100000, mtry=floor(sqrt(p)), subset=train.ind)
+barplot(sort(importance(mod)[,4]), horiz = TRUE, las = 1,
+    xlab = "Mean Decrease Gini Index", cex.names = 1,
+    col = "dodgerblue", main = "Variable Importance")
+mod = randomForest(factor(Y) ~ ., data = X, importance = TRUE,
+    ntree=100000, mtry=floor(sqrt(p)), subset=train.ind)
+barplot(sort(importance(mod)[,4]), horiz = TRUE, las = 1,
+    xlab = "Mean Decrease Gini Index", cex.names = 1,
+    col = "dodgerblue", main = "Variable Importance")
+dev.off()
 
 # error rate for a single tree
 tre = tree(factor(Y) ~ ., data = data.frame(X), subset = train.ind)
@@ -99,22 +99,39 @@ yhat.tre = predict(tre, newdata = data.frame(X[-train.ind,]))
 1-mean(yhat.tre == Y[-train.ind])
 
 
-### comparison of gini index and cross-entropy
-p1 = seq(0.01, 0.99, length=100)
-p2 = 1 - p1
+### Here's where the real analysis begins
+### clean the data more
+source("./clean_data.R")
+library(randomForest)
 
-gini = p1*(1-p1) + p2*(1-p2)
-entr = -p1*log(p1) - p2*log(p2)
+n = nrow(X)
+p = ncol(X)
 
-pdf("./figs/gini_entropy.pdf", width = 9, height = 9)
-# gini
-plot(p1, gini, type='l', ylim=c(0, 0.6), lwd=3, col="red", ylab="",
-    xlab = expression(p[1]), cex.lab = 2, cex.main = 2,
-    main = "Gini index and cross-entropy \n measures for K=2 classes")
-# cross-entropy
-lines(p1, entr*max(gini)/max(entr), type='l', col="blue", lwd=3)
-legend("topleft", box.lty=0, legend=c("Gini index", "cross-entropy"),
-    col=c("red","blue"), lty=1, lwd=3, cex = 2)
+# divide into training and test sets (the random forest
+# mechanism will do a bootstrap sample on the training set)
+set.seed(1)
+train.ind = sample(n, floor(n*0.57))
+
+mod = randomForest(factor(Y) ~ ., data = X, importance = TRUE,
+    ntree=100000, mtry=floor(sqrt(p)), subset=train.ind)
+
+pdf("./figs/forest_error.pdf")
+par(mar = c(5.1,5.1,4.1,2.1))
+plot(mod$err[1:500,1], type='l', xlab = "Tree", ylab = "OOB error rate",
+    cex.lab = 1.5, main = "Average classification error rate", cex.main = 2,
+    lwd = 2)
+yhat = predict(mod, newdata = data.frame(X[-train.ind,]))
+
+# test set error rate
+(test.error = 1-mean(yhat == Y[-train.ind]))
+abline(h = test.error, col='red', lwd=2, lty=2)
 dev.off()
-# cross-entropy penalizes slightly more, but levels out similarly,
-# note that entropy is scaled down to have the maximums match
+
+# confusion matrix
+mod$conf
+
+# variable importance
+barplot(sort(importance(mod)[,4]), horiz = TRUE, las = 1,
+    xlab = "Mean Decrease Gini Index", cex.names = 1,
+    col = "dodgerblue", main = "Variable Importance")
+
