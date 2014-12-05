@@ -66,5 +66,6 @@ X[,8] = ifelse(is.na(X[,8]), 0, X[,8])
 var.names = c(names(dat)[3:5], as.character(unique(dat[,6])[1:3]),
     "rot_crit", "rot_top", names(dat)[11:15], "rot_I")
 colnames(X) = var.names
+rownames(X) = as.character(1:nrow(X))
 
 X = X[,-c(8, 9, 11, 13, 14)]
