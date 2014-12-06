@@ -356,7 +356,9 @@ sig.dd = k(x.data)
 sig.dt = k(x.data, x.test)
 sig.tt = k(x.test)
 
-post.mu = mu.test+
+mm = m(x.data)
+kk = k(x.data)
+xx = x.data
 
 yy = mvrnorm(10000, mm, kk)
 
