@@ -10,6 +10,11 @@ We are primarily interested in calibrating the computer simulator so that future
 \begin{eqnarray}
 \m{y}_i = \eta(\m{x}_i, \m{\theta}) + \delta(\m{x}_i) + \epsilon_i.
 \end{eqnarray}
-The stochastic term $\eta(\m{x}_i, \m{\theta})$ is a Gaussian process emulator for the computer simulator at calibrated inputs $\m{\theta}$, and $\delta(\m{x}_i)$ accounts for differences between the simulator and reality (i.e. $\delta(\m{x}_i) = \zeta(\m{x}_i) - \eta(\m{x}_i, \m{\theta})$).
+The stochastic term $\eta(\m{x}_i, \m{\theta})$ is a Gaussian process emulator for the computer simulator at calibrated inputs $\m{\theta}$, and $\delta(\m{x}_i)$ accounts for differences between the simulator and reality (i.e. $\delta(\m{x}_i) = \zeta(\m{x}_i) - \eta(\m{x}_i, \m{\theta})$). The $p_t$-vector of calibrated inputs $\m{\theta}$ correspond to the (physically) uncontrollable computer simulator inputs at their best setting. These inputs are the chemical reaction rates, fixed quantities that are either very hard or impossible to obtain analytically.
 
-Details can be found in \cite{higdon:2008}.
+The responses are centered and scaled so the emulator $\eta(\cdot, \cdot)$ and discrepancy $\delta(\cdot)$ terms follow a zero-mean Gaussian process with product covariance having exponential form
+\begin{eqnarray}
+\mathrm{Cov}((\m{x},\m{t}),(\m{x}',\m{t}')) = \frac{1}{\lambda}\prod_{k=1}^{p_x}\rho_k^{4(x_k-x_k')^2}\times\prod_{k=1}^{p_t}\rho_{p_x+k}^{4(t_k-t_k')^2}
+\end{eqnarray}
+
+Further details on the model and necessary data transformations can be found in \cite{higdon:2008}.
