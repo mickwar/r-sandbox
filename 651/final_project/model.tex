@@ -1,6 +1,6 @@
 \section{Model}
 
-We follow the formulation of \cite{higdon:2008}. At input settings $\m{x}_i,\ldots,\m{x}_n$, our oberservations of the chemical process $\m{y}_i,\ldots,\m{y}_n$ are modeled by
+We follow the formulation of \cite{kennedy:2001}. At input settings $\m{x}_i,\ldots,\m{x}_n$, our oberservations of the chemical process $\m{y}_i,\ldots,\m{y}_n$ are modeled by
 \begin{eqnarray}
 \m{y}_i = \zeta(\m{x}_i) + \epsilon_i
 \end{eqnarray}
@@ -11,3 +11,5 @@ We are primarily interested in calibrating the computer simulator so that future
 \m{y}_i = \eta(\m{x}_i, \m{\theta}) + \delta(\m{x}_i) + \epsilon_i.
 \end{eqnarray}
 The stochastic term $\eta(\m{x}_i, \m{\theta})$ is a Gaussian process emulator for the computer simulator at calibrated inputs $\m{\theta}$, and $\delta(\m{x}_i)$ accounts for differences between the simulator and reality (i.e. $\delta(\m{x}_i) = \zeta(\m{x}_i) - \eta(\m{x}_i, \m{\theta})$).
+
+Details can be found in \cite{higdon:2008}.
