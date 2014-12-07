@@ -1,5 +1,5 @@
 \section{Introduction}
 
-Measurements of physical processes are often very expensive to obtain. Computer simulators are subsequently built to provide supplemental data to the physical process. This project analyzes anion relative abundances of mass spectrometry experiments measured at various initial electron concentrations. A simulator which emulates the chemical reactions within the mass spectrometer takes reaction rates as inputs.
+Variable electron and neutral density attachment mass spectrometry (VENDAMS) is a new approach to measuring chemical reaction rate constants. Such reactions may be very complex and product abundances can be modeled using a set of many differential equations; a computer simulator has been developed to simultaneously solve the equations when given the reaction rates. 
 
-The field trials and computer simulations are combined in such a way to improve the predictive performance of the chemical process and to determine those inputs which contribute most to explaining model variability.
+We model the computer simulator with a Gaussian process to allow us to obtain posterior estimates on the chemical reaction rates. We also determine the sensitivity of simulator inputs as it relates to the variability in the output. By comparing the simulator with field trials we calculate a discrepancy function (also a Gaussian process) to assess simulator bias at certain input locations.
