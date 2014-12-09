@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 
 \input{setup}
 
@@ -9,20 +9,54 @@
 \input{intro}
 
 \input{model}
-% 
-% \input{example}
-% 
-% \input{conclusion}
-% 
+
+\input{results}
+
+\input{conclusion}
+
 \bibliography{refs}
 \bibliographystyle{asa}
 
-% \subsection*{R Code}
-% \begin{tiny}
-% \subsubsection*{rf.R}
-% \lstinputlisting[breaklines,framerule = .03mm,frame = single]{rf.R}
-% \subsubsection*{clean.R}
-% \lstinputlisting[breaklines,framerule = .03mm,frame = single]{clean.R}
-% \end{tiny}
+\section*{Appendix}
+
+\subsection*{Data}
+
+Data used in the paper can be requested by emailing mickey.a.warner@gmail.com
+
+\subsection*{R Code}
+\begin{tiny}
+\subsubsection*{modelfit.R}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code/modelfit.R}
+\end{tiny}
+
+\subsection*{MATLAB Code}
+Model fitting code is provided by Los Alamos National Laboratory at:
+
+http://www.stat.lanl.gov/source/orgs/ccs/ccs6/gpmsa/software/gpmsa.tar.gz
+
+Additional code is provided:
+
+\begin{tiny}
+\subsubsection*{example\_script.m}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code/examplescript.m}
+
+\subsubsection*{chem\_struct.m}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code/chemstruct.m}
+
+\subsubsection*{chem\_runcode.m}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code/chemruncode.m}
+
+\subsubsection*{chem\_plots.m}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code/chemplots.m}
+
+\subsubsection*{fillPage.m}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code/fillPage.m}
+
+\subsubsection*{transform.m}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code/transform.m}
+
+\subsubsection*{get\_accept.m}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single]{code/getaccept.m}
+\end{tiny}
 
 \end{document}
