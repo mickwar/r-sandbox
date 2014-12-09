@@ -1,0 +1,75 @@
+\documentclass[mathserif, 11pt, t]{beamer}
+
+\let\Tiny=\tiny
+\usepackage{xcolor}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{bm}
+\geometry{vmargin=0.5in}
+
+%colors
+\definecolor{blue}{rgb}{0.05, 0.05, 0.90}
+\definecolor{bluegreen}{rgb}{0.05, 0.2, 0.6}
+
+%commands
+\newcommand{\lra}{\longrightarrow}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\renewcommand{\frametitle}[1]{\bigskip\textcolor{blue}{%
+    \LARGE{\textbf{#1}}}\vspace{0.15cm}\newline}
+\renewcommand{\subtitle}[1]{\vspace{0.45cm}\textcolor{bluegreen}{
+    {\textbf{#1}}}\vspace{0.15cm}\newline}
+\newcommand{\tlb}[1]{\large{\textbf{#1}}}
+
+%slide colors
+\pagecolor{blue!40}
+
+\begin{document}
+
+% Title frame
+\begin{center}
+\ \\ [-0.5in]
+\vfill
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+
+\begin{LARGE}
+\begin{center}
+Gaussian Process Modeling of Modern Mass Spectrometry Computer Experimental Data
+\end{center}
+\end{LARGE}
+\vfill
+\center{
+Mickey Warner
+}
+\vfill
+10 December 2014
+\bigskip
+\bigskip
+\bigskip
+\vfill
+\ \\ [-0.5in]
+\end{center}
+
+\begin{frame}
+\subtitle{VENDAMS}
+\begin{itemize}[label={$\cdot$}]
+\item It's chemistry!
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\subtitle{Trace plots}
+\begin{center}
+\includegraphics[scale=0.25]{../figs/Figure6.pdf}
+\end{center}
+\end{frame}
+
+\end{document}
