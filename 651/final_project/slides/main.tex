@@ -1,0 +1,94 @@
+\documentclass[mathserif, 11pt, t]{beamer}
+
+\let\Tiny=\tiny
+\usepackage{xcolor}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{bm}
+\geometry{vmargin=0.5in}
+
+%colors
+\definecolor{blue}{rgb}{0.05, 0.05, 0.90}
+\definecolor{bluegreen}{rgb}{0.05, 0.2, 0.6}
+
+%commands
+\newcommand{\lra}{\longrightarrow}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\renewcommand{\frametitle}[1]{\bigskip\textcolor{blue}{%
+    \LARGE{\textbf{#1}}}\vspace{0.15cm}\newline}
+\renewcommand{\subtitle}[1]{\vspace{0.45cm}\textcolor{bluegreen}{
+    {\textbf{#1}}}\vspace{0.15cm}\newline}
+\newcommand{\tlb}[1]{\large{\textbf{#1}}}
+
+%slide colors
+\pagecolor{blue!40}
+
+\begin{document}
+
+%%% begin title frame
+\begin{center}
+\ \\ [-0.5in]
+\vfill
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+
+\begin{LARGE}
+\begin{center}
+Gaussian Process Modeling of Modern Mass Spectrometry Computer Experimental Data
+\end{center}
+\end{LARGE}
+\vfill
+
+\begin{center}
+Mickey Warner
+\end{center}
+\vfill
+10 December 2014
+\bigskip
+\bigskip
+\bigskip
+\vfill
+\ \\ [-0.5in]
+\end{center}
+%%% end title frame
+
+\begin{frame}
+\subtitle{VENDAMS}
+\begin{itemize}[label={$\cdot$}]
+\item Variable electron and neutral density attachment mass spectrometry
+\item Estimate rates for complex chemical reactions
+\item 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\subtitle{Field trials and computer simulations}
+\begin{center}
+\includegraphics[scale=0.20]{../figs/Figure5.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\subtitle{Statistical Model}
+At initial electron concentration $\m{x}_i$, relative abundances $\m{y}_i$ are modeled according to:
+\[\m{y}_i = \eta(\m{x}_i, \m{\theta}) + \delta(\m{x}_i) + \epsilon_i\]
+Mean zero Gaussian processes are put on $\eta(\cdot, \cdot)$ and $\delta(\cdot)$, with product covariance functions having exponential form:
+\[ \mathrm{Cov}((\m{x},\m{t}),(\m{x}',\m{t}'); \m{\rho}_\eta) = \frac{1}{\lambda_\eta}\prod_{k=1}^{p_x}\rho_{\eta,k}^{4(x_k-x_k')^2}\times\prod_{k=1}^{p_t}\rho_{\eta,p_x+k}^{4(t_k-t_k')^2} \]
+\end{frame}
+
+\begin{frame}
+\subtitle{Trace plots}
+\begin{center}
+\includegraphics[scale=0.25]{../figs/Figure6.pdf}
+\end{center}
+\end{frame}
+
+\end{document}

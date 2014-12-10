@@ -1,0 +1,27 @@
+\section{Model}
+
+We follow the formulation of \cite{kennedy:2001}. At input settings $\m{x}_i,\ldots,\m{x}_n$, our observations of the chemical process $\m{y}_i,\ldots,\m{y}_n$ are modeled by
+\begin{eqnarray}
+\m{y}_i = \zeta(\m{x}_i) + \epsilon_i
+\end{eqnarray}
+where $\zeta(\m{x}_i)$ denotes the true and $\epsilon_i$ is observation error. The response $\m{y}_i$ is $q$-variate with each variable being a relative abundance of an anion from the VENDAMS procedure. The length $p_x=1$ variable $\m{x}_i$ controllable by the experimenter is initial electron concentration. We have $n=9$.
+
+We are primarily interested in calibrating the computer simulator so that future experiments may have more reliable output from the simulator. This would prevent the need to obtain more field observations in order to gain understanding of the chemical process. As such, we decompose the true process $\zeta(\m{x}_i)$ into two components, simulator and discrepancy terms:
+\begin{eqnarray}
+\m{y}_i = \eta(\m{x}_i, \m{\theta}) + \delta(\m{x}_i) + \epsilon_i.
+\end{eqnarray}
+The stochastic term $\eta(\m{x}_i, \m{\theta})$ is a Gaussian process emulator for the computer simulator at calibrated inputs $\m{\theta}$, and $\delta(\m{x}_i)$ accounts for differences between the simulator and reality (i.e. $\delta(\m{x}_i) = \zeta(\m{x}_i) - \eta(\m{x}_i, \m{\theta})$). The $p_t$-vector of calibrated inputs $\m{\theta}$ correspond to the computer simulator inputs at their best setting. These inputs are the chemical reaction rates, fixed quantities that are either very hard or impossible to obtain analytically.
+
+The responses are centered and scaled so the emulator $\eta(\cdot, \cdot)$ and discrepancy $\delta(\cdot)$ terms follow zero-mean Gaussian processes. The emulator has product covariance having exponential form
+\begin{eqnarray}
+\mathrm{Cov}((\m{x},\m{t}),(\m{x}',\m{t}'); \m{\rho}_\eta) &=& \frac{1}{\lambda_\eta}\prod_{k=1}^{p_x}\rho_{\eta,k}^{4(x_k-x_k')^2}\times\prod_{k=1}^{p_t}\rho_{\eta,p_x+k}^{4(t_k-t_k')^2}
+\end{eqnarray}
+for simulator input pair $(\m{x},\m{t})\in \R^{p_x+p_t}$. The parameter $\lambda_\eta$ controls the marginal precision for $\eta(\cdot, \cdot)$, and the $p_x+p_t$-vector $\m{\rho}_\eta$ controls the input strength for the corresponding component direction of $\m{x}$ and $\m{t}$. There are $p_t=9$ simulator inputs in this data set.
+
+The discrepancy term has a covariance function of the form
+\begin{eqnarray}
+\mathrm{Cov}(\m{x},\m{x}'; \m{\rho}_\delta) &=& \frac{1}{\lambda_\delta}\prod_{k=1}^{p_x}\rho_{\delta,k}^{4(x_k-x_k')^2}
+\end{eqnarray}
+For the field trials and the computer simulators, the responses $\m{y}$ are standardized to have zero mean and unit variance and the inputs $(\m{x}, \m{t})$ are scaled to be in $[0,1]^{p_x+p_t}$. Our responses have two constraints: $0\leq y_i \leq 1$ and $\sum_{i=1}^q y_i = 1$. To account for this we apply the logit function (before standardizing) to each variable in the responses. We use the first two principal components of the responses to reduce the dimensionality.
+
+We place gamma priors on each precision term $\lambda$ and beta priors on each $\rho$. We allow $\m{\theta}$ to follow a uniform on $[0,1]$, since, without prior knowledge of the simulator inputs, we expect these to vary across the design space without restriction. With Gaussian process priors, we have a multivariate normal sampling distribution. The posterior distribution is then the product of a multivariate normal with gamma, beta, and uniform distributions. Further details on the model and necessary data transformations can be found in \cite{higdon:2008}. Including every detail would be too lengthy for this paper.

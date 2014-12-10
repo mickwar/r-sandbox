@@ -1,0 +1,44 @@
+\section{Results}
+
+The posterior parameters are obtained via the Metropolis-Hastings algorithm. Figure \ref{trace} shows trace plots for each parameter. Most of the acceptance rates were around 40\%. Some were outside the optimal range, but this is not concerning since they were of parameters that went toward a boundary.
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.24]{figs/Figure6.pdf}
+\end{center}
+\caption{Trace plots for the parameters.}
+\label{trace}
+\end{figure}
+
+Sensitivity of the inputs are assessed by posterior distribution of $\m{\rho}_\eta$ (see Figure \ref{box}). The simulator is sensitive to all but inputs 2, 3, and 7. These inputs are close to either zero or one which would imply that the inputs are not contributing to the covariances defined by the covariance function in eq. (3). Thus, chemical reactions 1, 4, 5, 6, 8, and 9 have a significant impact on the relative abundances for the simulator.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.25]{figs/Figure1.pdf}
+\includegraphics[scale=0.230]{figs/Figure2.pdf}
+\end{center}
+\caption{Left: box plots of the two principal components for $\m{\rho}_\eta$. Values close to zero or one indicate input insensitivity. Hence, we want parameters to be away from those boundaries. Right: univariate and bivariate posterior distributions for the first five inputs. The upper triangle are of parameter draws.}
+\label{box}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.30]{figs/Figure3.pdf}
+\end{center}
+\caption{Left: computer simulator model predictions (not based on field trials). Center: discrepancy between simulator and reality. Right: calibrated predictions.}
+\label{pred}
+\end{figure}
+
+The first five input posterior distributions $\m{\theta}$ (reaction rates) are shown on the right side of Figure \ref{box} (the remaining four inputs look approximately uniform). Since most of the inputs have uniform posteriors, the chemical process is well understood. With the exception of chemical reactions 2 and 3, the possible range of chemical reaction rates have been specified in the simulator design.
+
+Posterior predictions are show in Figure \ref{pred}. We see that model does really well at adjusting the simulator to agree more with the field trial observations. We assess whether the model actually fits by performing a Kolmogorov-Smirnov test. If the model fits, we expect each of the $q=3$ variables at each of $n=9$ initial electron concentration locations to jointly have quantiles (with respect to the posterior predictions at these locations and variables) that follow a uniform distribution. Based on $9\times3=27$ ``observations'' we get a $p$-value of $0.3703$. There is insufficient evidence to reject our model as appropriate.
+
+% \begin{figure}
+% \begin{center}
+% \includegraphics[scale=0.30]{figs/ks.pdf}
+% \end{center}
+% \caption{Density of the quantiles for each observation with respective to its posterior predictive distribution.}
+% \label{ks}
+% \end{figure}
