@@ -2563,3 +2563,38 @@ plot(x, pch=20)
 points(x[pmin, 1], x[pmin, 2], col='red', pch=20, cex=2)
 points(x[pmax, 1], x[pmax, 2], col='green', pch=20, cex=2)
 ##########
+
+##########
+# comparison of median and mean
+n = 12
+niter = 10000
+
+md = double(niter)
+mn = double(niter)
+for (i in 1:niter){
+#   x = rnorm(n)
+    x = rlnorm(n)
+    md[i] = median(x)
+    mn[i] = mean(x)
+    }
+
+plot(density(mn), xlim=range(c(md, mn)), ylim=c(0, max(density(mn)$y, density(md)$y)))
+lines(density(md), col='red')
+
+# for heavy tail distributions, the median seems to have smaller variance, otherwise
+# the mean has smaller variance
+
+var(mn)
+var(md)
+############
+
+
+
+
+
+
+
+
+
+
+
