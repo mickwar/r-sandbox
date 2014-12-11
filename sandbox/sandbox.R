@@ -2576,19 +2576,19 @@ calc.mode = function(dens, method="loess"){
     if (method == "density")
         return (dx[which.max(dy)])
     }
-n = 130
+n = 100
 niter = 10000
 
 mn = double(niter)
 md = double(niter)
-mo = double(niter)
+#mo = double(niter)
 for (i in 1:niter){
     cat("\rIteration:",i,"/",niter)
-#   x = rnorm(n)
+    x = rnorm(n)
 #   x = rbeta(n, 3, 1)
 #   x = rlnorm(n, 0, 1)
 #   x = rgamma(n, 0.5, 0.1)
-    x = rcauchy(n)
+#   x = rcauchy(n)
     md[i] = median(x)
     mn[i] = mean(x)
     mo[i] = calc.mode(density(x, n = 2^12))
@@ -2599,14 +2599,8 @@ for (i in 1:niter){
 plot(density(x))
 plot(density(mn, n=2^20), xlim=range(c(mn, md, mo)), ylim=c(0, max(density(mn)$y, density(md)$y,
     density(mo)$y)))
-plot(density(mn, n=2^20), xlim=c(-10,10), ylim=c(0, max(density(mn)$y, density(md)$y,
-    density(mo)$y)))
 lines(density(md, n =2^20), col='red')
 lines(density(mo, n =2^20), col='blue')
-
-plot(density(md, n = 2^12), col='red')
-lines(density(mo, n = 2^12), col='blue')
-lines(density(mn, n = 2^20))
 
 var(mn)
 var(md)
@@ -2617,14 +2611,3 @@ var(mo)
 # for cauchy, it seems var(median) < var(mode) < var(mean), but this could be
 # due to the way i'm calculating the mode
 ############
-
-
-
-
-
-
-
-
-
-
-
