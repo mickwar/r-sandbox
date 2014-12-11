@@ -21,7 +21,7 @@ cbind(eiginfo.X$values/sum(eiginfo.X$values),
 ### Approach (1) ###
 cbind(eiginfo.X$values/sum(eiginfo.X$values),
       cumsum(eiginfo.X$values)/sum(eiginfo.X$values))
-### Approach (1) retains 2 components for k=.80 and 3 components for k=.90
+### Approach (1) retains 2 components for k=.80 and 2 components for k=.90
 
 ### Approach (2) ###
 mean(eiginfo.X$values)
@@ -65,7 +65,4 @@ eiginfo.X$values
 ts.plot(eiginfo.X$values,xlab="component",ylab="e'val")
 abline(h=mean(eiginfo.X$values))
 title("Scree Plot")
-### Approach (3) retains 1? component 
-
-
-
+### Approach (3) retains 1 or 2? component 
