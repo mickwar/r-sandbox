@@ -2565,27 +2565,57 @@ points(x[pmax, 1], x[pmax, 2], col='green', pch=20, cex=2)
 ##########
 
 ##########
-# comparison of median and mean
-n = 12
+# comparison of mean, median, and mode
+calc.mode = function(dens, method="loess"){
+    dx = dens$x
+    dy = dens$y
+    if (method == "loess"){
+        l = loess(dy ~ dx)
+        return (l$x[which.max(l$y)])
+        }
+    if (method == "density")
+        return (dx[which.max(dy)])
+    }
+n = 130
 niter = 10000
 
-md = double(niter)
 mn = double(niter)
+md = double(niter)
+mo = double(niter)
 for (i in 1:niter){
+    cat("\rIteration:",i,"/",niter)
 #   x = rnorm(n)
-    x = rlnorm(n)
+#   x = rbeta(n, 3, 1)
+#   x = rlnorm(n, 0, 1)
+#   x = rgamma(n, 0.5, 0.1)
+    x = rcauchy(n)
     md[i] = median(x)
     mn[i] = mean(x)
+    mo[i] = calc.mode(density(x, n = 2^12))
+    if (i == niter)
+        cat("\n")
     }
 
-plot(density(mn), xlim=range(c(md, mn)), ylim=c(0, max(density(mn)$y, density(md)$y)))
-lines(density(md), col='red')
+plot(density(x))
+plot(density(mn, n=2^20), xlim=range(c(mn, md, mo)), ylim=c(0, max(density(mn)$y, density(md)$y,
+    density(mo)$y)))
+plot(density(mn, n=2^20), xlim=c(-10,10), ylim=c(0, max(density(mn)$y, density(md)$y,
+    density(mo)$y)))
+lines(density(md, n =2^20), col='red')
+lines(density(mo, n =2^20), col='blue')
 
-# for heavy tail distributions, the median seems to have smaller variance, otherwise
-# the mean has smaller variance
+plot(density(md, n = 2^12), col='red')
+lines(density(mo, n = 2^12), col='blue')
+lines(density(mn, n = 2^20))
 
 var(mn)
 var(md)
+var(mo)
+# for non-heavy tail distributions, it seems var(mean) < var(median) < var(mode)
+# for heavy-tail distributions, it seems var(mode) < var(median) < var(mean)
+
+# for cauchy, it seems var(median) < var(mode) < var(mean), but this could be
+# due to the way i'm calculating the mode
 ############
 
 
