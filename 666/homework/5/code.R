@@ -47,8 +47,6 @@ eiginfo.X
 cbind(eiginfo.X$values/sum(eiginfo.X$values),
       cumsum(eiginfo.X$values)/sum(eiginfo.X$values))
 
-
-
 ##### Selecting number of PCs (using original data) #####
 
 ### Approach (1) ###
