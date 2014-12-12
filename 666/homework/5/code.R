@@ -34,6 +34,8 @@ abline(h=mean(eiginfo.X$values))
 title("Scree Plot")
 ### Approach (3) retains 1? component 
 
+eiginfo.X$vectors[,1:2]
+
 
 
 ##############################
@@ -48,7 +50,6 @@ cbind(eiginfo.X$values/sum(eiginfo.X$values),
       cumsum(eiginfo.X$values)/sum(eiginfo.X$values))
 
 ##### Selecting number of PCs (using original data) #####
-
 ### Approach (1) ###
 cbind(eiginfo.X$values/sum(eiginfo.X$values),
       cumsum(eiginfo.X$values)/sum(eiginfo.X$values))
@@ -64,3 +65,5 @@ ts.plot(eiginfo.X$values,xlab="component",ylab="e'val")
 abline(h=mean(eiginfo.X$values))
 title("Scree Plot")
 ### Approach (3) retains 1 or 2? component 
+
+eiginfo.X$vectors[,1:2]
