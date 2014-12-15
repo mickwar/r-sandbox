@@ -2618,7 +2618,7 @@ var(mo)
 set.seed(1)
 p = 7
 m = 2
-lambda = matrix(runif(p*m, -1, 1), p, m)
+lambda = matrix(rnorm(p*m), p, m)
 psi = diag(sort(runif(p)))
 
 sigma = lambda %*% t(lambda) + psi
