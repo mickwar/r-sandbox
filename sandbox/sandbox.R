@@ -2611,3 +2611,37 @@ var(mo)
 # for cauchy, it seems var(median) < var(mode) < var(mean), but this could be
 # due to the way i'm calculating the mode
 ############
+
+############
+# factor analysis
+
+set.seed(1)
+p = 7
+m = 2
+lambda = matrix(runif(p*m, -1, 1), p, m)
+psi = diag(sort(runif(p)))
+
+sigma = lambda %*% t(lambda) + psi
+
+# get random draws
+n = 10000
+library(MASS)
+y = mvrnorm(n, rep(0, p), sigma)
+
+R = cor(y)
+eig = eigen(R)
+eig$values / sum(eig$values)
+cumsum(eig$values) / sum(eig$values)
+
+# take the first k eigenvectors
+k = 2
+
+L = eig$vectors[,1:k] * sqrt(eig$values[1:k])
+
+P = diag(1 - diag(L %*% t(L)))
+
+(L %*% t(L) + P) - R
+# these seem similar enough, but P and L are fairly
+# different from psi and lambda
+
+##########
