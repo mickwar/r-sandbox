@@ -1,0 +1,54 @@
+\documentclass[12pt]{article}
+
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+
+\begin{center}
+
+\includegraphics[scale=0.49]{figs/data_plot.pdf}
+
+\vfill
+
+\includegraphics[scale=0.49]{figs/log_data.pdf}
+
+\end{center}
+
+
+\begin{verbatim}
+> summary(glm(y ~ 0 + X, family = poisson))
+
+Call:
+glm(formula = y ~ 0 + X, family = poisson)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.0568  -0.8302  -0.3072   0.9279   1.7310  
+
+Coefficients:
+   Estimate Std. Error z value Pr(>|z|)    
+X1  0.99600    0.16971   5.869 4.39e-09 ***
+X2  1.32661    0.06463  20.525  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 9062.600  on 20  degrees of freedom
+Residual deviance:   21.755  on 18  degrees of freedom
+AIC: 138.05
+
+Number of Fisher Scoring iterations: 4
+\end{verbatim}
+
+
+\newpage
+\section*{R Code}
+\begin{tiny}
+\lstset{stepnumber=1, numbers=left}
+\lstinputlisting[breaklines,framerule = .03mm,frame = single, language=R]{code.R}
+\end{tiny}
+
+\end{document}
