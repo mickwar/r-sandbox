@@ -75,21 +75,25 @@ mpg.dat=c(209.5/6.171, 296.0/9.664, 240.5/9.867, 221.8/10.231,
         330.6/10.390, 301.0/9.956, 316.2/10.020, 366.9/9.942,
         262.1/10.055, 215.8/10.048, 283.1/8.690, 357.6/9.879,
         242.5/10.121, 188.9/8.485, 311.3/9.870, 225.3/10.236,
-        259.8/10.304, 264.8/9.904, 277.3/10.465, 272.5/11.277)
-source("~/files/R/dates.R")
-dates = dates[41135:41835,]
+        259.8/10.304, 264.8/9.904, 277.3/10.465, 272.5/11.277,
+        223.3/10.018)
+source("~/files/R/sandbox/dates.R")
+dates = dates[41135:42035,]
 dates$Day = as.numeric(dates$Day)
 days = data.frame("Day"=c("15", "20", "20", " 9", "10", "21", " 7",
     "22", "22", "30", "30", " 9", "26", "24", "29", "10", "12", "24",
-    "26", "26", " 1", "12", "16", "26", " 5", "23", " 6", "18"),
+    "26", "26", " 1", "12", "16", "26", " 5", "23", " 6", "18",
+    " 7", "27", "13", "20", " 5"),
     "Month"=c("August", "August", "September", "November", "November",
     "November", "December", "December", "December", "December",
     "December", "January", "March", "April", "April", "May", "May",
     "May", "May", "May", "July", "August", "August", "August",
-    "October", "November", "January", "March"),
+    "October", "November", "January", "March", "May", "June", "August",
+    "September", "January"),
     "Year"=c(2012, 2012, 2012, 2012, 2012, 2012, 2012, 2012,
     2012, 2012, 2012, 2013, 2013, 2013, 2013, 2013, 2013, 2013,
-    2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2014, 2014))
+    2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2014, 2014,
+    2014, 2014, 2014, 2014, 2015))
 n = length(mpg.dat)
 indexed = numeric(n)
 for (i in 1:n)
@@ -119,7 +123,7 @@ par(mar=c(4.1,3.1,3.1,1.1))
 hist(mpg.dat, breaks=10, col='gray', main="", xlab="MPG", ylab="",
     xlim=c(min(mpg.dat)-3,max(mpg.dat)+3),freq=FALSE) 
 points(density(preds), col='red', type='l', lwd=2)
-legend(15, 0.14, c("Posterior Predictive", "Data"), lty=c(1, 1),
+legend(15, 0.12, c("Posterior Predictive", "Data"), lty=c(1, 1),
     col=c('red', "gray"), lwd=c(2,10), cex=1.3)
 dev.off()
 
@@ -149,8 +153,6 @@ mean(mpgpost[,1])
 quantile(mpgpost[,1],0.5)
 # Mode
 density(mpgpost[,1])$x[which.max(density(mpgpost[,1])$y)]
-abline(v=quantile(mpgpost[,1],c(0.025,0.975)), col='green',
-    lwd=2)
 
 ### Point Estimates for the Variance Parameter
 # Mean
@@ -182,6 +184,7 @@ quantile(mpgpost[,2],c(0.005,0.995))
 ### As of 31 Dec 2012, the 99% posterior probability interval is (25.8, 32.8)
 ### As of 01 Mar 2013, the 99% posterior probability interval is (25.6, 31.9)
 ### As of 14 May 2013, the 99% posterior probability interval is (26.0, 32.0)
+### As of 6 Jan 2015, the 99% posterior probability interval is (26.1, 30.5)
 
 
 
