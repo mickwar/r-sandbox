@@ -28,4 +28,69 @@ eta2 = log(y2 / (m - y2)) + c(-1, 1)*qnorm(0.975)*sqrt(1/y2 + 1/(m-y2))
 logistic(eta1)
 logistic(eta2)
 
-### part 2
+### part 3
+smooth = function(x, y, m, d){
+    # m = number of points to do the smoothing,
+    # should be greater than length(x) to look nice
+    if (missing(m))
+        m = max(100, 8*length(x))
+    if (missing(d))
+        d = diff(range(x)) / length(x)
+
+    # gaussian kernel, delta is the bandwidth parameter
+    kern = function(x, y)
+        exp(-1/(2*d^2)*(x-y)^2)
+
+    # go outside the range of the data by some
+    w = diff(range(x))*0.25
+
+    outx = seq(min(x) - w, max(x) + w, length=m)
+    outy = double(m)
+    # loop to compute the weighted value at each new x
+    for (i in 1:length(outy))
+        outy[i] = sum(y*kern(x, outx[i]))/
+            sum(kern(x, outx[i]))
+    return (list("x"=outx, "y"=outy))
+    }
+
+li = c(8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 32, 34, 38)
+nc = c(2, 2, 3, 3, 3, 1, 3, 2, 1, 1, 1, 1, 1, 3)
+nr = c(0, 0, 0, 0, 0, 1, 2, 1, 0, 1, 1, 0, 1, 2)
+
+ss = smooth(li, nr/nc, d = 4)
+
+pdf("links.pdf", height = 12, width = 6)
+# logit link
+par(mfrow=c(3,1), mar = c(4.1, 4.2, 3.1, 2.1))
+mod = glm(cbind(nr, nc-nr) ~ li, family = binomial(link = "logit"))
+mod.pred = predict(mod, se.fit = TRUE)
+plot(li, logistic(mod.pred$fit), pch = 20, lwd = 5, ylim = c(0, 1),
+    main = "Logit Link", xlab = "LI", ylab = quote(widehat("p")))
+polygon(c(li, li[length(li):1]), c(logistic(mod.pred$fit - 1.96*mod.pred$se.fit), logistic(mod.pred$fit + 1.96*mod.pred$se.fit)[length(li):1]), col = 'lightgreen', border = "white")
+points(li, logistic(mod.pred$fit), pch = 20, lwd = 8, ylim = c(0, 1), col = rgb(0, 0.5, 0))
+lines(ss, lty=2, lwd=3)
+summary(mod)
+
+# probit link
+mod = glm(cbind(nr, nc-nr) ~ li, family = binomial(link = "probit"))
+mod.pred = predict(mod, se.fit = TRUE)
+plot(li, logistic(mod.pred$fit), pch = 20, lwd = 5, ylim = c(0, 1),
+    main = "Probit Link", xlab = "LI", ylab = quote(widehat("p")))
+polygon(c(li, li[length(li):1]), c(logistic(mod.pred$fit - 1.96*mod.pred$se.fit), logistic(mod.pred$fit + 1.96*mod.pred$se.fit)[length(li):1]), col = 'lightgreen', border = "white")
+points(li, logistic(mod.pred$fit), pch = 20, lwd = 8, ylim = c(0, 1), col = rgb(0, 0.5, 0))
+lines(ss, lty=2, lwd=3)
+summary(mod)
+
+# cloglog link
+mod = glm(cbind(nr, nc-nr) ~ li, family = binomial(link = "cloglog"))
+mod.pred = predict(mod, se.fit = TRUE)
+plot(li, logistic(mod.pred$fit), pch = 20, lwd = 5, ylim = c(0, 1),
+    main = "C-log-log Link", xlab = "LI", ylab = quote(widehat("p")))
+polygon(c(li, li[length(li):1]), c(logistic(mod.pred$fit - 1.96*mod.pred$se.fit), logistic(mod.pred$fit + 1.96*mod.pred$se.fit)[length(li):1]), col = 'lightgreen', border = "white")
+points(li, logistic(mod.pred$fit), pch = 20, lwd = 8, ylim = c(0, 1), col = rgb(0, 0.5, 0))
+lines(ss, lty=2, lwd=3)
+summary(mod)
+dev.off()
+
+# go with logit link
+mod = glm(cbind(nr, nc-nr) ~ li, family = binomial(link = "logit"))
