@@ -94,3 +94,19 @@ dev.off()
 
 # go with logit link
 mod = glm(cbind(nr, nc-nr) ~ li, family = binomial(link = "logit"))
+summary(mod)
+exp(coef(mod))
+
+mod.pred = predict(mod, se.fit = TRUE)
+logistic(mod.pred$fit)
+
+# LI[10] is closest to p = 0.5
+li[10]
+
+# OR
+coef(mod)[1] / coef(mod)[2] * (-1)
+
+### CI for LI = 8
+eta = coef(mod)[1] + coef(mod)[2] * li
+phat = logistic(eta)
+sqrt(1/(m*phat*(1-phat)))
