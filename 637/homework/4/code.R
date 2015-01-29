@@ -108,5 +108,23 @@ coef(mod)[1] / coef(mod)[2] * (-1)
 
 ### CI for LI = 8
 eta = coef(mod)[1] + coef(mod)[2] * li
-phat = logistic(eta)
-sqrt(1/(m*phat*(1-phat)))
+cbind(logistic(eta - qnorm(0.975) * mod.pred$se.fit),
+    logistic(eta + qnorm(0.975) * mod.pred$se.fit))
+
+### s.e.
+# sqrt(1/(m*phat*(1-phat))) ## not the same that R gives
+
+# bootstrap
+ps = double(10000)
+for (i in 1:length(ps)){
+    train = sample(length(nr), replace = TRUE)
+    mod = tryCatch(glm(cbind(nr, nc-nr) ~ li, family = binomial(link = "logit"), subset = train), warning = function(x) 0)
+    if (is(mod)[1] == "glm"){
+        ps[i] = coef(mod)[1] + coef(mod)[2] * 8
+    } else {
+        ps[i] = 0
+        }
+    }
+ps = ps[ps != 0]
+var(ps)
+plot(density(ps))
