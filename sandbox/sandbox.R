@@ -2646,3 +2646,13 @@ P = diag(1 - diag(L %*% t(L)))
 # different from psi and lambda
 
 ##########
+
+##########
+iter = 10000
+n = 10
+mins = double(iter)
+for (i in 1:iter)
+    mins[i] = min(runif(n, 0, 1))
+plot(density(mins))
+curve(dbeta(x, 2, 5), col='red')
+##########
