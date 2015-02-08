@@ -8,6 +8,7 @@ x = data.frame(matrix(0, nrow(dat_slc) + nrow(dat_sf), 14))
 colnames(x) = c("CITY", "LDS", "PRNTACTV", "SACRMTG", "AGE",
     "INCOME", "EDUC", "PRVPRAYR", "READSCRP", "MARITAL",
     "SEX", "PSTH", "FRIEND", "MISSION")
+# 256, 28, 251, 252, 271, 36, 33, 270, 269, 3, 4, 6
 
 # city indicator (0 for SF, 1 for SLC)
 x$CITY = c(rep(0, nrow(dat_sf)), rep(1, nrow(dat_slc)))
@@ -77,10 +78,15 @@ x$SEX = 2 - c(dat_sf[,269], dat_slc[,269])
 
 # priesthood office (3)
 x$PSTH = c(dat_sf[,3], dat_slc[,3])
+x$PSTH[x$SEX == 0] = 0  # set priesthood to 0 if female
+                        # may need to deal with this
+                        # just ignore priesthood office?
 
-x$PSTH[x$SEX == 0]
+# lds friends (4)
+x$FRIEND = c(dat_sf[,4], dat_slc[,4])
 
-# 256, 28, 251, 252, 271, 36, 33, 270, 269, 3, 4, 6
+# lds friends (6)
+x$MISSION = c(dat_sf[,6], dat_slc[,6]) - 1
 
 # response
 temp_sf = ifelse(dat_sf[,7] == "Born in the LDS Church, but no longer affiliated" |
@@ -88,3 +94,33 @@ temp_sf = ifelse(dat_sf[,7] == "Born in the LDS Church, but no longer affiliated
 temp_slc = ifelse(dat_slc[,7] == 1 | dat_slc[,7] == 4, 0, 1)
 y = c(temp_sf, temp_slc)
 
+# mising values
+miss.y = which(is.na(y))
+miss.x = NULL
+for (i in 1:ncol(x))
+    miss.x = unique(c(miss.x, which(is.na(x[,i]))))
+# every row that has at least one missing value
+miss.all = c(miss.y, miss.x)
+
+# counts for responses after removing missing values
+table(y[-miss.all])
+
+# check to make sure they are removed
+sum(is.na(y[-miss.all]))
+sum(is.na(x[-miss.all,]))
+
+y = y[-miss.all]
+x = x[-miss.all,]
+
+# make all the x's factors (except age and income)
+x[,names(x)] = lapply(x[,names(x)], factor)
+x$AGE = c(x$AGE)
+x$INCOME = c(x$INCOME)
+
+
+### model fitting
+mod = glm(y ~ ., data = x, family = binomial)
+summary(mod)
+
+mod = glm(y ~ CITY + SEX + AGE + INCOME, data = x, family = binomial)
+summary(mod)
