@@ -124,3 +124,40 @@ summary(mod)
 
 mod = glm(y ~ CITY + SEX + AGE + INCOME, data = x, family = binomial)
 summary(mod)
+
+
+### logit link
+full.mod = glm(y ~ ., data = x, family = binomial(link = "logit"))
+null.mod = glm(y ~ 1, data = x, family = binomial(link = "logit"))
+# AIC
+mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
+    k = 2, data = x, direction = "both", family = binomial(link = "logit"))
+summary(mod)
+# BIC
+mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
+    k = log(nrow(x)), data = x, direction = "both", family = binomial(link = "logit"))
+summary(mod)
+
+### probit link
+full.mod = glm(y ~ ., data = x, family = binomial(link = "probit"))
+null.mod = glm(y ~ 1, data = x, family = binomial(link = "probit"))
+# AIC
+mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
+    k = 2, data = x, direction = "both", family = binomial(link = "probit"))
+summary(mod)
+# BIC
+mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
+    k = log(nrow(x)), data = x, direction = "both", family = binomial(link = "probit"))
+summary(mod)
+
+### cloglog link
+full.mod = glm(y ~ ., data = x, family = binomial(link = "cloglog"))
+null.mod = glm(y ~ 1, data = x, family = binomial(link = "cloglog"))
+# AIC
+mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
+    k = 2, data = x, direction = "both", family = binomial(link = "cloglog"))
+summary(mod)
+# BIC
+mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
+    k = log(nrow(x)), data = x, direction = "both", family = binomial(link = "cloglog"))
+summary(mod)
