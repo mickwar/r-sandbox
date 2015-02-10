@@ -4,10 +4,10 @@ dat_slc = read.csv("~/files/data/637/mormon_slc_sample.csv")
 
 ### data cleaning
 # initialize
-x = data.frame(matrix(0, nrow(dat_slc) + nrow(dat_sf), 14))
+x = data.frame(matrix(0, nrow(dat_slc) + nrow(dat_sf), 12))
 colnames(x) = c("CITY", "LDS", "PRNTACTV", "SACRMTG", "AGE",
     "INCOME", "EDUC", "PRVPRAYR", "READSCRP", "MARITAL",
-    "SEX", "PSTH", "FRIEND", "MISSION")
+    "SEX", "FRIEND")
 # 256, 28, 251, 252, 271, 36, 33, 270, 269, 3, 4, 6
 
 # city indicator (0 for SF, 1 for SLC)
@@ -76,17 +76,17 @@ x$MARITAL = c(dat_sf[,270], dat_slc[,270])
 # sex (269)
 x$SEX = 2 - c(dat_sf[,269], dat_slc[,269])
 
-# priesthood office (3)
-x$PSTH = c(dat_sf[,3], dat_slc[,3])
-x$PSTH[x$SEX == 0] = 0  # set priesthood to 0 if female
-                        # may need to deal with this
-                        # just ignore priesthood office?
+# # priesthood office (3)
+# x$PSTH = c(dat_sf[,3], dat_slc[,3])
+# x$PSTH[x$SEX == 0] = 0  # set priesthood to 0 if female
+#                         # may need to deal with this
+#                         # just ignore priesthood office?
 
 # lds friends (4)
-x$FRIEND = c(dat_sf[,4], dat_slc[,4])
+x$FRIEND = c(c(dat_sf[,4]) - 1, dat_slc[,4])
 
-# lds friends (6)
-x$MISSION = c(dat_sf[,6], dat_slc[,6]) - 1
+# # mission (6)
+# x$MISSION = c(dat_sf[,6], dat_slc[,6]) - 1
 
 # response
 temp_sf = ifelse(dat_sf[,7] == "Born in the LDS Church, but no longer affiliated" |
@@ -116,18 +116,25 @@ x = x[-miss.all,]
 x[,names(x)] = lapply(x[,names(x)], factor)
 x$AGE = c(x$AGE)
 x$INCOME = c(x$INCOME)
-
+x$FRIEND = c(x$FRIEND)
 
 ### model fitting
 mod = glm(y ~ ., data = x, family = binomial)
 summary(mod)
 
-mod = glm(y ~ CITY + SEX + AGE + INCOME, data = x, family = binomial)
+mod = glm(y ~ CITY + PRVPRAYR + LDS + SACRMTG + FRIEND + PRVPRAYR*CITY, data = x, family = binomial)
 summary(mod)
 
 
+
+
+
+
+
+
+
 ### logit link
-full.mod = glm(y ~ ., data = x, family = binomial(link = "logit"))
+full.mod = glm(y ~ . + PRVPRAYR*CITY + FRIEND*CITY, data = x, family = binomial(link = "logit"))
 null.mod = glm(y ~ 1, data = x, family = binomial(link = "logit"))
 # AIC
 mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),

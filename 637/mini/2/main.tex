@@ -1,0 +1,138 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage,multicol,graphicx,color}
+
+\title{Membership Status in the LDS Church \\ \vspace{1mm} \large Stat 637 Mini-Project \#2}
+
+\date{February $11^{th}$, 2015}
+\author{Arthur Lui, Ryan Roundy, Mickey Warner}
+
+\usepackage{amsmath,graphicx}
+
+\begin{document}
+\maketitle
+
+\section*{Introduction}
+The purpose of this project is to assess the membership status of members of the LDS church that were based in cities of Salt Lake and San Francisco from 1967-1969. A survey that comprised over 200 questions was sent out to members of the LDS church in both Salt Lake and San Francisco and the questions covered a myriad of topics. In this project, the focus will be on the question that asked the respondent if they were still affiliated with the church. A subset of variables that we deemed interesting were proposed to be used in the model to predict affiliation and a final model was chosen.
+
+\section*{Variables of Interest}
+The main question that we are interested in modeling is question number 7 from the survey, which asked:
+\begin{itemize}
+\item{Which of the following most nearly represents your current membership status in the LDS Church?}
+\begin{enumerate}
+\item{Born in the LDS Church, but no longer affiliated}
+\item{Life-long member and still affiliated}
+\item{Convert and still affiliated}
+\item{Once converted, but no longer affiliated}
+\item{Other (please explain)}
+\end{enumerate}
+\end{itemize}
+We transformed the answers to be a binary response by the following criteria:
+\begin{equation*}
+Y_{i}=\left\{
+     \begin{array}{lr}
+     1 & \text{if respondent is still affiliated with the church}  \\
+     0 & \text{otherwise}
+     \end{array}
+\right.
+\end{equation*}
+
+In order to predict current membership status, we subjectively chose a subset of the predictor variables based on information that we thought would be interesting to model. The variables we chose to consider are:
+
+\begin{multicols}{2}
+\begin{itemize}
+    \item{PRNTACTV - Whether or not parents were acting while respondent was being raised}
+    \item{SACRMTG - How often sacrament meeting is attended}
+    \item{AGE - Age of respondent}
+    \item{CITY - Whether of not respondent lived in SLC of SF}
+    \item{INCOME - Income of respondent}
+    \item{EDUC - Amount of formal education}
+    \item{PRVPRAYR - How often personal prayers are said}
+    \item{READSCRP - How often scriptures are read}
+    \item{MARITAL - Marital status}
+    \item{SEX - Gender}
+    \item{FRIENDS - Number of 5 closest friends that are also Mormon}
+    \item{LDS - If respondent was born in church or coverted}
+\end{itemize}
+\end{multicols}
+
+\section*{Model}
+The model we have chosen is as follows:
+\begin{equation*}
+Y_i \sim Bernoulli(p_i)
+\end{equation*}
+\begin{equation*}
+log\left(\frac{p_i}{1-p_i} \right) = \textbf{x}_i'\boldsymbol\beta
+\end{equation*}
+where $Y_i=1$ if the respondent is affiliated and $\textbf{x}_i$ is the vector of covariates for individual $i$. We used the hybrid selection algorithm and AIC in order to perform variable selection. The basic idea of the hybrid algorithm is that you begin with a base model that includes just the intercept and at each step of the algorithm, a potential covariate is either added or dropped depending on the effect of that covariate on AIC. Thus at any point, whatever results in the biggest reduction in AIC, whether it involves adding an additional covariate or dropping a covariate that is already in the model, is performed. The algorithm ends when adding or dropping a potential covariate does not result in a reduction in AIC.
+
+After the performing the hybrid selection on the group of potential variables described above, the following variables were determined to be significant in predicting membership status in the church.
+\begin{itemize}
+\item{City}
+\item{Private Prayer}
+\item{Convert}
+\item{Sacrament}
+\item{Friend}
+\item{Private Prayer and City Interaction}
+\end{itemize}
+We performed the analysis with the logit, probit, and complementary log-log (cloglog) links. The results were essentially the same for the logit and probit links, and the cloglog link resulted in a larger model with no added benefit, so we decided to use the logit link for interpretability and familiarity.
+
+\section*{Model Checking}
+In order to assess the performance of our model, we will be using ROC curves, and different error rates. The ROC curve for our model is in Figure~\ref{roc}. As shown, the ROC curve has a high AUC of 0.949, which shows evidence of a model that predicts well.
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[height=2.85in]{auc.pdf} \vspace{-5mm}
+\caption{ROC curve for our model.} \label{roc}
+\end{center}
+\end{figure}
+
+\vspace{-3mm}
+In Figure~\ref{error}, the false positive, false negative, and overall error rates are shown over all the potential values of $p_0$. From this figure, it appears that the best choice for $p_0$ in order to minimize all of the error rates is around 0.79.
+\vspace{-3mm}
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[height=2.85in]{error.pdf} \vspace{-5mm}
+\caption{Different error rates for our model} \label{error}
+\end{center}
+\end{figure}
+
+\section*{Results}
+Table~\ref{results} includes the coefficient estimates for the variables in the final model. 
+\begin{table}[ht] 
+\centering
+\begin{tabular}{rrrrr} 
+  \hline
+ & Estimate & Std. Error & z value & Pr($>$$|$z$|$) \\ 
+  \hline \vspace{1mm}
+(Intercept) & 3.8922 & 1.4970 & 2.60 & \textcolor{red}{0.0093} \\ \vspace{1mm}
+  CITY1 & 0.3379 & 0.5869 & 0.58 & 0.5648 \\ 
+  PRVPRAYR2 & -1.4602 & 0.8042 & -1.82 & 0.0694 \\ 
+  PRVPRAYR3 & -1.8447 & 0.9246 & -2.00 & \textcolor{red}{0.0460} \\ 
+  PRVPRAYR4 & -1.2020 & 0.8896 & -1.35 & 0.1767 \\ 
+  PRVPRAYR5 & -1.5644 & 0.7378 & -2.12 & \textcolor{red}{0.0340} \\ \vspace{1mm}
+  PRVPRAYR6 & -1.5502 & 0.5365 & -2.89 & \textcolor{red}{0.0039} \\ 
+  FRIEND1 & 1.2097 & 1.0216 & 1.18 & 0.2364 \\ 
+  FRIEND2 & 0.8066 & 1.0086 & 0.80 & 0.4239 \\ 
+  FRIEND3 & 1.6352 & 1.0234 & 1.60 & 0.1101 \\ 
+  FRIEND4 & 1.6906 & 1.0048 & 1.68 & 0.0924 \\ 
+  FRIEND5 & 1.4253 & 0.9852 & 1.45 & 0.1480 \\ \vspace{1mm}
+  FRIEND6 & 3.6853 & 1.5010 & 2.46 & \textcolor{red}{0.0141} \\ 
+  SACRMTG2 & -1.1713 & 1.2407 & -0.94 & 0.3451 \\ 
+  SACRMTG3 & -2.7590 & 1.1762 & -2.35 & \textcolor{red}{0.0190} \\ 
+  SACRMTG4 & -2.3498 & 1.2804 & -1.84 & 0.0665 \\ 
+  SACRMTG5 & -3.4214 & 1.1044 & -3.10 & \textcolor{red}{0.0019} \\ \vspace{1mm}
+  SACRMTG6 & -5.2841 & 1.0672 & -4.95 & \textcolor{red}{0.0000} \\ \vspace{1mm}
+  LDSconvert & 0.8497 & 0.4044 & 2.10 & \textcolor{red}{0.0356} \\ 
+  CITY1:PRVPRAYR2 & 3.6050 & 1.3830 & 2.61 & \textcolor{red}{0.0091} \\ 
+  CITY1:PRVPRAYR3 & 1.9972 & 1.1531 & 1.73 & 0.0833 \\ 
+  CITY1:PRVPRAYR4 & 0.7899 & 1.0855 & 0.73 & 0.4668 \\ 
+  CITY1:PRVPRAYR5 & 1.7825 & 0.9867 & 1.81 & 0.0708 \\ 
+  CITY1:PRVPRAYR6 & 0.9725 & 0.7218 & 1.35 & 0.1779 \\ 
+   \hline
+\end{tabular}
+\caption{Coefficient estimates for each variable in the model}
+\label{results}
+\end{table}
+
+
+
+\end{document}
