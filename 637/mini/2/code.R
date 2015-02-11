@@ -2,6 +2,11 @@ library(foreign)
 dat_sf = data.frame(read.spss("~/files/data/637/mormon_sf_sample.SAV"))
 dat_slc = read.csv("~/files/data/637/mormon_slc_sample.csv")
 
+logit = function(x)
+    log(x/(1-x))
+logistic = function(x)
+    1/(1+exp(-x))
+
 ### data cleaning
 # initialize
 x = data.frame(matrix(0, nrow(dat_slc) + nrow(dat_sf), 12))
@@ -119,52 +124,31 @@ x$INCOME = c(x$INCOME)
 x$FRIEND = c(x$FRIEND)
 
 ### model fitting
-mod = glm(y ~ ., data = x, family = binomial)
+mod = glm(y ~ CITY + PRVPRAYR + LDS + SACRMTG + FRIEND +
+    PRVPRAYR*CITY, data = x, family = binomial(link = "logit"))
 summary(mod)
 
-mod = glm(y ~ CITY + PRVPRAYR + LDS + SACRMTG + FRIEND + PRVPRAYR*CITY, data = x, family = binomial)
-summary(mod)
+### confidence intervals on p's with various sets of x's
+x.conf = x[1:6, -c(3, 5, 6, 7, 9, 10, 11)]
+x.conf[,2] = "birth"
+x.conf[,1] = c(0,0,0,1,1,1)
+x.conf[,3] = c(1,4,6,1,4,6)
+x.conf[,4] = c(1,2,6,1,2,6)
+x.conf[,5] = c(5,2,0,5,2,0)
+rownames(x.conf) = c("SF_High", "SF_Medium", "SF_Low",
+    "SLC_High", "SLC_Medium", "SLC_Low")
+x.conf[,names(x.conf)] = lapply(x.conf[,names(x.conf)], factor)
+x.conf$FRIEND = c(x.conf$FRIEND)
+x.conf[,5] = c(5,2,0,5,2,0)
 
+p = predict(mod, se.fit = TRUE, newdata = x.conf)
 
+conf.int = matrix(0, 6, 2)
+for (i in 1:nrow(x.conf))
+    conf.int[i,] = logistic(p$fit[i] + c(-1, 1)*qnorm(0.975)*p$se.fit[i])
 
+rownames(conf.int) = rownames(x.conf)
 
-
-
-
-
-
-### logit link
-full.mod = glm(y ~ . + PRVPRAYR*CITY + FRIEND*CITY, data = x, family = binomial(link = "logit"))
-null.mod = glm(y ~ 1, data = x, family = binomial(link = "logit"))
-# AIC
-mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
-    k = 2, data = x, direction = "both", family = binomial(link = "logit"))
-summary(mod)
-# BIC
-mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
-    k = log(nrow(x)), data = x, direction = "both", family = binomial(link = "logit"))
-summary(mod)
-
-### probit link
-full.mod = glm(y ~ ., data = x, family = binomial(link = "probit"))
-null.mod = glm(y ~ 1, data = x, family = binomial(link = "probit"))
-# AIC
-mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
-    k = 2, data = x, direction = "both", family = binomial(link = "probit"))
-summary(mod)
-# BIC
-mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
-    k = log(nrow(x)), data = x, direction = "both", family = binomial(link = "probit"))
-summary(mod)
-
-### cloglog link
-full.mod = glm(y ~ ., data = x, family = binomial(link = "cloglog"))
-null.mod = glm(y ~ 1, data = x, family = binomial(link = "cloglog"))
-# AIC
-mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
-    k = 2, data = x, direction = "both", family = binomial(link = "cloglog"))
-summary(mod)
-# BIC
-mod = step(null.mod, scope = list(lower = null.mod, upper = full.mod),
-    k = log(nrow(x)), data = x, direction = "both", family = binomial(link = "cloglog"))
-summary(mod)
+library(xtable)
+write.table(print(xtable(conf.int, digits = 3)), "./conf_int.txt", col.names = FALSE, quote = FALSE)
+write.table(print(xtable(summary(mod))), "./coef_est.txt", col.names = FALSE, quote = FALSE)

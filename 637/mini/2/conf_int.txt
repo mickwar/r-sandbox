@@ -1,0 +1,18 @@
+1 % latex table generated in R 3.1.2 by xtable 1.7-3 package
+% Wed Feb 11 09:24:58 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & 1 & 2 \\ 
+  \hline
+SF\_High & 0.975 & 1.000 \\ 
+  SF\_Medium & 0.311 & 0.976 \\ 
+  SF\_Low & 0.050 & 0.211 \\ 
+  SLC\_High & 0.972 & 0.999 \\ 
+  SLC\_Medium & 0.624 & 0.983 \\ 
+  SLC\_Low & 0.089 & 0.373 \\ 
+   \hline
+\end{tabular}
+\end{table}
+

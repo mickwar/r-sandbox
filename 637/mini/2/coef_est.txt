@@ -1,0 +1,31 @@
+1 % latex table generated in R 3.1.2 by xtable 1.7-3 package
+% Wed Feb 11 09:14:58 2015
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrr}
+  \hline
+ & Estimate & Std. Error & z value & Pr($>$$|$z$|$) \\ 
+  \hline
+(Intercept) & 4.6554 & 1.1567 & 4.02 & 0.0001 \\ 
+  CITY1 & -0.2602 & 0.5688 & -0.46 & 0.6474 \\ 
+  PRVPRAYR2 & -1.1462 & 0.7407 & -1.55 & 0.1218 \\ 
+  PRVPRAYR3 & -1.8227 & 0.8721 & -2.09 & 0.0366 \\ 
+  PRVPRAYR4 & -1.3837 & 0.9218 & -1.50 & 0.1333 \\ 
+  PRVPRAYR5 & -1.7355 & 0.7366 & -2.36 & 0.0185 \\ 
+  PRVPRAYR6 & -1.6333 & 0.5221 & -3.13 & 0.0018 \\ 
+  LDSconvert & 0.8781 & 0.3872 & 2.27 & 0.0233 \\ 
+  SACRMTG2 & -1.1591 & 1.2351 & -0.94 & 0.3480 \\ 
+  SACRMTG3 & -2.5673 & 1.1746 & -2.19 & 0.0288 \\ 
+  SACRMTG4 & -2.2791 & 1.2762 & -1.79 & 0.0741 \\ 
+  SACRMTG5 & -3.3046 & 1.1008 & -3.00 & 0.0027 \\ 
+  SACRMTG6 & -5.1559 & 1.0605 & -4.86 & 0.0000 \\ 
+  FRIEND & 0.2310 & 0.0898 & 2.57 & 0.0101 \\ 
+  CITY1:PRVPRAYR2 & 3.4425 & 1.3389 & 2.57 & 0.0101 \\ 
+  CITY1:PRVPRAYR3 & 2.1081 & 1.1122 & 1.90 & 0.0580 \\ 
+  CITY1:PRVPRAYR4 & 1.0785 & 1.1091 & 0.97 & 0.3308 \\ 
+  CITY1:PRVPRAYR5 & 1.9890 & 0.9776 & 2.03 & 0.0419 \\ 
+  CITY1:PRVPRAYR6 & 0.9716 & 0.7018 & 1.38 & 0.1662 \\ 
+   \hline
+\end{tabular}
+\end{table}
+

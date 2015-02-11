@@ -1,0 +1,159 @@
+     #####################################################################
+     ### model 1
+                           Convergence criteria met.                    
+     
+     
+                        Covariance Parameter Estimates
+     
+                                           Standard         Z
+      Cov Parm      Subject    Estimate       Error     Value      Pr > Z
+     
+      Intercept     ID         0.001620    0.003465      0.47      0.3201
+      day           ID         0.000036    0.000029      1.22      0.1117
+     
+                        Covariance Parameter Estimates
+     
+                                           Standard         Z
+      Cov Parm      Subject    Estimate       Error     Value      Pr > Z
+     
+      Residual                  0.03023    0.003046      9.92      <.0001
+     
+                                Fit Statistics
+     
+                     -2 Res Log Likelihood           -80.0
+                     AIC (smaller is better)         -74.0
+                     AICC (smaller is better)        -73.9
+                     BIC (smaller is better)         -72.5
+     
+     
+                          Solution for Fixed Effects
+     
+                                   Standard
+     Effect       T    Estimate       Error      DF    t Value    Pr > |t|
+     
+     Intercept           3.2554     0.03167      11     102.78      <.0001
+     day*T        1     0.03304    0.003320     188       9.95      <.0001
+     day*T        2     0.02028    0.003259     188       6.22      <.0001
+     day*T        3     0.02315    0.003320     188       6.97      <.0001
+     day*T        4     0.01164    0.003459     188       3.37      0.0009
+     
+     
+     #####################################################################
+     ### model 2
+     
+                           Convergence criteria met.                    
+     
+     
+                        Covariance Parameter Estimates
+     
+                                           Standard         Z
+      Cov Parm      Subject    Estimate       Error     Value      Pr > Z
+     
+      Intercept     ID                0           .       .         .    
+      day           ID         0.000045    0.000025      1.81      0.0354
+      Residual                  0.03898    0.003874     10.06      <.0001
+     
+                                Fit Statistics
+     
+                     -2 Res Log Likelihood           -56.8
+                     AIC (smaller is better)         -52.8
+                     AICC (smaller is better)        -52.8
+                     BIC (smaller is better)         -51.9
+     
+     
+                           Solution for Fixed Effects
+     
+                                 Standard
+        Effect       Estimate       Error      DF    t Value    Pr > |t|
+     
+        Intercept      3.2554     0.03333      11      97.66      <.0001
+        day           0.02248    0.003281      11       6.85      <.0001
+     
+     
+     
+     #####################################################################
+     ### model 3
+                           Convergence criteria met.                    
+     
+     
+                        Covariance Parameter Estimates
+     
+                                           Standard         Z
+      Cov Parm      Subject    Estimate       Error     Value      Pr > Z
+     
+      Intercept     ID         0.001107    0.003335      0.33      0.3699
+      day           ID         0.000039    0.000031      1.24      0.1066
+     
+                        Covariance Parameter Estimates
+     
+                                           Standard         Z
+      Cov Parm      Subject    Estimate       Error     Value      Pr > Z
+     
+      Residual                  0.02822    0.002862      9.86      <.0001
+     
+     
+                                Fit Statistics
+     
+                     -2 Res Log Likelihood           -86.7
+                     AIC (smaller is better)         -80.7
+                     AICC (smaller is better)        -80.6
+                     BIC (smaller is better)         -79.2
+     
+     
+                          Solution for Fixed Effects
+     
+                                   Standard
+     Effect       T    Estimate       Error      DF    t Value    Pr > |t|
+     
+     Intercept           3.4516     0.06294      11      54.84      <.0001
+     day               -0.00246    0.005247      11      -0.47      0.6486
+     T            1     -0.3500     0.08370     185      -4.18      <.0001
+     T            2     -0.1937     0.08217     185      -2.36      0.0195
+     T            3     -0.2050     0.08370     185      -2.45      0.0152
+     T            4           0           .       .        .         .    
+     day*T        1     0.04661    0.006610     185       7.05      <.0001
+     day*T        2     0.02256    0.006497     185       3.47      0.0006
+     day*T        3     0.02626    0.006610     185       3.97      0.0001
+     day*T        4           0           .       .        .         .    
+     
+     
+     
+     #####################################################################
+     ### model 4
+     
+                           Convergence criteria met.                    
+     
+                         Covariance Parameter Estimates
+     
+                                           Standard         Z
+       Cov Parm     Subject    Estimate       Error     Value        Pr Z
+     
+       UN(1,1)      ID                0           .       .         .    
+       UN(2,1)      ID         0.000347    0.000262      1.33      0.1851
+       UN(2,2)      ID         1.535E-6    0.000028      0.05      0.4782
+       Residual                 0.02832    0.002858      9.91      <.0001
+     
+     
+                                Fit Statistics
+     
+                     -2 Res Log Likelihood           -88.2
+                     AIC (smaller is better)         -82.2
+                     AICC (smaller is better)        -82.1
+                     BIC (smaller is better)         -80.8
+     
+     
+                          Solution for Fixed Effects
+     
+                                   Standard
+     Effect       T    Estimate       Error      DF    t Value    Pr > |t|
+     
+     Intercept           3.4607     0.06164      11      56.14      <.0001
+     day               -0.00323    0.004876      11      -0.66      0.5212
+     T            1     -0.3569     0.08347     185      -4.28      <.0001
+     T            2     -0.2028     0.08181     185      -2.48      0.0141
+     T            3     -0.2119     0.08347     185      -2.54      0.0119
+     T            4           0           .       .        .         .    
+     day*T        1     0.04722    0.006583     185       7.17      <.0001
+     day*T        2     0.02333    0.006452     185       3.62      0.0004
+     day*T        3     0.02688    0.006583     185       4.08      <.0001
+     day*T        4           0           .       .        .         .    
