@@ -37,7 +37,7 @@ calc.post = function(params){
 set.seed(1)
 n = 1000
 true.beta = c(-1.00, 1.50)
-true.b = 2
+true.b = 92
 b.lower = 0
 b.upper = 1
 x = cbind(1, sort(rnorm(n, 0, 1)))
@@ -48,10 +48,11 @@ plot(x[,2], y, pch = 20)
 points(x[,2], logistic(x[,2], exp(1)), type='l')
 points(x[,2], logistic(x[,2], 2), type='l')
 points(x[,2], logistic(x[,2], 5), type='l')
+points(x[,2], logistic(x[,2], true.b), type='l')
 
 # initialize mcmc settings
-nburn = 5000
-nmcmc = 10000
+nburn = 10000
+nmcmc = 200000
 window = 500
 nparams = 3
 params = matrix(0, nburn + nmcmc, nparams)
@@ -102,16 +103,28 @@ for (i in 2:(nburn+nmcmc)){
 
 params = params[(nburn+1):(nburn+nmcmc),]
 accept = accept[(nburn+1):(nburn+nmcmc),]
+post.mat = post.mat[(nburn+1):(nburn+nmcmc),]
+
+thin = 1
+thin.vec = seq(1, nmcmc, by = thin)
 
 par(mfrow=c(3,1))
-plot(params[,1], type='l')
-plot(params[,2], type='l')
-plot(params[,3], type='l')
- 
-calc.mode(density(1/params[,3]))
+plot(params[thin.vec,1], type='l')
+plot(params[thin.vec,2], type='l')
+plot(params[thin.vec,3], type='l')
 
-apply(params, 2, mean)
-apply(accept, 2, mean)
+par(mfrow=c(3,1))
+plot(density(params[thin.vec,1]))
+plot(density(params[thin.vec,2]))
+plot(density(params[thin.vec,3]))
+ 
+calc.mode(density(params[thin.vec,1]))
+calc.mode(density(params[thin.vec,2]))
+calc.mode(density(1/params[thin.vec,3]))
+
+apply(params[thin.vec,], 2, mean)
+c(apply(params[thin.vec,1:2], 2, mean), 1/mean(params[thin.vec,3]))
+apply(accept[thin.vec,], 2, mean)
 
 max(post.mat)
 # with b in (1.5, 10)
@@ -125,6 +138,23 @@ max(post.mat)
 # about uniform (maybe slightly skewed), but no increase in likelihood
 
 par(mfrow=c(1,1))
-plot(params[,c(1,2)])
-plot(params[,c(2,3)])
-plot(params[,c(1,3)])
+plot(params[thin.vec,c(1,2)], type='l')
+plot(params[thin.vec,c(2,3)], type='l')
+plot(params[thin.vec,c(1,3)], type='l')
+
+
+
+est.mode = function(params, post){
+    # params, post are nparams x nmcmc
+    # the first nparams - 1 columns in the first row
+    # of post should be -Inf
+    nparams = nrow(params)
+    maxx = which.max(as.numeric(post))
+    end = 1 + ((maxx - 1) %% nparams) # the index of the ending parameter
+    order = c((nparams - end + 1):nparams, 1:(nparams - end))[1:nparams]
+    vec = as.numeric(params)[(maxx-nparams+1):maxx]
+    return(list("mode"=vec[order], "height"=post[maxx]))
+    }
+
+post.mat[1, -nparams] = -Inf
+modee = est.mode(t(params), t(post.mat))
