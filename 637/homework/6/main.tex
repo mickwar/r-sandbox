@@ -1,0 +1,71 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage[margin=1.25in]{geometry}
+
+\usepackage{bm}
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+
+\begin{document}
+
+\noindent Mickey Warner
+
+\noindent Stat 637
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{lrr}
+ & & \\ \hline
+ & Lower & Upper \\ \hline \hline
+$\beta_0$                   & $-1.807$ & $ 0.247$ \\
+$\beta_{\mathrm{Duration}}$ & $ 0.015$ & $ 0.063$ \\
+$\beta_{\mathrm{Type}}$     & $-1.701$ & $ 0.061$ \\
+Deviance                    & $30.346$ & $37.148$ \\ \hline
+\end{tabular}
+\caption{95\% HPD intervals for posterior distributions and deviance (Metropolis).}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{lrr}
+ & & \\ \hline
+ & Lower & Upper \\ \hline \hline
+$\beta_0$                   & $-1.799$ & $ 0.276$ \\
+$\beta_{\mathrm{Duration}}$ & $ 0.014$ & $ 0.062$ \\
+$\beta_{\mathrm{Type}}$     & $-1.719$ & $ 0.061$ \\
+Deviance                    & $30.342$ & $37.273$ \\ \hline
+\end{tabular}
+\caption{95\% HPD intervals for posterior distributions and deviance (Gibbs).}
+\end{center}
+\end{table}
+
+\noindent These intervals indicate the 95\% probability region having the shortest length. For instance, there is a 95\% probability that the intercept $\beta_0$ (using the Metropolis algorithm) is between $-1.807$ and $0.247$, and this interval is shorter than all other possible 95\% intervals. Similar statements can be made regarding the other parameters.
+\bigskip
+
+\noindent The deviance is calculated as $D_i = -2\times\log f(\m{y}|\m{\theta}_i)$, where $\m{y}$ is the data vector (including response and covariates), $\m{\theta}_i$ is the set of parameters for iteration $i$ in the sampling algorithm, and $\log f(\cdot|\cdot)$ is the log-likelihood. For the Bernoulli distribution, the log likelihood for the maximal model is $0$, so $D_i$ is simplified. The deviance is a measure of how well the model fits with respect to the data.
+\bigskip
+
+\noindent The tables and figures both indicate that the two sampling methods yielded essentially the same results. The same priors were used in both settings and the proposal distributions in the Metropolis algorithm were tuned such that acceptance rates were close to $0.25$.
+\bigskip
+
+\noindent For a patient who spent 44 minutes in surgery with a tracheal tube, we calculate the probability of the patient waking with a sore throat. The 95\% HPD interval is $(0.260, 0.787)$ with a mean of $0.525$, from the Gibbs algorithm. The Metropolis algorithm yielded comparable results.
+
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.65]{figs/mcmc_post.pdf}
+\caption{Beta parameter posterior distributions and deviance using the Metropolis algorithm.}
+\end{center}
+\end{figure}
+
+
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.65]{figs/gibb_post.pdf}
+\caption{Beta parameter posterior distributions and deviance using the Albert and Chib algorithm (Gibbs).}
+\end{center}
+\end{figure}
+
+\end{document}

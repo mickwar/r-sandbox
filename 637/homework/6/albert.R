@@ -44,7 +44,7 @@ z.lower = c(rep(-Inf, sum(y == 0)), rep(0, sum(y == 1)))
 z.upper = c(rep(0, sum(y == 0)), rep(Inf, sum(y == 1)))
 
 for (i in 2:(nburn + ngibb)){
-    cat("\rIteration",i,"/",nburn+nmcmc)
+#   cat("\rIteration",i,"/",nburn+ngibb)
 
     # draw beta
     params.beta[i,] = mvrnorm(1, sig.beta %*% t(x) %*% params.z[i-1,], sig.beta)
@@ -52,8 +52,8 @@ for (i in 2:(nburn + ngibb)){
     # draw latent variable (z)
     params.z[i,] = rtruncnorm(1, a = z.lower, b = z.upper, mean = x %*% params.beta[i,])
 
-    if (i == (nburn+nmcmc))
-        cat("\n")
+#   if (i == (nburn+ngibb))
+#       cat("\n")
     }
 
 ### remove burnin
@@ -88,3 +88,10 @@ dev.off()
 
 hpds
 dev.hpd
+
+# 44 minute surgery with T=1 tracheal tube
+pred.x = c(1, 44, 1)
+pred.p = pnorm(params.beta %*% pred.x)
+
+hpd.uni(pred.p)
+mean(pred.p)

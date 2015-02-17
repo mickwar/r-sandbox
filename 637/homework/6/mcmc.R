@@ -52,7 +52,7 @@ post.mat = matrix(-Inf, nburn + nmcmc, nparams)
 post.mat[1, 1] = post
 
 for (i in 2:(nburn+nmcmc)){
-    cat("\rIteration",i,"/",nburn+nmcmc)
+#   cat("\rIteration",i,"/",nburn+nmcmc)
     params[i,] = params[i-1,]
     for (j in 1:nparams){
         cand = rnorm(1, params[i,j], sigs[j])
@@ -76,8 +76,8 @@ for (i in 2:(nburn+nmcmc)){
     if (floor(i/window) == i/window && i <= nburn)
         sigs = sigs*autotune(apply(accept[(i-window+1):i,], 2,
             mean), k = max(window/50, 1.1))
-    if (i == (nburn+nmcmc))
-        cat("\n")
+#   if (i == (nburn+nmcmc))
+#       cat("\n")
     }
 
 ### remove burnin
@@ -112,3 +112,10 @@ dev.off()
 
 hpds
 dev.hpd
+
+# 44 minute surgery with T=1 tracheal tube
+pred.x = c(1, 44, 1)
+pred.p = pnorm(params %*% pred.x)
+
+hpd.uni(pred.p)
+mean(pred.p)
