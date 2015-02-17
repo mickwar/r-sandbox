@@ -9,7 +9,7 @@ calc.post = function(param.vec, like.only = FALSE){
     out = sum(y*log(px) + (1-y)*log(1-px))
     # priors (beta ~ N(0, 1))
     if (!like.only)
-        out = out + sum(dnorm(param.vec, 0, 1, log = TRUE))
+        out = out + sum(dnorm(param.vec, beta.mean, beta.var, log = TRUE))
     return (out)
     }
 
@@ -25,7 +25,13 @@ dat = dat[order(dat[,1]),]
 y = dat$Y
 x = cbind(1, dat$D, dat$T)
 
+### priors
+beta.mean = c(0, 0, 0)
+beta.cov = diag(3)
+beta.var = diag(beta.cov)
 
+
+### MCMC part
 ### initialize mcmc settings
 nburn = 25000
 nmcmc = 100000
@@ -92,7 +98,7 @@ hpds = t(apply(params, 2, hpd.uni))
 dev.hpd = hpd.uni(devs)
 
 ### trace and posterior density plots
-pdf("./figs/posterior.pdf", height = 12, width = 9)
+pdf("./figs/mcmc_post.pdf", height = 12, width = 9)
 main.vec = c("Intercept", "Duration", "Type")
 par(mfrow=c(4,1), mar = c(2.1, 4.1, 4.1, 2.1))
 plot.post(params[,1], density(params[,1]), hpds[1,], main = main.vec[1], cex = 2.5, xlab = "")
@@ -103,3 +109,6 @@ plot.post(params[,3], density(params[,3]), hpds[3,], main = main.vec[3], cex = 2
 par(mfg=c(4,1,4,1))
 plot.post(devs, density(devs), dev.hpd, main = "Deviance", cex = 2.5, xlab = "")
 dev.off()
+
+hpds
+dev.hpd
