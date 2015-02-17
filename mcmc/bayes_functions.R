@@ -178,8 +178,10 @@ plot.post = function(x, dens, hpd, right = TRUE,
     rng = range(dens$y)
     diff = diff(rng)
 
+    opts2 <<- par(no.readonly = TRUE)
+
     # first plot the hpd
-    hpd.plot(dens, hpd, ylim = c(rng[1], rng[2] + diff * 0.3), ...)
+    hpd.plot(dens, hpd, ylim = c(rng[1], rng[2] + diff * 0.5), ...)
 
     rng.x = range(dens$x)
     x.diff = diff(rng.x)
@@ -195,7 +197,7 @@ plot.post = function(x, dens, hpd, right = TRUE,
         right = rng.x[2] - x.diff*2/3
         }
     par(fig = c(grconvertX(c(left, right), from="user", to="ndc"),
-        grconvertY(c(rng[2], rng[2] + diff * 0.3), from="user", to="ndc")),
+        grconvertY(c(rng[2], rng[2] + diff * 0.5), from="user", to="ndc")),
         mar = subfig.mar, new = TRUE)
     #plot(density(x),col="blue",cex.main=.5,lwd=3)
     plot(x, type="l", col="gray20", cex.main=.5, axes=F, main="Trace Plot")
