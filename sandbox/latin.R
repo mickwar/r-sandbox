@@ -155,7 +155,18 @@ random.add = function(n){
                 LS[add.ind] = 0
                 draw.space[[add.ind]] = draw.space[[add.ind]][draw.space[[add.ind]] != add.val]
             } else {
+                old.LS = LS
                 LS = solver(LS)
+                # additional squares may be added, these need to be accounted for
+                # as well when reducing the draw space
+                new.ind = which(c(old.LS) != c(LS))
+                new.val = LS[new.ind]
+                if (any(c(LS) == 0) && length(new.ind) > 0){
+                    for (k in 1:length(new.ind))
+                        for (j in get.inds(new.ind[k]))
+                            draw.space[[j]] = draw.space[[j]][draw.space[[j]] != new.val[k]]
+                    }
+
                 # further reduce draw space when that value appears in a row or column
                 for (j in get.inds(add.ind))
                     draw.space[[j]] = draw.space[[j]][draw.space[[j]] != add.val]
