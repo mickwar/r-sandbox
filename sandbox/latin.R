@@ -1,6 +1,33 @@
 solver = function(LS){
     old.LS = LS
     n = nrow(LS)
+
+    # check if any value shows up multiple times in one row/column
+    check = function(LS){
+        n = nrow(LS)
+        # by row
+        for (i in 1:n){
+            n - sum(LS[i,] == 0)
+            length(unique(LS[i,]))
+
+            sum(LS[i,] == 0)
+            n - sum(table(LS[i,]) == 1)
+
+            sum(LS[,i] == 0)
+            n - sum(table(LS[,i]) == 1)
+
+            n - sum(LS[,i] == 0)
+            length(unique(LS[,i]))
+            }
+
+    table(LS[,1] != 0)
+    unique(LS[,1])
+
+        }
+
+
+    # get the subsquare (the part of the LS that does not have index in
+    # any row or column)
     sub.sq = function(index){
         if (length(index) == 0)
             return (list("sq"=LS, "indx"=NULL))
@@ -13,6 +40,7 @@ solver = function(LS){
         return (list("sq"=as.matrix(LS[-out[,1], -out[,2]]), "indx"=out))
         }
 
+    # solve the subsquare
     fill.sq = function(sub, char){
         m = nrow(sub$sq)
 
@@ -36,11 +64,13 @@ solver = function(LS){
         return (LS)
         }
 
+    # looping mechanism
     while (sum(LS == 0) > 0){
         for (i in 1:n){
             # get the subsquare, the subset of rows and columns with no i
             sub = sub.sq(which(LS == i))
             LS = fill.sq(sub, i)
+            check(LS)
             }
         # checking whether the square is solvable
         if (all(old.LS == LS))
@@ -50,15 +80,17 @@ solver = function(LS){
     return (LS)
     }
 
-# LS = matrix(0, 5, 5)
-# LS[1,1] = 1
-# LS[2,2] = 1
-# LS[4,3] = 2
-# LS[3,4] = 2
-# LS[4,4] = 3
-# LS[1,2] = 4
-# LS[2,4] = 5
-# LS
+  LS = matrix(0, 5, 5)
+  LS[1,1] = 1
+  LS[2,2] = 1
+  LS[4,3] = 2
+  LS[3,4] = 2
+  LS[4,4] = 3
+  LS[1,2] = 4
+  LS[2,4] = 2
+  LS
+
+solver(LS)
 
 gen.full.square = function(n){
     if (n > 9){
