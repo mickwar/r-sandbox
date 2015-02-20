@@ -127,17 +127,6 @@ random.remove = function(LS, ntry){
     }
 
 random.add = function(n){
-    check = function(LS){
-        n = nrow(LS)
-        for (i in 1:n){
-            # by row
-            if (any(table(LS[i, LS[i,] != 0]) > 1))
-                return ("error")
-            if (any(table(LS[LS[,i] != 0, i]) > 1))
-                return ("error")
-            }
-        return ("good")
-        }
     get.inds = function(i){
         col = (i - 1) %/% n + 1
         row = i - n*(col-1)
@@ -145,36 +134,15 @@ random.add = function(n){
         }
     LS = matrix(0, n, n)
     space = 1:(n^2)
-    draw.space = rep(list(c(1:n)), n^2)
     while (length(space) > 0){
         add.ind = sample(space, 1)
-        add.val = sample(draw.space[[add.ind]], 1)
+        draw.space = 1:n
+        temp.ind = unique(LS[get.inds(add.ind)])
+        if (!all(temp.ind == 0))
+            draw.space = draw.space[-unique(LS[get.inds(add.ind)])]
+        add.val = sample(draw.space, 1)
         LS[add.ind] = add.val
-        if (check(LS) == "good"){
-            if (all(solver(LS) == 0)){
-                LS[add.ind] = 0
-                draw.space[[add.ind]] = draw.space[[add.ind]][draw.space[[add.ind]] != add.val]
-            } else {
-                old.LS = LS
-                LS = solver(LS)
-                # additional squares may be added, these need to be accounted for
-                # as well when reducing the draw space
-                new.ind = which(c(old.LS) != c(LS))
-                new.val = LS[new.ind]
-                if (any(c(LS) == 0) && length(new.ind) > 0){
-                    for (k in 1:length(new.ind))
-                        for (j in get.inds(new.ind[k]))
-                            draw.space[[j]] = draw.space[[j]][draw.space[[j]] != new.val[k]]
-                    }
-
-                # further reduce draw space when that value appears in a row or column
-                for (j in get.inds(add.ind))
-                    draw.space[[j]] = draw.space[[j]][draw.space[[j]] != add.val]
-                }
-        } else {
-            LS[add.ind] = 0
-            draw.space[[add.ind]] = draw.space[[add.ind]][draw.space[[add.ind]] != add.val]
-            }
+#       (LS = solver(LS))
         space = which(c(LS) == 0)
         }
     return (LS)
@@ -191,18 +159,18 @@ gen.full.square(9)
 
 
 ### simulation
-time.gen = matrix(0, 10, 6)
-for (i in 1:ncol(time.gen))
-    for (j in 1:nrow(time.gen))
-        time.gen[j,i] = system.time(gen.full.square(i + 3))[3]
-
-time.add = matrix(0, 10, 6)
-for (i in 1:ncol(time.add))
-    for (j in 1:nrow(time.add))
-        time.add[j,i] = system.time(random.add(i + 3))[3]
-
-mean.gen = apply(time.gen, 2, mean)
-mean.add = apply(time.add, 2, mean)
-
-plot(4:9, mean.gen)
-points(4:9, mean.add)
+# time.gen = matrix(0, 10, 6)
+# for (i in 1:ncol(time.gen))
+#     for (j in 1:nrow(time.gen))
+#         time.gen[j,i] = system.time(gen.full.square(i + 3))[3]
+# 
+# time.add = matrix(0, 10, 6)
+# for (i in 1:ncol(time.add))
+#     for (j in 1:nrow(time.add))
+#         time.add[j,i] = system.time(random.add(i + 3))[3]
+# 
+# mean.gen = apply(time.gen, 2, mean)
+# mean.add = apply(time.add, 2, mean)
+# 
+# plot(4:9, mean.gen)
+# points(4:9, mean.add)
