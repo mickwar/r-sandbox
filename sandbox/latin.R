@@ -126,24 +126,118 @@ random.remove = function(LS, ntry){
     return (LS)
     }
 
-random.add = function(n){
+random.sequential = function(n, res.max = 100){
+    out = matrix(0, n, n)
+    total.iter = 0
+    reset = FALSE
+    reset.counter = 0
+    row = 1
+    col = 1
+    out[1,] = sample(n, n)
+    draw = (1:n)[-out[1,1]]
+    out[2:n,1] = sample(draw, length(draw))
+    while (row < n && col < n){
+        total.iter = total.iter + 1
+        # restart
+        if (reset){
+            out = matrix(0, n, n)
+            row = 1
+            col = 1
+            out[1,] = sample(n, n)
+            draw = (1:n)[-out[1,1]]
+            out[2:n,1] = sample(draw, length(draw))
+            reset = FALSE
+            }
+        # randomize column
+        if ((row + col) %% 2){
+            col = col + 1
+            draw = (1:n)[-out[1:row, col]]
+            out[(row+1):n, col] = sample(draw, length(draw))
+            reset.counter = 0
+            while (reset.counter < res.max &&
+                any(out[(row+1):n, col] == out[(row+1):n, 1:(col-1)])){
+                reset.counter = reset.counter + 1
+                out[(row+1):n, col] = sample(draw, length(draw))
+                }
+        # randomize row
+        } else {
+            row = row + 1
+            draw = (1:n)[-out[row, 1:col]]
+            out[row, (col+1):n] = sample(draw, length(draw))
+            reset.counter = 0
+            while (reset.counter < res.max && 
+                any(out[row, (col+1):n] == t(out[1:(row-1), (col+1):n]))){
+                reset.counter = reset.counter + 1
+                out[row, (col+1):n] = sample(draw, length(draw))
+                }
+            }
+        if (reset.counter == res.max)
+            reset = TRUE
+        }
+    print(total.iter)
+    return (out)
+    }
+random.sequential(15, res.max = 500)
+
+random.add = function(n, print = FALSE){
     get.inds = function(i){
         col = (i - 1) %/% n + 1
         row = i - n*(col-1)
-        unique(c((0:(n-1))*n + row, ((col-1)*n + 1):(col * n)))
+        # first n-1 are in the row, last n-1 are in the column
+        out = c((0:(n-1))*n + row, ((col-1)*n + 1):(col * n))
+        return(out[-which(out == i)])
         }
     LS = matrix(0, n, n)
     space = 1:(n^2)
+    draw.space = matrix(rep(1:n, n^2), n^2, n, byrow = TRUE)
     while (length(space) > 0){
-        add.ind = sample(space, 1)
-        draw.space = 1:n
-        temp.ind = unique(LS[get.inds(add.ind)])
-        if (!all(temp.ind == 0))
-            draw.space = draw.space[-unique(LS[get.inds(add.ind)])]
-        add.val = sample(draw.space, 1)
+
+        if (print)
+            print("next iteration")
+
+        lens = 1
+        if (length(space) > 1)
+            lens = apply(draw.space[space,], 1, function(x) sum(x != 0))
+        add.ind = space[which(lens == min(lens))]
+
+        if (print){
+            print("add.ind1")
+            print(add.ind)
+            }
+
+        if (length(add.ind) > 1)
+            add.ind = sample(add.ind, 1)
+        temp.draw = draw.space[add.ind,]
+
+        if (print){
+            print("temp.draw")
+            print(temp.draw)
+            }
+
+        add.val = temp.draw[temp.draw != 0]
+        if (length(add.val) > 1)
+            add.val = sample(temp.draw[temp.draw != 0], 1)
         LS[add.ind] = add.val
-#       (LS = solver(LS))
+
+        if (print){
+            print("add.ind2")
+            print(add.ind)
+            print("add.val")
+            print(add.val)
+            }
+        LS = solver(LS)
+        a.temp = table(c(space, which(c(LS) == 0)))
+        for (j in as.numeric(names(a.temp[a.temp == 1])))
+            draw.space[get.inds(j), LS[j]] = 0
         space = which(c(LS) == 0)
+
+        if (print){
+            print("LS")
+            print(LS)
+#           print("a.temp")
+#           print(a.temp)
+            }
+
         }
     return (LS)
     }
@@ -154,23 +248,37 @@ LS = gen.full.square(8, as.char = FALSE)
 solver(puzzle)
 
 system.time(random.add(10))
-random.add(9)
-gen.full.square(9)
+random.add(8, TRUE)
+
+gen.full.square(5)
 
 
 ### simulation
-# time.gen = matrix(0, 10, 6)
-# for (i in 1:ncol(time.gen))
-#     for (j in 1:nrow(time.gen))
-#         time.gen[j,i] = system.time(gen.full.square(i + 3))[3]
-# 
-# time.add = matrix(0, 10, 6)
-# for (i in 1:ncol(time.add))
-#     for (j in 1:nrow(time.add))
-#         time.add[j,i] = system.time(random.add(i + 3))[3]
-# 
-# mean.gen = apply(time.gen, 2, mean)
-# mean.add = apply(time.add, 2, mean)
-# 
-# plot(4:9, mean.gen)
-# points(4:9, mean.add)
+reps = 10
+ns = seq(3, 20)
+time.gen = matrix(0, reps, length(ns))
+for (i in 1:length(ns))
+    for (j in 1:reps)
+        time.gen[j,i] = system.time(gen.full.square(ns[i]))[3]
+
+time.add = matrix(0, reps, length(ns))
+for (i in 1:length(ns))
+    for (j in 1:reps)
+        time.add[j,i] = system.time(random.add(ns[i]))[3]
+
+mean.gen = apply(time.gen, 2, median)
+min.gen = apply(time.gen, 2, min)
+max.gen = apply(time.gen, 2, max)
+
+mean.add = apply(time.add, 2, median)
+min.add = apply(time.add, 2, min)
+max.add = apply(time.add, 2, max)
+
+plot(ns, mean.gen, type='l',# ylim=c(0, max(c(max.gen, max.add))),
+    col = 'blue', lwd=3, ylim=c(0,200))
+points(ns, min.gen, type='l', lty=2, col = 'blue')
+points(ns, max.gen, type='l', lty=2, col = 'blue')
+points(ns, mean.add, type='l', lwd=3, col = 'red')
+points(ns, min.add, type='l', lty=2, col = 'red')
+points(ns, max.add, type='l', lty=2, col = 'red')
+
