@@ -13,7 +13,7 @@ tithing=
     260, 340, 145, 200, 70,
     65, 70, 65, 70,
     140, 60)
-    # do 70 (1 mar 2015)
+    # do 70 (8 mar 2015)
 
 offerings=
     c(158.25,   # 2012
@@ -21,7 +21,7 @@ offerings=
     10, 6, 60, 10, 40, 30,
     35, 29, 35, 70,
     60)
-    # do 30 (1 mar 2015)
+    # do 30 (8 mar 2015)
 
 sum(paychecks)/10 - sum(tithing)
 # Negative means how much I overpaid
