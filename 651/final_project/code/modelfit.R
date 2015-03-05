@@ -1,4 +1,4 @@
-# prev_v was generated from matlab code
+# pred_v was generated from matlab code
 v = as.matrix(read.table("./pred_v.txt"))
 
 # get observations
