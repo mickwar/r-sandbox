@@ -2656,3 +2656,11 @@ for (i in 1:iter)
 plot(density(mins))
 curve(dbeta(x, 2, 5), col='red')
 ##########
+
+##########
+make.mat = function(a, b, n)
+    matrix(a, n, n) + diag(b, n)
+
+invert.mat = function(a, b, n)
+    diag(1/b, n) - a/(b*(b+a*n))
+#########
