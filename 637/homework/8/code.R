@@ -4,12 +4,6 @@ library(truncnorm)
 
 load("~/files/data/casella.Rdata")
 
-str(test)
-
-str(train)
-
-train[1,]
-
 new.train = train[,-which(names(train) %in% c("title.review", "review", "name"))]
 new.train[is.na(new.train)] = 0
 
@@ -34,12 +28,22 @@ xtxx = xtx %*% t(X)
 
 ### parameters
 nburn = 100
-ngibbs = 1000
+ngibbs = 10000
 
 param.beta = matrix(0, p, nburn + ngibbs)
-param.z = matrix(0, n, nburn + ngibbs)
 param.gamma = matrix(0, J-1, nburn + ngibbs)
 param.gamma[,1] = sort(runif(J-1, -2, 2))
+#matrix(rep(sort(runif(J-1, -2, 2)), 7), J-1, 7)
+#param.gamma = matrix(rep(sort(runif(J-1, -2, 2)), nburn + ngibbs), J-1, nburn + ngibbs)
+
+for (j in 1:n){
+    if (Y[j] == 1)
+        param.z[j,1] = runif(1, param.gamma[Y[j],1]-1, param.gamma[Y[j],1])
+    if (Y[j] == J)
+        param.z[j,1] = runif(1, param.gamma[Y[j]-1,1], param.gamma[Y[j]-1,1]+1)
+    if (!(Y[j] == 1 || Y[j] == J))
+        param.z[j,1] = runif(1, param.gamma[Y[j]-1,1], param.gamma[Y[j],1])
+    }
 
 z.lower = double(n)
 z.upper = double(n)
@@ -76,8 +80,8 @@ for (i in 2:(nburn + ngibbs)){
     }
 
 par(mfrow=c(3,1))
-plot(param.beta[1,], type='l')
-plot(param.z[2,], type='l')
+plot(param.beta[3,], type='l')
+plot(param.z[6,], type='l')
 plot(param.gamma[4,], type='l')
 
 
