@@ -1,0 +1,75 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{bm}
+%\usepackage{setspace}
+\usepackage[font=footnotesize]{caption}
+\usepackage{subcaption}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{enumitem}
+
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\newcommand{\R}{I\hspace{-4.4pt}R}
+
+\begin{document}
+
+\noindent Mickey Warner
+\smallskip
+
+\noindent Stat 637
+\smallskip
+
+\noindent Casella and Berger Amazon Ratings
+\bigskip
+
+\section*{Introduction}
+
+\noindent Amazon customers have rated the book \emph{Statistical Inference} authored by Casella and Berger. Customers may supply reviews and also rate the item from 1 to 5 stars, the higher number of stars indicating a higher quality product. The customer reviews themselves may be marked as helpful or not by other customers. In predicting the rating (number of stars) we use the percentage of people who found the review helpful and the length of the review (in characters).
+
+\section*{The Model}
+
+\noindent We model the number of stars given by each review with a Bayesian proportional odds model. We give each rating its own intercept with different slopes for the covariates. We have as covariates
+\begin{itemize}[label=$\cdot$]
+\item $x_1$ = percentage of people who found the review helpful
+\item $x_2$ = length of the review
+\end{itemize}
+\noindent The log-likelihood is 
+\[ l(\m{y}|\m{\theta}) \propto \sum_{i=1}^n \log(p_{ij}) \times I(Y_i=j) \]
+\noindent and the relationship of the $p_{ij}$'s is given by
+\[ \log\left(\frac{p_{i,1}+\cdots+p_{i,j}}{p_{i,j+1}+\cdots+p_{i,J}}\right) = \m{x}_i^\top \m{\beta}_j, ~~~~~ \mathrm{for}~j=1,\ldots,J-1 \]
+\noindent The proportional odds assumption implies our vector of coefficients for category $j$, is given by $\m{\beta}_j=(\beta_{0,j}, \beta_1, \beta_2)^\top$. We let $\m{\beta}\sim N(0, 10^2\m{I})$. 
+
+\section*{Results}
+
+\noindent The model is fit using Metropolis updates with MCMC. The trace plots look guud. Posterior distributions of the parameters and mean squared error are given in the proceeding figures.
+\bigskip
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{figs/post.pdf}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{figs/mse.pdf}
+\end{center}
+\end{figure}
+
+\noindent The intercept parameter for category $j$ is interpreted as follows: The log-odds of being in category $j$ or less, when no one found the review helpful and the review had no words, is $\beta_{0,j}$. In the Bayesian context, $\beta_{0,j}$ has a distribution, so depending on the posterior draw will actually determine the log-odds. We may use the mean of the parameter to get an idea of the overall change in log-odds.
+\bigskip
+
+\noindent We interpret the slope for $x_1$ as follows: For a one unit increase in the percentage of people finding the review helpful, we expect a $\beta_1$ increase in the log-odds of being in category $j$ or less to not. The slope for $x_2$ is interpreted similarly.
+\bigskip
+
+\noindent The posterior MSE has a highest posterior density interval of $(1.45, 4.60)$. Most of the posterior predictions predicted either high (5) or low (2). This suggests that are model does not do well at predicting average responses, only those closer to the extremes. However, predicting the 5 star ratings correctly could just be because that group has the highest number of ratings.
+
+\section*{Discussion}
+
+\noindent Despite the lack of predictive power of the model, it is very straightforward. The linear terms for review helpfulness and review length are easy to interpret and understand. More research could be done to extract additional information from the contents of each review to improve the predictive power while still having a parsimonious model.
+
+
+
+\end{document}
