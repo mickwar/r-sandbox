@@ -1,0 +1,29 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{bm}
+
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\newcommand{\R}{I\hspace{-4.4pt}R}
+
+
+\begin{document}
+
+\noindent Mickey Warner
+\bigskip
+
+\noindent Stat 637
+\bigskip
+
+\noindent Final Project Proposal
+\bigskip
+
+\noindent I wish to do a review on the paper by Breslow and Clayton (1993) entitled \emph{Approximate Inference in Generalized Linear Mixed Models}. In the paper they provide procedures of estimating the parameters of generalized linear mixed models (GLMMs). For observation vector $\m{y}$, not necessarily continuous, the GLMM has the form
+\[ E(\m{y}|\m{b}) = g^{-1}(\m{X}\m{\alpha} + \m{Z}\m{b}) \]
+where $\m{\alpha}$ are the fixed effects, $\m{b}$ the random effects, $\m{X}$ and $\m{Z}$ the design matrices associated with the effects, and $g^{-1}(\cdot)$ is the inverse of the link function. We also let $\m{b}\sim N(0, \m{D})$. The random effects complicate the likelihood. However, the estimation approaches are similar to what we covered in class.
+\bigskip
+
+\noindent I will attempt to clarify the derivation of their approaches while still fully expressing the theory. I will also go through their examples and provide code for others to use.
+
+
+\end{document}
