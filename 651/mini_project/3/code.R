@@ -1,6 +1,6 @@
 ### bootstrap importance
 library(truncnorm)
-y = scan("~/files/R/651/data/faculty.dat")
+y = scan("~/files/data/651/faculty.dat")
 
 # inverse gamma density
 igpdf=function(x, a, b)
