@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{bm}
+
+\newcommand{\m}[1]{\mathbf{\bm{#1}}}
+\newcommand{\R}{I\hspace{-4.4pt}R}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\var}{\mathrm{var}}
+
+% Brief summary of the paper (highlight important parts as you
+% would in a literature review, where this paper is a main source
+% for your work -- not everything, just important details).
+
+% Comment on how the paper applies to the class (ideas for each
+% paper are listed with each citation, although you are not limited
+% to these suggestions).
+
+% Extend the results of the paper to yoru own analysis.
+
+
+\begin{document}
+
+\noindent Mickey Warner
+\bigskip
+
+\noindent Stat 637 -- Mini Project \# 1
+
+\section*{Introduction}
+
+\noindent In this report, we review Zeger \emph{et. al.}'s 1988 paper titled \emph{Models for Longitudinal Data: A Generalized Estimating Equation Approach}. The authors consider two classes of models: subject-specific (SS) and population average (PA). The focus of a particular problem will determine which of the two models to fit.
+\bigskip
+
+\noindent Subject-specific models are used when the response for an individual is the focus. These models taken on the form of a mixed generalized linear model. For each subject $i$, the response $y_{it}$ at time $t$ is assumed to satisfy
+\begin{eqnarray}
+h(\E[y_{it}|\m{b}_i]) = h(u_{it}) &=& \m{x}_{it}^\top\m{\beta} + \m{z}_{it}^\top\m{b}_i \\
+\var(y_{it}|\m{b}_i) &=& g(u_{it})\cdot \phi
+\end{eqnarray}
+where $\m{b}_i$ is an independent observation from some distribution, $F$, $\m{x}_{it}$ is a $p\times 1$ vector of fixed covariates at time $t$, $\m{z}_{it}$ is $q\times 1$, and $t=1,\ldots,n_i$ and $i=1,\ldots,K$. The functions $h$ and $g$ are referred to as the ``link'' and ``variance'' functions, respectively.
+
+
+\end{document}
