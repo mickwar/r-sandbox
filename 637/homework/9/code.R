@@ -27,3 +27,16 @@ summary(mod.gh.gi.hi)
 mod.full = glm(y ~ . + .^2 + .^3, data = x, family = poisson(link = "log"))
 summary(mod.full)
 
+
+summary(mod.gh.gi.hi)
+mu = predict(mod.gh.gi.hi, type = "response")
+
+(odds.gh = (mu[1] * mu[6] / (mu[2] * mu[5])))
+exp(log(odds.gh) + c(-1, 1) * qnorm(0.975) * 0.1749)
+
+(odds.gi = (mu[1] * mu[7] / (mu[5] * mu[3])))
+exp(log(odds.gi) + c(-1, 1) * qnorm(0.975) * 0.2406)
+
+### or
+exp(coef(mod.gh.gi.hi)[5] + c(-1, 1) * qnorm(0.975) * 0.1749)
+exp(coef(mod.gh.gi.hi)[6] + c(-1, 1) * qnorm(0.975) * 0.2406)
