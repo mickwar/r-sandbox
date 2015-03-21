@@ -51,7 +51,7 @@ Gaussian Process Modeling of Modern Mass Spectrometry Computer Experimental Data
 Mickey Warner
 \end{center}
 \vfill
-10 December 2014
+21 March 2015
 \bigskip
 \bigskip
 \bigskip
@@ -65,8 +65,8 @@ Mickey Warner
 \begin{itemize}[label={$\cdot$}]
 \item Variable electron and neutral density attachment mass spectrometry
 \smallskip
-\item Estimate rates for complex chemical reactions \[D+V\lra O+RAK\]
-\item Measures relative abundances of anions: \[0\leq y_i \leq 1,~~~\sum y_i=1\]
+\item Estimate rates for complex chemical reactions \[A+B\lra C+D\]
+\item Measures relative abundances of anions: \[0\leq y_i \leq 1,~~~\sum_{i=1}^{n_y} y_i=1\]
 \item Computer simulations used for supplemental data
 \end{itemize}
 \end{frame}
@@ -74,24 +74,25 @@ Mickey Warner
 \begin{frame}
 \subtitle{Field trials and computer simulations}
 \begin{center}
-\includegraphics[scale=0.20]{../figs/Figure5.pdf}
+\includegraphics[scale=0.30]{figs/dat_combine.pdf}
 \end{center}
 \end{frame}
 
 \begin{frame}
 \subtitle{Statistical model}
 At initial electron concentration $\m{x}_i$, relative abundances $\m{y}_i$ are modeled according to
-\[\m{y}_i = \eta(\m{x}_i, \m{\theta}) + \delta(\m{x}_i) + \epsilon_i\]
+\[\mathrm{logit}(\m{y}_i) = \eta(\m{x}_i, \m{\theta}) + \delta(\m{x}_i) + \epsilon_i\]
 
 Mean zero Gaussian processes are put on $\eta(\cdot, \cdot)$ and $\delta(\cdot)$, with product covariance functions having exponential form
-\[ \mathrm{Cov}((\m{x},\m{t}),(\m{x}',\m{t}'); \m{\rho}_\eta) = \frac{1}{\lambda_\eta}\prod_{k=1}^{p_x}\rho_{\eta,k}^{4(x_k-x_k')^2}\times\prod_{k=1}^{p_t}\rho_{\eta,p_x+k}^{4(t_k-t_k')^2} \]
+\[ \mathrm{C}((\m{x},\m{t}),(\m{x}',\m{t}'); \m{\rho}_\eta) = \frac{1}{\lambda_\eta}\prod_{k=1}^{p_x}\rho_{\eta,k}^{4(x_k-x_k')^2}\times\prod_{k=1}^{p_t}\rho_{\eta,p_x+k}^{4(t_k-t_k')^2} \]
 Gamma priors on $\m{\lambda}$, beta priors on $\m{\rho}$, and uniform on $\m{\theta}$. More details found in Higdon, et. al. (2008).
 \end{frame}
 
 \begin{frame}
 \subtitle{Trace plots}
+\vspace{-0.5cm}
 \begin{center}
-\includegraphics[scale=0.25]{../figs/Figure6.pdf}
+\includegraphics[scale=0.25]{figs/br_trace.pdf}
 \end{center}
 \end{frame}
 
@@ -107,15 +108,16 @@ $p$-value $=0.37$
 \begin{frame}
 \subtitle{Posterior distributions}
 \begin{center}
-\includegraphics[scale=0.218]{../figs/Figure1.pdf}~
-\includegraphics[scale=0.20]{../figs/Figure2.pdf}
+\includegraphics[scale=0.25]{figs/br_boxplot.pdf}~
+\includegraphics[scale=0.22]{figs/br_theta.pdf}
 \end{center}
 \end{frame}
 
 \begin{frame}
 \subtitle{Posterior predictions}
+\vspace{-1.0cm}
 \begin{center}
-\includegraphics[scale=0.22]{../figs/Figure3.pdf}
+\includegraphics[scale=0.25]{figs/br_pred_all.pdf}
 \end{center}
 Left: statistical emulator for the simulator
 
@@ -127,10 +129,17 @@ Right: discrepancy-adjusted (calibrated) predictions
 
 \begin{frame}
 \subtitle{Conclusion}
+\vspace{-0.5cm}
 \begin{itemize}[label={$\cdot$}]
 \item Simulations, adjusted for field trials, predict the process well
 \item The model fits
 \item Reaction rates are estimated
+\end{itemize}
+
+\subtitle{Future work}
+\vspace{-0.5cm}
+\begin{itemize}[label={$\cdot$}]
+\item Other ways to deal with contraints in the response
 \end{itemize}
 \end{frame}
 
