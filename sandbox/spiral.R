@@ -1,4 +1,4 @@
-spiral = function(nsides, theta, thresh = 1e-6){
+spiral = function(nsides, theta, thresh = 1e-3, xlim = c(-0.5, 0.5), ylim=c(-0.5, 0.5)){
     rad = pi/180
 
     total_angle = 180 * (nsides - 2)
@@ -8,7 +8,7 @@ spiral = function(nsides, theta, thresh = 1e-6){
     for (i in 1:nsides)
         poly[i,] = c(cos((180-tau)*(i-1)*rad), sin((180-tau)*(i-1)*rad))
 
-    plot(0, type='n', xlim=c(-0.4, 0.4), ylim=c(-0.4, 0.4))
+    plot(0, type='n', xlim=xlim, ylim=ylim)
     polygon(poly)
 
     # create rotational matrix
@@ -32,6 +32,8 @@ spiral(4, 45)
 spiral(5, 40)
 spiral(6, 30)
 
-x = 6
+x = 4
 for (i in 1:(180/x*2-1))
-    spiral(x, i)
+    spiral(x, i, 1e-3, c(-0.3,0.3), c(-0.3,0.3))
+
+spiral(6, 0.2, 1e-3, c(-0.35,0.35), c(-0.35,0.35))
