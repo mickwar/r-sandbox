@@ -1,0 +1,64 @@
+* CODE;
+data cleft;
+    infile "cleft.txt" firstobs=2;
+    input trt rep nmice ncleft;
+run;
+
+proc glimmix data = cleft method = laplace;
+    class trt rep;
+    model ncleft/nmice = trt / dist=binomial solution;
+    random intercept / subject=rep type=toep(1);
+*    random rep / type=ar(1);
+    nloptions maxit = 200;
+run;
+
+
+* OUTPUT;
+
+                             Fit Statistics
+
+                  -2 Log Likelihood             103.28
+                  AIC  (smaller is better)      113.28
+                  AICC (smaller is better)      114.81
+                  BIC  (smaller is better)      112.23
+                  CAIC (smaller is better)      117.23
+                  HQIC (smaller is better)      109.11
+
+
+                    Fit Statistics for Conditional
+                             Distribution
+
+               -2 log L(ncleft | r. effects)       94.83
+               Pearson Chi-Square                  75.92
+               Pearson Chi-Square / DF              1.69
+
+
+                    Covariance Parameter Estimates
+
+                                                 Standard
+              Cov Parm    Subject    Estimate       Error
+
+              Variance    rep          0.3280      0.4438
+
+
+
+                         The GLIMMIX Procedure
+
+                      Solutions for Fixed Effects
+
+                                Standard
+Effect       trt    Estimate       Error       DF    t Value    Pr > |t|
+
+Intercept            -0.8066      0.3631        5      -2.22      0.0770
+trt          4       -4.2916      1.0654       36      -4.03      0.0003
+trt          5      -19.0469     2132.51       36      -0.01      0.9929
+trt          6       -1.5155      0.5392       36      -2.81      0.0079
+trt          7             0           .        .        .         .    
+
+
+                    Type III Tests of Fixed Effects
+
+                          Num      Den
+            Effect         DF       DF    F Value    Pr > F
+
+            trt             3       36       6.60    0.0011

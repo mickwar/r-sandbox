@@ -1,4 +1,4 @@
-spiral = function(nsides, theta, reps = 50){
+spiral = function(nsides, theta, thresh = 1e-6){
     rad = pi/180
 
     total_angle = 180 * (nsides - 2)
@@ -8,7 +8,7 @@ spiral = function(nsides, theta, reps = 50){
     for (i in 1:nsides)
         poly[i,] = c(cos((180-tau)*(i-1)*rad), sin((180-tau)*(i-1)*rad))
 
-    plot(0, type='n', xlim=c(-1.0, 1.0), ylim=c(-1, 1))
+    plot(0, type='n', xlim=c(-0.4, 0.4), ylim=c(-0.4, 0.4))
     polygon(poly)
 
     # create rotational matrix
@@ -16,16 +16,22 @@ spiral = function(nsides, theta, reps = 50){
 
     # compute scale
     scale = sin(tau/2*rad)/ sin((180-theta-tau/2)*rad)
+    
+    len = 1
 
     # iterate downward
-    for (i in 1:reps){
+    while (len > thresh){
+        len = len * scale
         poly = scale * poly %*% rotate
         polygon(poly)
         }
     }
 
-spiral(4, 45, 1000)
+spiral(3, 60)
+spiral(4, 45)
+spiral(5, 40)
+spiral(6, 30)
 
-x = 8
+x = 6
 for (i in 1:(180/x*2-1))
-    spiral(x, i, 1000)
+    spiral(x, i)
