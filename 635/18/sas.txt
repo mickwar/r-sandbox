@@ -1,0 +1,66 @@
+**** SAS CODE
+data mud (drop = total baetidae lestidae libellulidae chironomidae);
+    infile "mud.txt" firstobs = 2;
+    input date date7. tank trt total baetidae chironomidae lestidae libellulidae;
+    lchiro = log(chironomidae);
+run;
+
+* proc print data = mud;
+* run;
+
+ods graphics on;
+proc glimmix data = mud method = laplace;
+    date2 = date;
+    class tank trt;
+    model lchiro = date;
+    random date2 / type = rsmooth;
+    random tank / type = vc;
+    output out = gmxout pred(blup)=pred2;
+run;
+
+proc sgplot  data = gmxout;
+    series x = date y = pred2 / group = tank;
+run;
+
+
+
+**** SAS OUTPUT
+
+            Convergence criterion (GCONV=1E-8) satisfied.          
+
+
+                            Fit Statistics
+
+                 -2 Log Likelihood             468.26
+                 AIC  (smaller is better)      478.26
+                 AICC (smaller is better)      478.48
+                 BIC  (smaller is better)      468.26
+                 CAIC (smaller is better)      473.26
+                 HQIC (smaller is better)      468.26
+                 Radial Smoother df(res)     538506.5
+
+
+                   Fit Statistics for Conditional
+                            Distribution
+
+              -2 log L(lchiro | r. effects)      395.33
+              Pearson Chi-Square                  67.56
+              Pearson Chi-Square / DF              0.25
+
+
+                   Covariance Parameter Estimates
+
+                                                Standard
+             Cov Parm               Estimate       Error
+
+             Var[RSmooth(date2)]    5.935E-7           .
+             tank                    0.07495           .
+             Residual                 0.2731           .
+
+
+                   Type III Tests of Fixed Effects
+
+                         Num      Den
+            Effect         DF       DF    F Value    Pr > F
+
+            date            1      231      Infty    <.0001

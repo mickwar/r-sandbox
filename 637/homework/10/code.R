@@ -12,3 +12,5 @@ p = 2 # intercept and group effect
 
 (n-p)* phi
 qchisq(0.95, n-p) 
+
+
