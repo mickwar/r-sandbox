@@ -24,6 +24,7 @@ summary(mod)
 par(mfrow=c(2,2))
 plot(summary(mod), ask = FALSE)
 
+
 ### quasi-poisson
 mod = glm(y ~ group, offset = log(trisk), data = dja,
     family = quasipoisson)
@@ -41,6 +42,7 @@ par(mfrow=c(2,2))
 plot(mod, ask = FALSE)
 
 ### negative binomial
+library(MASS)
 mod = glm(y ~ group, offset = log(trisk), data = dja,
     family = negative.binomial(theta = 1))
 summary(mod)
