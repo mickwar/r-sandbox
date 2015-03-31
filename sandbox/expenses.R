@@ -12,13 +12,13 @@ tithing=
     c(895,  # 2012
     1277,   # 2013
     2015,   # 2014
-    140, 60, 70)
+    140, 60, 70, 80, 100)
 
 offerings=
     c(158.25,   # 2012
     53,         # 2013
     355,        # 2014
-    60, 30)
+    60, 30, 20)
 
 sum(paychecks)/10 - sum(tithing)
 # Negative means how much I overpaid

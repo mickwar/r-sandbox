@@ -36,4 +36,10 @@ x = 4
 for (i in 1:(180/x*2-1))
     spiral(x, i, 1e-3, c(-0.3,0.3), c(-0.3,0.3))
 
-spiral(6, 0.2, 1e-3, c(-0.35,0.35), c(-0.35,0.35))
+
+setEPS()
+postscript("../figs/spiral_4b.eps")
+pdf("../figs/spiral_4b.pdf")
+par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+spiral(4, 12.0, 1e-3, c(-0.35,0.35), c(-0.35,0.35))
+dev.off()
