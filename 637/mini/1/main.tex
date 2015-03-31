@@ -29,15 +29,15 @@
 
 \section*{Introduction}
 
-\noindent In this report, we review Zeger \emph{et al.}'s 1988 paper titled \emph{Models for Longitudinal Data: A Generalized Estimating Equation Approach}. The authors consider two classes of models: subject-specific (SS) and population average (PA). The focus of a particular problem will determine which of the two models to fit.
+\noindent In this report, we review Zeger \emph{et al.}'s 1988 paper titled \emph{Models for Longitudinal Data: A Generalized Estimating Equation Approach}. The authors consider two classes of models: subject-specific (SS) and population average (PA). These models are employed when several measurements are collected on individuals across time. These measurements are typically correlated which adds an additional challenge in the analysis.
 \bigskip
 
-\noindent Subject-specific models are used when the response for an individual is the focus. These models taken on the form of a mixed generalized linear model. For each subject $i$, the response $y_{it}$ at time $t$ is assumed to satisfy
-\begin{eqnarray}
-h(\E[y_{it}|\m{b}_i]) = h(u_{it}) &=& \m{x}_{it}^\top\m{\beta} + \m{z}_{it}^\top\m{b}_i \\
-\var(y_{it}|\m{b}_i) &=& g(u_{it})\cdot \phi
-\end{eqnarray}
-where $\m{b}_i$ is an independent observation from some distribution, $F$, $\m{x}_{it}$ is a $p\times 1$ vector of fixed covariates at time $t$, $\m{z}_{it}$ is $q\times 1$, and $t=1,\ldots,n_i$ and $i=1,\ldots,K$. The functions $h$ and $g$ are referred to as the ``link'' and ``variance'' functions, respectively.
+\noindent Subject-specific models are used when the response for an individual is the focus. These models taken on the form of a generalized linear mixed model. For subject $i$ at time $t$, let $y_{it}$ be the response, $\m{x}_{it}$ a $p\times 1$ vector of fixed covariates associated with $p\times 1$ fixed effects $\m{\beta}$, and $\m{z}_{it}$ a $q\times 1$ vector of covariates associated with $q\times 1$ random effects $\m{b}_i$. Let $u_{it}=E(y_{it}|\m{b}_i)$. We assume the responses satisfy
+\[ h(u_{it}) = \m{x}_{it}^\top\m{\beta} + \m{z}_{it}^\top\m{b}_i ~~~\mathrm{and}~~~ \var(y_{it}|\m{b}_i) = g(u_{it})\cdot \phi \]
+where $\m{b}_i$ is an independent observation from some distribution, $F$, and $i=1,\ldots,K$ and $t=1,\ldots,n_i$. The functions $h$ and $g$ are referred to as the ``link'' and ``variance'' functions, respectively. Typically, $\m{b}_i\sim N(\m{0}, \m{D})$. Choices for $h$ include the log, logit, or probit links. The variance function $g$ may be defined by the choice of likehood (e.g. with a Poisson likelihood, we have $g(u_{it})=u_{it}$. The scale parameter $\phi$ can be used to define quasi-likelihoods.
+\bigskip
+
+\noindent When inference on a population is of more interest than inference on a subject, an alternative model is the population average model. The response $y_{it}$
 
 
 \end{document}
