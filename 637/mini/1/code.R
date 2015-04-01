@@ -1,3 +1,0 @@
-library(geepack)
-data(respiratory)
-
