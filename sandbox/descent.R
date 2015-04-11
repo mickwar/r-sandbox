@@ -56,9 +56,11 @@ nrolls = 100000
 attack.roll = matrix(0, nrolls, 3)
 defend.roll = double(nrolls)
 for (i in 1:nrolls){
-    attack.roll[i,] = roll.attack.dice(1, 0, 1)
+    attack.roll[i,] = roll.attack.dice(1, 1, 1)
     defend.roll[i] = roll.defend.dice(0, 1, 0)
     }
 
 mean(attack.roll[,1] > defend.roll)
 
+# hearts range surge
+table(attack.roll[,1]) / nrolls
