@@ -7,7 +7,7 @@ b2 = 6.3
 
 xx = seq(0, 1, length=10000)
 
-# calculate M ( sup_y f_Y(y) / f_V(y) )
+# calculate M (= sup_y f_Y(y) / f_V(y) )
 # M must be finite for Theorem 5.6.8 to hold
 yy1 = dbeta(xx, a1, b1)
 yy2 = dbeta(xx, a2, b2)

@@ -26,3 +26,7 @@ ex = binary.matrix(af1)
 
 head(af1)
 head(ex)
+
+# full
+table(af1)
+ex
