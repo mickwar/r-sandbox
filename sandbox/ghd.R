@@ -152,6 +152,8 @@ apply(accept, 2, mean)
 # truth:
 c(lambda, alpha, beta, delta, mu)
 
+sum(dgh(y, lambda, alpha, beta, delta, mu))
+
 # estimated means
 apply(params, 2, mean)
 
