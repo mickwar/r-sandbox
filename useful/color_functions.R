@@ -1,4 +1,5 @@
 ### Some color and plotting functions for nicer density plots.
+### Explanations of these functions are given in ../sandbox/color_exampels.R
 
 color.den = function(dens, from, to, fill = 1, border = NULL){
     if (is.null(border))

@@ -1,4 +1,5 @@
 ### Some color and plotting functions for nicer density plots.
+### (note: new functions should be added in ../useful/color_functions.R first)
 
 ### color.den()
 # (by Arthur Lui, editted by Mickey)
