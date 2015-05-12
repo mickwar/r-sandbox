@@ -1,27 +1,29 @@
 ##########
-# random draws from a Wishart distribution
-# trace function
-tr = function(x)
-sum(diag(x))
 
-# multivariate gamma function
-# p = 1 is univariate gamma
-mgamma = function(a, p)
-    pi^(p*(p-1)/4) * prod(gamma(a+(1-1:p)/2))
-# log multi gamma
-lmgamma = function(a, p)
-    p*(p-1)/4*log(pi) + sum(lgamma(a+(1-1:p)/2))
-
-# density of Wishart(V, n) at X
+# density of Wishart(V, df) at X
 dwishart = function(X, V, df, log = FALSE){
     # X is p x p, positive definite (the support)
-    # V is p x p, positive definite
+    # V is p x p, positive definite (scale matrix)
     # df > p - 1 is degrees of freedom
+
     p = nrow(V)
+    if (df <= p - 1)
+        stop("df must be greater than p - 1.")
+
+    # trace function
+    tr = function(x)
+        sum(diag(x))
+
     if (log){
+        # log multi gamma
+        lmgamma = function(a, p)
+            p*(p-1)/4*log(pi) + sum(lgamma(a+(1-1:p)/2))
         return ((df-p-1)/2*determinant(X)$modulus[1] - (1/2)*tr(solve(V) %*% X) - (df*p/2)*log(2) -
             (df/2)*determinant(V)$modulus[1] - lmgamma(df/2, p))
     } else {
+        # multivariate gamma function
+        mgamma = function(a, p)
+            pi^(p*(p-1)/4) * prod(gamma(a+(1-1:p)/2))
         return (det(X)^((df-p-1)/2) * exp(-0.5*tr(solve(V) %*% X)) /
             (2^(df*p/2) * det(V)^(df/2) * mgamma(df/2, p)))
         }
@@ -33,8 +35,9 @@ p = nrow(V)
 df = 10
 
 dwishart(X, V, df)
-dwishart(X, V, df, TRUE)
+dwishart(X, V, 1, TRUE)
 
+### random draws from a Wishart distribution (several implementations)
 # Bartlett decomposition (for random draws)
 # get one random draw
 rwishart = function(V, df){
@@ -52,7 +55,9 @@ rwishart = function(V, df){
     L = t(chol(V))
     A = diag(sqrt(rchisq(p, df-(1:p)+1)))
     A = lower.rand(A)
-    return (L %*% A %*% t(A) %*% t(L))
+    X = L %*% A
+    return (X %*% t(X))
+#   return (L %*% A %*% t(A) %*% t(L))
     }
 
 rwish2 = function(V, df){
@@ -62,8 +67,18 @@ rwish2 = function(V, df){
     t(X) %*% X
     }
 
+rwish3 = function(V, df, U = NULL){
+    if (is.null(U))
+        U = chol(V)
+    p = NROW(U)
+    X = matrix(rnorm(p*df, 0, 1), df, p) %*% U
+    t(X) %*% X
+    }
+
 rwishart(V, df)
 rwish2(V, df)
+rwish3(V, df)
+rwish3(V, df)
 
 
 p = 100
@@ -72,9 +87,12 @@ diag(V) = 1
 df = p
 
 
+
+
 n = 1000
 out = rep(list(matrix(0, p, p)), n)
 out2 = rep(list(matrix(0, p, p)), n)
+out3 = rep(list(matrix(0, p, p)), n)
 system.time(
     for (i in 1:n){
         out[[i]] = rwishart(V, df)
@@ -85,24 +103,28 @@ system.time(
         out2[[i]] = rwish2(V, df)
         }
     )
-mean.out = matrix(0, 2, 2)
-mean.out2 = matrix(0, 2, 2)
+system.time({
+    U <- chol(V)
+    for (i in 1:n){
+        out3[[i]] = rwish3(V, df, U)
+        }
+    })
+mean.out = matrix(0, p, p)
+mean.out2 = matrix(0, p, p)
+mean.out3 = matrix(0, p, p)
 for (i in 1:n){
-    mean.out[1,1] = mean.out[1,1] + out[[i]][1,1]
-    mean.out[1,2] = mean.out[1,2] + out[[i]][1,2]
-    mean.out[2,1] = mean.out[2,1] + out[[i]][2,1]
-    mean.out[2,2] = mean.out[2,2] + out[[i]][2,2]
-    mean.out2[1,1] = mean.out2[1,1] + out2[[i]][1,1]
-    mean.out2[1,2] = mean.out2[1,2] + out2[[i]][1,2]
-    mean.out2[2,1] = mean.out2[2,1] + out2[[i]][2,1]
-    mean.out2[2,2] = mean.out2[2,2] + out2[[i]][2,2]
+    mean.out = mean.out + out[[i]]
+    mean.out2 = mean.out2 + out2[[i]]
+    mean.out3 = mean.out3 + out3[[i]]
     }
 
 mean.out = mean.out / n
 mean.out2 = mean.out2 / n
+mean.out3 = mean.out3 / n
 
 # theoretical mean: df*V
 df * V
 mean.out
 mean.out2
+mean.out3
 ##########
