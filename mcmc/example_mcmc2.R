@@ -2,7 +2,7 @@
 # using bayesian regression
 source("./bayes_functions.R")
 
-# generate some data
+### generate some data
 set.seed(1)
 n = 10
 datx = runif(n, 0, 10)
@@ -16,28 +16,24 @@ plot(datx, daty, pch=20)
 y = as.matrix(daty)
 x = cbind(1, datx)
 
-# calculatle log posterior
+
+### calculatle log posterior
 calc.post = function(params){
+    beta = params[ind.beta]
+    sig2 = params[ind.eps]
+
     # log-likelihood
-    out = -n/2 * log(params[ind.eps]) - 1/(2*params[ind.eps]) *
-        t(y - x %*% params[ind.beta]) %*% (y - x %*% params[ind.beta])
+    out = -n/2 * log(sig2) - 1/(2*sig2) *
+        t(y - x %*% beta) %*% (y - x %*% beta)
+
     # priors
     # gamma on sigma^2
-    out = out + (eps.a-1)*log(params[ind.eps])-params[ind.eps]/eps.b
+    out = out + (eps.a-1)*log(sig2)-sig2/eps.b
     # normal on b0 and b1
-    out = out-1/2*log(sig_0)-1/(2*sig_0)*(params[ind.beta][1]-mu_0)^2
-    out = out-1/2*log(sig_1)-1/(2*sig_1)*(params[ind.beta][2]-mu_1)^2
+    out = out-1/2*log(sig_0)-1/(2*sig_0)*(beta[1]-mu_0)^2
+    out = out-1/2*log(sig_1)-1/(2*sig_1)*(beta[2]-mu_1)^2
     return (out)
     }
-
-ind.beta = 1:2
-ind.eps = 3
-nparams = 3
-
-# support bounds for each parameter
-lower = double(nparams)-Inf
-upper = double(nparams)+Inf
-lower[ind.eps] = 0
 
 # hyperparameter specifications
 eps.a = 2
@@ -47,6 +43,18 @@ mu_1 = 0
 sig_0 = 100
 sig_1 = 100
 
+# indices for parameters
+ind.beta = 1:2
+ind.eps = 3
+nparams = 3
+
+# support bounds for each parameter
+lower = double(nparams)-Inf
+upper = double(nparams)+Inf
+lower[ind.eps] = 0
+
+
+### MCMC settings
 nburn = 10000
 nmcmc = 20000
 params = matrix(0, nburn+nmcmc, nparams)
@@ -54,11 +62,6 @@ post.mat = matrix(-Inf, nburn+nmcmc, nparams)
 # starting values
 params[1, ind.eps] = 2.5
 sigs = rep(1, nparams)
-
-# if burn in has already been done (these should
-# be the most up-to-date values)
-#sigs = read.table("./mcmc_cand_sigmas.txt")[,1]
-#params[1,] = read.table("./mcmc_init_params.txt")[,1]
 
 # initialize log posterior value
 post = calc.post(params[1,])
@@ -69,40 +72,47 @@ post.mat[1, 1] = post
 accept = matrix(0, nburn+nmcmc, nparams)
 window = 100
 
-# mcmc loop
-#dir = "example_mcmc_output"
-#prefix = "mcmc_"
+### MCMC loop
 for (i in 2:(nburn+nmcmc)){
-#   if (i == 2)
-#       mcmc_time(iter = 0, dir = dir, prefix = prefix)
-    cat("\rIteration",i,"/",nburn+nmcmc)
+    # set current parameters to previous draws
     params[i,] = params[i-1,]
+
+    # iterate through each parameter
     for (j in 1:nparams){
+        # draw a candidate value from proposal distribtion (all Normal in this case)
         cand = rnorm(1, params[i,j], sigs[j])
+
+        # check if candidate is in proper bounds
         if (cand >= lower[j] && cand <= upper[j]){
             cand.param[j] = cand
             cand.post = calc.post(cand.param)
             # check whether to accept draw or not
             if (log(runif(1)) < cand.post - post){
-                post = cand.post
-                params[i,j] = cand
-                accept[i,j] = 1
+                post = cand.post        # update post
+                params[i,j] = cand      # update parameter draws
+                accept[i,j] = 1         # indicator for accepting
             } else {
+                # candidate not accepted, replace cand.param[j] with previous draw
                 cand.param[j] = params[i,j]
                 }
         } else {
+            # candidate out of range, replace cand.param[j] with previous draw
             cand.param[j] = params[i,j]
             }
-        post.mat[i, j] = post
         }
-        # adjust the candidate sigma
+
+    # adjust the candidate sigma (not required in an MCMC loop, but used here to
+    # improve the sampling efficiency)
     if (floor(i/window) == i/window && i <= nburn)
         sigs = sigs*autotune(apply(accept[(i-window+1):i,], 2,
             mean), k = max(window/50, 1.1))
-#   mcmc_time(do = TRUE, iter = i, every = 100, params, accept,
-#       sigs, nburn, nmcmc, dir = dir, prefix = prefix)
-    if (i == (nburn+nmcmc))
-        cat("\n")
+        # this use of the apply function gets the acceptance rate
+        # for each parameter in the last window=100 draws
+        # here k=2, which is largest factor by which sigs can change
+        # target is 0.25
+
+        # if the rate is too high, sig[j] will increase
+        # if the rate is too low, sig[j] will decrease
     }
 
 params = params[(nburn+1):(nburn+nmcmc),]
