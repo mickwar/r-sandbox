@@ -2664,3 +2664,72 @@ make.mat = function(a, b, n)
 invert.mat = function(a, b, n)
     diag(1/b, n) - a/(b*(b+a*n))
 #########
+
+#########
+set.seed(1)
+n = 20000
+
+f = function(x, a, c, d)
+    d^c / beta(a, c) * x^(a-1) / (x + d)^(a+c)
+
+g = function(x, a, c, d)
+    (x^a) / (x+d)^(a+c)
+h = function(x)
+    g(x, a, c, d)
+
+plot(xx, h(xx), type='l')
+
+int(h, c(0, 100000000000), 100000)
+
+
+a = 1.5
+c = 1.0
+d = 1
+xx = seq(0, 1000, length=5000)
+
+y = rgamma(n, c, d)
+z = rgamma(n, a, y)
+mean(z); var(z)
+
+plot(z, y, pch=20)
+
+plot(density(z, n=10000), xlim=c(0, 50))
+lines(xx, f(xx, a, c, d), col='red')
+# mean:
+1/(beta(a, c)) * 1/(a+c-2) * 1/(d^(a-2)) * 1/(a+c-1)
+mean(z)
+
+cor(cbind(z, y))
+
+plot(density(z))
+curve(dgamma(x, mean(z)^2/var(z), mean(z)/var(z)), add = TRUE, col='red')
+
+plot(density(z))
+lines(density(rgamma(n, mean(z)^2/var(z), mean(z)/var(z))), col='red')
+
+ks.test(z, j)
+ks.test(y, "pgamma", 1, 1)
+
+
+plot(density(y))
+curve(dgamma(x, mean(y)^2/var(y), mean(y)/var(y)), add = TRUE, col='red')
+
+
+ss = seq(0, 1, length = 1000)
+ll = seq(1, 100000, length = 1000)
+
+g = function(x, a, c, d)
+    -(x+d)^(-(a+c)+2) / (a+c-2)
+
+a = 1.5
+c = 1.0
+d = 2
+par(mfrow=c(2,1))
+plot(ss, g(ss, a, c, d), pch=20)
+plot(ll, g(ll, a, c, d), pch=20)
+
+ -1/((a+c)-2) / (d^(a+c-2))
+
+library(hypergeo)
+hypergeo(a+1, a+c, a+2, -100000000000/d)
+#######
