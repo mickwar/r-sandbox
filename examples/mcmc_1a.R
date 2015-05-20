@@ -2,16 +2,28 @@
 
 ### generate some data
 set.seed(1)
-n = 10
-datx = runif(n, 0, 10)
-b0 = 2
-b1 = 1.2
-sig2 = 1
-daty = b0 + b1*datx + rnorm(n, 0, sqrt(sig2))
+n = 200
+p = 12
+x = cbind(1, matrix(runif(n*p, 0, 10), n, p))
+true.beta = seq(-5, 5, length = ncol(x))
+true.sig2 = 1
+y = x %*% true.beta + rnorm(n, 0, sqrt(true.sig2))
 
-# into vectors
-y = as.matrix(daty)
-x = cbind(1, datx)
+# hyperparameter specifications
+eps.a = 2
+eps.b = 10
+mu_0 = 0
+sig_0 = 100
+
+# indices for parameters
+ind.beta = 1:ncol(x)
+ind.eps = ncol(x)+1
+nparams = ncol(x)+1
+
+# support bounds for each parameter
+lower = double(nparams)-Inf
+upper = double(nparams)+Inf
+lower[ind.eps] = 0
 
 ### calculatle log posterior
 calc.post = function(params){
@@ -25,38 +37,25 @@ calc.post = function(params){
     # priors
     # gamma on sigma^2
     out = out + (eps.a-1)*log(sig2)-sig2/eps.b
-    # normal on b0 and b1
-    out = out-1/2*log(sig_0)-1/(2*sig_0)*(beta[1]-mu_0)^2
-    out = out-1/2*log(sig_1)-1/(2*sig_1)*(beta[2]-mu_1)^2
+    # normal on betas (iid)
+    out = out + sum(-1/2*log(sig_0)-1/(2*sig_0)*(beta-mu_0)^2)
     return (out)
     }
 
-# hyperparameter specifications
-eps.a = 2
-eps.b = 10
-mu_0 = 0
-mu_1 = 0
-sig_0 = 100
-sig_1 = 100
-
-# indices for parameters
-ind.beta = 1:2
-ind.eps = 3
-nparams = 3
-
-# support bounds for each parameter
-lower = double(nparams)-Inf
-upper = double(nparams)+Inf
-lower[ind.eps] = 0
-
 
 ### MCMC settings
-nmcmc = 10000
+nmcmc = 100000
 params = matrix(0, nmcmc, nparams)
 accept = matrix(0, nmcmc, nparams)
-# starting values
-params[1, ind.eps] = 2.5
-sigs = rep(1, nparams)
+
+# candidate sigmas
+sigs = double(nparams)
+sigs[ind.beta] = 0.05
+sigs[ind.eps] = 0.5
+
+# starting values (starting at true values)
+params[1, ind.beta] = true.beta
+params[1, ind.eps] = true.sig2
 
 # initialize log posterior value
 post = calc.post(params[1,])
@@ -66,6 +65,7 @@ cand.param = params[1,]
 
 
 ### MCMC loop
+system.time({
 for (i in 2:nmcmc){
     # set current parameters to previous draws
     params[i,] = params[i-1,]
@@ -95,3 +95,4 @@ for (i in 2:nmcmc){
         }
 
     }
+})

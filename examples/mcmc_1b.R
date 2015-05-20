@@ -2,16 +2,28 @@
 
 ### generate some data
 set.seed(1)
-n = 10
-datx = runif(n, 0, 10)
-b0 = 2
-b1 = 1.2
-sig2 = 1
-daty = b0 + b1*datx + rnorm(n, 0, sqrt(sig2))
+n = 200
+p = 12
+x = cbind(1, matrix(runif(n*p, 0, 10), n, p))
+true.beta = seq(-5, 5, length = ncol(x))
+true.sig2 = 1
+y = x %*% true.beta + rnorm(n, 0, sqrt(true.sig2))
 
-# into vectors
-y = as.matrix(daty)
-x = cbind(1, datx)
+# hyperparameter specifications
+eps.a = 2
+eps.b = 10
+mu_0 = 0
+sig_0 = 100
+
+# indices for parameters
+ind.beta = 1:ncol(x)
+ind.eps = ncol(x)+1
+nparams = ncol(x)+1
+
+# support bounds for each parameter
+lower = double(nparams)-Inf
+upper = double(nparams)+Inf
+lower[ind.eps] = 0
 
 ### calculate log likelihood
 calc.like = function(params){
@@ -25,53 +37,41 @@ calc.like = function(params){
     return (out)
     }
 ### calculate log priors
-calc.prior = function(param, j){
-    if (j == 1)
+calc.prior = rep(list(0), nparams)
+for (i in ind.beta)
+    calc.prior[[i]] = function(param)
         return (-1/2*log(sig_0)-1/(2*sig_0)*(param-mu_0)^2)
-    if (j == 2)
-        return (-1/2*log(sig_1)-1/(2*sig_1)*(param-mu_1)^2)
-    if (j == 3)
-        return((eps.a-1)*log(param)-param/eps.b)
-    }
 
-# hyperparameter specifications
-eps.a = 2
-eps.b = 10
-mu_0 = 0
-mu_1 = 0
-sig_0 = 100
-sig_1 = 100
-
-# indices for parameters
-ind.beta = 1:2
-ind.eps = 3
-nparams = 3
-
-# support bounds for each parameter
-lower = double(nparams)-Inf
-upper = double(nparams)+Inf
-lower[ind.eps] = 0
+calc.prior[[ind.eps]] = function(param)
+    return((eps.a-1)*log(param)-param/eps.b)
 
 
 ### MCMC settings
-nmcmc = 10000
+nmcmc = 100000
 params = matrix(0, nmcmc, nparams)
 accept = matrix(0, nmcmc, nparams)
-# starting values
-params[1, ind.eps] = 2.5
-sigs = rep(1, nparams)
+
+# candidate sigmas
+sigs = double(nparams)
+sigs[ind.beta] = 0.05
+sigs[ind.eps] = 0.5
+
+# starting values (starting at true values)
+params[1, ind.beta] = true.beta
+params[1, ind.eps] = true.sig2
 
 # initialize log likelihood and log prior values
 like = calc.like(params[1,])
 priors = double(nparams)
-for (i in 1:nparams)
-    priors[i] = calc.prior(params[1,i], i)
+for (j in 1:nparams)
+    priors[j] = calc.prior[[j]](params[1,j])
 
 # vector used to testing proposals
 cand.param = params[1,]
 
 
 ### MCMC loop
+system.time({
 for (i in 2:nmcmc){
     # set current parameters to previous draws
     params[i,] = params[i-1,]
@@ -85,7 +85,7 @@ for (i in 2:nmcmc){
         if (cand >= lower[j] && cand <= upper[j]){
             cand.param[j] = cand
             cand.like = calc.like(cand.param)
-            cand.prior = calc.prior(cand.param[j], j)
+            cand.prior = calc.prior[[j]](cand.param[j])
             # check whether to accept draw or not
             if (log(runif(1)) < cand.like + cand.prior - like - priors[j]){
                 like = cand.like        # store likelihood
@@ -103,3 +103,4 @@ for (i in 2:nmcmc){
         }
 
     }
+})
