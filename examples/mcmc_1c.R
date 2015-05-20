@@ -1,5 +1,7 @@
-# example code using the bayes functions file
-# using bayesian regression
+### Metropolis algorithm example on a regression problem
+### with autotuning proposal acceptance rates
+
+# load the following functions: autotune, hpt.int, hpd.plot
 source("./bayes_functions.R")
 
 ### generate some data
@@ -58,18 +60,19 @@ lower[ind.eps] = 0
 nburn = 10000
 nmcmc = 20000
 params = matrix(0, nburn+nmcmc, nparams)
-post.mat = matrix(-Inf, nburn+nmcmc, nparams)
+accept = matrix(0, nburn+nmcmc, nparams)
 # starting values
 params[1, ind.eps] = 2.5
 sigs = rep(1, nparams)
 
 # initialize log posterior value
 post = calc.post(params[1,])
-cand.param = params[1,]
-post.mat[1, 1] = post
 
-# confidence intervals on acceptance rates?
-accept = matrix(0, nburn+nmcmc, nparams)
+# vector used to testing proposals
+cand.param = params[1,]
+
+# every window interations, the autotune function is run
+# the higher the value, the more accurate the change will be
 window = 100
 
 ### MCMC loop
@@ -109,6 +112,7 @@ for (i in 2:(nburn+nmcmc)){
         # this use of the apply function gets the acceptance rate
         # for each parameter in the last window=100 draws
         # here k=2, which is largest factor by which sigs can change
+        # k = window/50 seems to have worked well for me in the past
         # target is 0.25
 
         # if the rate is too high, sig[j] will increase
@@ -117,78 +121,34 @@ for (i in 2:(nburn+nmcmc)){
 
 params = params[(nburn+1):(nburn+nmcmc),]
 accept = accept[(nburn+1):(nburn+nmcmc),]
-post.mat = post.mat[(nburn+1):(nburn+nmcmc),]
-post.mat[1, -nparams] = -Inf
 
 # check acceptance rates
 apply(accept, 2, mean)
 
-cdf = function(data, theta){
-    y = data[,1]
-    x = data[,2:3]
-    pnorm(y, x %*% theta[1:2], sqrt(theta[3]))
-    }
+# notice the new candidate sigmas, originally all 1
+sigs
 
-pvals = bayes.gof(cbind(y, x), params, cdf, K = 2)
+# bivariate posterior plots
+plot(params[,c(1,2)], type='l')
+plot(params[,c(1,3)], type='l')
+plot(params[,c(2,3)], type='l')
 
-mean(pvals <= 0.05)
-mean(pvals <= 0.01)
-
-plot(density(pvals))
-
-# get an estimate of the mode using the parameter draws and the calculated
-# (log) posterior. only works if the joint posterior is calculated for every
-# parameter as opposed to using the marginals
-est.mode = function(params, post){
-    # params, post are nparams x nmcmc
-    # the first nparams - 1 columns in the first row
-    # of post should be -Inf
-    nparams = nrow(params)
-    maxx = which.max(as.numeric(post))
-    end = 1 + ((maxx - 1) %% nparams) # the index of the ending parameter
-    order = c((nparams - end + 1):nparams, 1:(nparams - end))[1:nparams]
-    vec = as.numeric(params)[(maxx-nparams+1):maxx]
-    return(list("mode"=vec[order], "height"=post[maxx]))
-    }
-
-modemx = optim(params[1,], function(x) -calc.post(x))$par
-modemy = -optim(params[1,], function(x) -calc.post(x))$value
-modee = est.mode(t(params), t(post.mat))
-
-calc.post(modemx)
-calc.post(modee$mode)
-
-plot(as.numeric(post.mat), pch=20, cex=0.1)#, ylim=c(-9.5, -9))
-abline(h = modemy, lwd=2)
-abline(v = which.max(as.numeric(post.mat)), col='blue', lwd=2)
+# highest posterior density inverals
+hpd.int = apply(params, 2, hpd.uni)
 
 # loop the posterior density of each parameter
 names.VAR = c("b0", "b1", "sigma")
 for (i in 1:nparams){
-    dens = density(params[,i], width=sd(params[,i]))
-    # compute the hpd set
-    hpd.int = hpd.mult(params[,i], dens)
-    plot(dens, main=names.VAR[i], ylab="Density")
-    # overall fill color
-    dens.col = "gray80"
-    polygon(dens, col=dens.col)
-    # mutiply cyan with gray80
-    shade = col.mult(dens.col, "cyan")
-    # shade in each portion of the hpd (if multiple intervals)
-    for (k in 1:(length(hpd.int)/2))
-        color.den(dens, hpd.int[2*k-1], hpd.int[2*k], shade)
-    # re-draw the density
-    lines(dens, lwd=1.5)
-    lines(range(dens$x), c(0,0))
+    dens = density(params[,i], width = sd(params[,i]))
+    hpd.plot(dens, hpd.int[,i],
+        main = names.VAR[i], ylab = "Density", xlab = "")
+
     # make a line at x=0
     at.x = 0
     lines(rep(bound(at.x, dens), 2), c(0, bound(at.x,
-        dens, FALSE)), col='black', lwd=2, lty=2)
+        dens, FALSE)), col='red', lwd=3, lty=1)
+
     # pause and wait for user input (hit enter)
-    abline(v = modee$mode[i], col='blue')
-    abline(v = modemx[i], lty=2)
     if (i < nparams)
         readline()
-    }
- 
-
+    } 
