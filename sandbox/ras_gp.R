@@ -9,6 +9,11 @@ y = c( 5.1,  4.8,  3.9,  3.5,  3.9,
       -3.5, -2.8, -2.4, -2.2, -0.4,
        1.0,  1.1,  1.3,  1.0,  2.1)
 
+# x = x[rep(1:length(x), each=2)]
+# y = y[rep(1:length(y), each=2)]
+# x = x + rnorm(length(x), 0, 0.25)
+# y = y + rnorm(length(y), 0, 0.25)
+
 plot(x, y, pch=3, xlim=c(-5, 5), ylim=c(-4, 8), lwd=2, cex=2)
 abline(v=(-5:5), h=seq(-4, 8, by=2), col="gray50", lty=2)
 
@@ -18,6 +23,7 @@ m = function(x, theta_m){
     c = theta_m[3]
     return (a*x^2 + b*x + c)
     }
+library(fields) # for Matern
 k = function(x, xprime, theta_k){
     # if xprime = x, leave xprime missing (i.e. a covariance matrix
     # is created for all possible pairs in x)
@@ -29,12 +35,20 @@ k = function(x, xprime, theta_k){
 
     if (missing(xprime)){
         d = as.matrix(dist(x, method = "manhattan"))
+        # squared exponential
         out = sig_y * exp(-(d^2) / (2*l^2)) + diag(sig_n, n)
+
+        # Matern
+#       out = sig_y * Matern(d, range=l, nu=1, phi=1) + diag(sig_n, n)
     } else {
         m = NROW(xprime)
         d = as.matrix(dist(c(x, xprime), method = "manhattan"))
         d = d[1:n, (n+1):(n+m)]
+        # squared exponential
         out = sig_y * exp(-(d^2) / (2*l^2)) 
+
+        # Matern
+#       out = sig_y * Matern(d, range=l, nu=1, phi=1)
         }
     return (out)
     }
@@ -113,6 +127,7 @@ for (i in 2:(nburn+nmcmc)){
 params = params[(nburn+1):(nburn+nmcmc),]
 accept = accept[(nburn+1):(nburn+nmcmc),]
 
+par(mfrow=c(3,2))
 plot(params[,1], type='l')
 plot(params[,2], type='l')
 plot(params[,3], type='l')
@@ -120,11 +135,15 @@ plot(params[,4], type='l')
 plot(params[,5], type='l')
 plot(params[,6], type='l')
 
+par(mfrow=c(1,1))
+
 apply(params, 2, mean)
 apply(accept, 2, mean)
 
+sigs
+
 library(MASS)
-pred.x = seq(-6,6, length = 100)
+pred.x = seq(-6, 6, length = 100)
 pred.y = matrix(0, nmcmc, length(pred.x))
 for (i in 1:nmcmc){
     cat("\rIteration",i,"/",nmcmc)
@@ -148,24 +167,24 @@ pred.upper = apply(pred.y, 2, quantile, 0.975)
 pred.mean = apply(pred.y, 2, mean)
 pred.lower = apply(pred.y, 2, quantile, 0.025)
 
-plot(x, y, pch=3, xlim=c(-5, 5), ylim=c(-4, 8), cex=2, lwd=2)
-abline(v=(-5:5), h=seq(-4, 8, by=2), col="gray50", lty=2)
-polygon(c(pred.x, rev(pred.x)), c(pred.upper, rev(pred.lower)),
-    col='gray85')
-lines(pred.x, pred.mean, col='red', lwd=2)
-lines(pred.x, pred.y[1,], lty=2)
-lines(pred.x, pred.y[2,], lty=2)
-lines(pred.x, pred.y[3,], lty=2)
-points(x, y, pch=3, xlim=c(-5, 5), ylim=c(-4, 8), cex=2, lwd=2)
-legend(-2.5, 7.5, legend = c("Data", "Posterior predictive mean",
-    "Single predictive draws", "95% predictive region"),
-    lty=c(NA,1,2,1), pch=c(3, NA, NA, NA), col=c(1,2,1,"gray85"),
-    lwd=c(2,2,1,8), bg="white", pt.cex=c(2,1,1,1))
-box()
+# plot(x, y, pch=3, xlim=c(-5, 5), ylim=c(-4, 8), cex=2, lwd=2)
+# abline(v=(-5:5), h=seq(-4, 8, by=2), col="gray50", lty=2)
+# polygon(c(pred.x, rev(pred.x)), c(pred.upper, rev(pred.lower)),
+#     col='gray85')
+# lines(pred.x, pred.mean, col='red', lwd=2)
+# lines(pred.x, pred.y[1,], lty=2)
+# lines(pred.x, pred.y[2,], lty=2)
+# lines(pred.x, pred.y[3,], lty=2)
+# points(x, y, pch=3, xlim=c(-5, 5), ylim=c(-4, 8), cex=2, lwd=2)
+# legend(-2.5, 7.5, legend = c("Data", "Posterior predictive mean",
+#     "Single predictive draws", "95% predictive region"),
+#     lty=c(NA,1,2,1), pch=c(3, NA, NA, NA), col=c(1,2,1,"gray85"),
+#     lwd=c(2,2,1,8), bg="white", pt.cex=c(2,1,1,1))
+# box()
 
 
-### maximum likelihood estimates
-### produces similar predictions
+### maximum likelihood estimates (much faster)
+# produces similar predictions (smaller variance though)
 g = function(p)
     0.5*determinant(k(x, theta_k=p[4:6]))$modulus[1] +
         0.5*t(y-m(x, p[1:3])) %*% (solve(k(x, theta_k=p[4:6])) %*%
@@ -176,6 +195,7 @@ g = function(p)
 
 MU = m(x, mle.p[1:3])
 SIG = k(x, theta_k = mle.p[4:6])
+
 
 t_m = mle.p[1:3]
 t_k = mle.p[4:6]
@@ -195,18 +215,23 @@ mle.mean = apply(mle.y, 2, mean)
 mle.lower = apply(mle.y, 2, quantile, 0.025)
 
 plot(x, y, pch=3, xlim=c(-5, 5), ylim=c(-4, 8), cex=2, lwd=2)
-abline(v=(-5:5), h=seq(-4, 8, by=2), col="gray50", lty=2)
+abline(v=(-11:11), h=seq(-4, 8, by=2), col="gray50", lty=2)
+polygon(c(pred.x, rev(pred.x)), c(pred.upper, rev(pred.lower)),
+    col='lightgreen')
 polygon(c(pred.x, rev(pred.x)), c(mle.upper, rev(mle.lower)),
-    col='gray85')
+    col='pink')
+lines(pred.x, pred.mean, col='green', lwd=2)
 lines(pred.x, mle.mean, col='red', lwd=2)
-lines(pred.x, mle.y[1,], lty=2)
-lines(pred.x, mle.y[2,], lty=2)
-lines(pred.x, mle.y[3,], lty=2)
+# lines(pred.x, mle.y[1,], lty=2)
+# lines(pred.x, mle.y[2,], lty=2)
+# lines(pred.x, mle.y[3,], lty=2)
 points(x, y, pch=3, xlim=c(-5, 5), ylim=c(-4, 8), cex=2, lwd=2)
 legend(-2.5, 7.5, legend = c("Data", "Posterior predictive mean",
-    "Single predictive draws", "95% predictive region"),
-    lty=c(NA,1,2,1), pch=c(3, NA, NA, NA), col=c(1,2,1,"gray85"),
-    lwd=c(2,2,1,8), bg="white", pt.cex=c(2,1,1,1))
+    "MLE predictive mean", "95% posterior predictive region",
+    "95% MLE predictive region"),
+    lty=c(NA,1,1,1,1), pch=c(3, NA, NA, NA, NA), col=c("black", "green", "red",
+        "lightgreen", "pink"),
+    lwd=c(2,2,2,8,8), bg="white", pt.cex=c(2,1,1,1,1))
 box()
 
 
