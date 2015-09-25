@@ -39,9 +39,10 @@ Tr = function(kprime, theta, u){
         return (c(theta - u, theta + u))
     }
 
-Pi = matrix(0.5, K, K)
+Pi = matrix(0.25, K, K)
+diag(Pi) = 0.75
 # {Pi}_ij = the probability of choosing a jump to model j while in model i
-# The rows must sum to 1
+# The rows must sum to 1 (well, not really, in sample() the probabilities are normalized)
 
 nburn = 0
 nmcmc = 5000
@@ -49,7 +50,7 @@ nmcmc = 5000
 params = list()
 params[[1]] = matrix(0, nburn + nmcmc, 1)
 params[[2]] = matrix(0, nburn + nmcmc, 2)
-accept = matrix(0, nburn + nmcmc, K)
+accept = rep(list(double(nburn + nmcmc)), K)
 count = rep(1, K)
 
 params[[1]][1,] = mean(y)
@@ -84,7 +85,7 @@ for (i in 2:(nburn + nmcmc)){
         if (log(runif(1)) <= calc.post(kprime, cand) -
             calc.post(kcurr, params[[kcurr]][count[kcurr]-1,])){
             params[[kprime]][count[kcurr],] = cand
-            accept[count[kcurr],kprime] = 1
+            accept[[kprime]][count[kcurr]] = 1
         } else {
             params[[kprime]][count[kcurr],] = params[[kprime]][count[kcurr]-1,]
             }
@@ -95,7 +96,7 @@ for (i in 2:(nburn + nmcmc)){
         if (log(runif(1)) <= calc.post(kprime, cand) - calc.post(kcurr, params[[kcurr]][count[kcurr]+1,]) -
             ifelse(is.null(u), 0, dnorm(u, 0, 0.1, log = TRUE)) + log(kprime / kcurr)){
             params[[kprime]][count[kprime],] = cand[1:NCOL(params[[kprime]])]
-            accept[count[kprime]+1,kprime] = 1
+            accept[[kprime]][count[kprime]+1] = 1
             kcurr = kprime
         } else {
             params[[kprime]][count[kprime],] = params[[kprime]][count[kprime]-1,]
@@ -103,11 +104,22 @@ for (i in 2:(nburn + nmcmc)){
         }
     }
 
-plot(1:count[1], params[[1]][1:count[1]], type = 'l')
-plot(params[[2]][1:count[2],], pch = 20)
+for (j in 1:K){
+    params[[j]] = head(params[[j]], count[j])
+    accept[[j]] = head(accept[[j]], count[j])
+    }
 
-plot(1:count[1], accept[1:count[1],1], pch = 20)
-plot(1:count[2], accept[1:count[2],2], pch = 20)
+plot(params[[1]], type = 'l')
+
+par(mfrow = c(2,1),)
+plot(params[[2]][,1], pch = 20)
+plot(params[[2]][,2], pch = 20)
+
+plot(accept[[1]], pch = 20)
+plot(accept[[2]], pch = 20)
+
+mean(accept[[1]])
+mean(accept[[2]])
 
 
 ### There are some issues with this, I'm thinking it's mostly because of
