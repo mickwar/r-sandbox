@@ -111,9 +111,9 @@ for (j in 1:K){
 
 plot(params[[1]], type = 'l')
 
-par(mfrow = c(2,1),)
-plot(params[[2]][,1], pch = 20)
-plot(params[[2]][,2], pch = 20)
+par(mfrow = c(2,1))
+plot(params[[2]][,1], type='l')
+plot(params[[2]][,2], type='l')
 
 plot(accept[[1]], pch = 20)
 plot(accept[[2]], pch = 20)
