@@ -1,5 +1,6 @@
 ###########
 # normal mixture model
+library(date)
 source("~/files/R/mcmc/bayes_functions.R")
 rho = 0.7
 mu1 = 2
@@ -46,8 +47,29 @@ y = gen(500)
 dat = read.table("~/files/data/MPG_saturn.txt", header = TRUE)
 y = dat$miles / dat$gallons
 #y = y[-c(13, 20)] # removing the most extreme values
-plot(density(y))
 
+### Natural splines (number of days between fill ups to predict MPG)
+t = as.numeric(as.date(gsub("-","", dat[,1])))
+x = diff(t)
+y = y[-1]
+t = t[-1]
+
+plot(as.date(t), y, type='b', pch = 20)
+
+ord = order(x)
+mod = lm(y[ord] ~ ns(x[ord], knots= c(10, 30, 60))) #Some ad hoc grouping, I figure <10 was road trip
+deviance(mod)
+summary(mod)
+
+plot(x, y, pch=20, main = "MPG on days since previous fill up"); lines(x[ord], predict(mod), lwd = 3)
+
+plot(rstudent(mod), pch = 20, main = "Standardized Residuals"); abline(h = 0, lwd = 2)
+
+plot(predict(mod), y[ord], pch = 20, main = "Fitted vs Observed"); abline(0, 1)
+
+### MCMC
+y = dat$miles / dat$gallons
+plot(density(y))
 nparams = 5
 sigs = rep(1, nparams)
 nburn = 15000
