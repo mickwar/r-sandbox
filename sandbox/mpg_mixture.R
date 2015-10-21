@@ -48,23 +48,38 @@ dat = read.table("~/files/data/MPG_saturn.txt", header = TRUE)
 y = dat$miles / dat$gallons
 #y = y[-c(13, 20)] # removing the most extreme values
 
-### Natural splines (number of days between fill ups to predict MPG)
+### Simple linear regression
 t = as.numeric(as.date(gsub("-","", dat[,1])))
 x = diff(t)
 y = y[-1]
 t = t[-1]
 
-plot(as.date(t), y, type='b', pch = 20)
 
+ord = order(x)
+mod = lm(y[ord] ~ x[ord]) #Some ad hoc grouping, I figure <10 was road trip
+summary(mod)
+# predict on data
+plot(x, y, pch=20, main = "MPG", xlab = "Days before last fill up", ylab = "MPG"); lines(x[ord], predict(mod), lwd = 3)
+
+# residuals
+plot(rstudent(mod), pch = 20, main = "Standardized Residuals"); abline(h = 0, lwd = 2)
+
+# fitted vs observed
+
+### Natural splines (number of days between fill ups to predict MPG)
+library(splines)
 ord = order(x)
 mod = lm(y[ord] ~ ns(x[ord], knots= c(10, 30, 60))) #Some ad hoc grouping, I figure <10 was road trip
 deviance(mod)
 summary(mod)
 
-plot(x, y, pch=20, main = "MPG on days since previous fill up"); lines(x[ord], predict(mod), lwd = 3)
+# predict on data
+plot(x, y, pch=20, main = "MPG", xlab = "Days before last fill up", ylab = "MPG"); lines(x[ord], predict(mod), lwd = 3)
 
+# residuals
 plot(rstudent(mod), pch = 20, main = "Standardized Residuals"); abline(h = 0, lwd = 2)
 
+# fitted vs observed
 plot(predict(mod), y[ord], pch = 20, main = "Fitted vs Observed"); abline(0, 1)
 
 ### MCMC
