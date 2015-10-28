@@ -63,11 +63,13 @@ men.mean = c(70, 144)
 women.mean = c(64, 120)
 
 set.seed(2)
-men = mvrnorm(50, men.mean, matrix(c(3, 4.762, 4.762, 21), 2, 2))
-women = mvrnorm(50, women.mean, matrix(c(3, 4.762, 4.762, 21), 2, 2))
+D = diag(c(3, 21)) %*% matrix(c(1, 0.6, 0.6, 1), 2, 2) %*% diag(c(3, 21))
+men = mvrnorm(50, men.mean, D)
+women = mvrnorm(50, women.mean, D)
 
 # men points
-plot(men.mean[1], men.mean[2], pch = 20, xlim = c(55, 75), ylim = c(100, 170), col = 'blue', cex = 4)
+plot(men.mean[1], men.mean[2], pch = 20, xlim = range(c(men[,1], women[,1])),
+    ylim = range(c(men[,2], women[,2])), col = 'blue', cex = 4)
 points(women.mean[1], women.mean[2], pch = 20, col = 'red', cex = 4)
 
 abline(a=men.mean[2] - men.mean[1] * (0.6 * 21/3), b = (0.6 * 21/3),
