@@ -27,32 +27,21 @@ P[1,1] = P[1,2] = P[n,n] = P[n-1,n] = 1/2
 #P[1,2] = P[n,n-1] = 2
 #P = P/4
 
-
-
-
 # Note: since I use the sample() function to propose a possible dimension jump,
 # I don't actually need to make sure these rows sum to 1 since sample() takes
 # care of normalizing. I could just as well keep all the non-zero entries to
 # be the same value and it would still correspond to have 1/3 probability for
 # birth, stay, and death steps
 
-weight.fun = function(modelk)
-    ((1 - prior.alpha)^(1:modelk - 1) * prior.alpha) / (1 - (1 - prior.alpha)^modelk)
-#   rep(1/modelk, modelk)
+
 
 
 
 ### Function for computing the (proportional) posterior
 # modelk denotes the number of dimensions to compute the posterior at
 # paramsk are the parameters associated with modelk
-calc.post = function(modelk, paramsk){
+calc.post = function(modelk, paramsk, weightsk){
     out = 0
-
-    # Fixing the weights, based on number of dimensions
-    weights = weight.fun(modelk)
-    # Consider using an actual prior for the weights (say Dirichlet distribution)
-    # Note as modelk -> infinity, weights -> geometric(alpha), so weights
-    # come from the "truncated geometric"
 
     # Likelihood
     # Odd indices are the means, even are the variances, so elements 3 and 4 is the mean
@@ -61,7 +50,7 @@ calc.post = function(modelk, paramsk){
     p.means = temp[,1]
     p.vars = temp[,2]
     for (i in 1:n)
-        out = out + log(sum(weights * dnorm(y[i], p.means, sqrt(p.vars))))
+        out = out + log(sum(weightsk * dnorm(y[i], p.means, sqrt(p.vars))))
 #       out = out + log(sum(dnorm(y[i], head(paramsk, modelk), sqrt(tail(paramsk, modelk)))))
 #       # under the old setup
 
@@ -76,12 +65,17 @@ calc.post = function(modelk, paramsk){
     # iid Gamms for the sigma^2 vector parameter
     out = out + sum(dgamma(p.vars, prior.sig2.a, prior.sig2.b, log = TRUE))
 
+    # Dirichlet for the weights
+    out = out + lgamma(modelk * prior.delta) - k*lgamma(prior.delta) +
+        (prior.delta - 1) * sum(log(weights))
+
     return (out)
     }
 
-prior.alpha = 0.8 # Prior for weights (though weights is fixed)
+prior.delta = 0.8 # Prior for weights
 
 prior.k = 0.01 # Prior for K
+
 
 prior.mu.mean = 28 # about mean(y), so same mean for -all- dimensions
 prior.mu.sd = 10 # about 2*sd(y)
