@@ -54,6 +54,14 @@ dbinom(600*0.2, 600, p)
 1-pbinom(50, 100, 0.55)     # Probability of drawing 51 or more red (i.e. more blue)
 1-pbinom(100, 200, 0.55)    # Probability of drawing 101 or more red (i.e. more blue)
 
+p = 0.55
+n = 100
+plot(0:n, dbinom(0:n, n, p), type='h')
+abline(v = 50.2, col = 'red', lty = 2)
+n = 200
+plot(0:n, dbinom(0:n, n, p), type='h')
+abline(v = 100.2, col = 'red', lty = 2)
+
 ### Chapter 17
 # Number 1
 x = c(1, 6, 7, 9, 9, 10)
@@ -118,3 +126,12 @@ pnorm((-100 - ex[2]) / se2)
 # Number 12
 x = 1:7
 sqrt(100) * sqrt(sum((x - mean(x))^2 / length(x))) 
+
+sqrt(60) * sqrt(sum((x - mean(x))^2 / length(x))) 
+
+x = rgamma(10000, 1/10, 15)
+
+mean(x)
+sd(x)
+
+plot(density(x))
