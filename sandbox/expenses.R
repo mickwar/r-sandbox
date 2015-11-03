@@ -11,7 +11,8 @@ paychecks =
     638.40, # 17 apr 2015
     638.35, # 1 may 2015
     343.75, # 15 may 2015
-    20987.04) # 19 jun through 18 sep 2015
+    20987.04, # 19 jun through 18 sep 2015 (LLNL)
+    2142.17)    # 10 oct 2015
     
 
 tithing=
@@ -19,13 +20,13 @@ tithing=
     1277,   # 2013
     2015,   # 2014
     140, 60, 70, 80, 100,
-    100, 70)
+    100, 70, 2310)
 
 offerings=
     c(158.25,   # 2012
     53,         # 2013
     355,        # 2014
-    60, 30, 20, 200, 30)
+    60, 30, 20, 200, 30, 190)
 
 sum(paychecks)/10 - sum(tithing)
 # Negative means how much I overpaid
