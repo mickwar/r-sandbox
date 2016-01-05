@@ -33,15 +33,22 @@ pgev = function(x, mu, sigma, ksi){
     return (y)
     }
 
-set.seed(5)
-n = 1000
-size = 100
-y = double(n)
-for (i in 1:n)
-    y[i] = max(rnorm(size, 0, 1))
+#set.seed(5)
+#n = 1000
+#size = 100
+#y = double(n)
+#for (i in 1:n)
+#    y[i] = max(rnorm(size, 0, 1))
+#
+#n = 200
+#y = rnorm(n)
+#
+#
+#plot(density(y))
+dat = read.table("~/files/data/coles_sea_level.txt", header = TRUE)
+plot(dat, pch = 20)
 
-
-plot(density(y))
+y = dat$sea.level
 
 calc.post = function(param){
     # likelihood
@@ -54,11 +61,11 @@ calc.post = function(param){
     }
 
 prior.mu.a = 0
-prior.mu.b = 1
-prior.sigma.a = 1
-prior.sigma.b = 1
+prior.mu.b = 3
+prior.sigma.a = 1/4
+prior.sigma.b = 1/4
 prior.ksi.a = 0
-prior.ksi.b = 1
+prior.ksi.b = 3
 
 
 source("~/files/R/mcmc/bayes_functions.R")
@@ -72,6 +79,7 @@ params = matrix(0, nburn + nmcmc, nparam)
 accept = double(nburn + nmcmc)
 cand.sig = diag(0.1, nparam)
 
+set.seed(1)
 params[1,] = c(rnorm(1, prior.mu.a, prior.mu.b),
     rgamma(1, prior.sigma.a, prior.sigma.b),
     rnorm(1, prior.ksi.a, prior.ksi.b))
@@ -104,12 +112,26 @@ for (i in 2:(nburn + nmcmc)){
 params = tail(params, nmcmc)
 accept = tail(accept, nmcmc)
 
+apply(params, 2, mean)
+cov(params)
+
 mean(accept)
 
+hpds = apply(params, 2, hpd.uni)
+
 par(mfrow = c(3,1))
-plot(density(params[,1]))
-plot(density(params[,2]))
-plot(density(params[,3]))
+plot(density(params[,1]), main = expression(mu), xlab = "", cex.main = 2)
+abline(v=c(3.87, mean(params[,1])), col = c(2, 1))
+abline(v=hpds[,1], lty = 2)
+abline(v=c(3.82, 3.93), lty = 2, col = 2)
+plot(density(params[,2]), main = expression(sigma), xlab = "", cex.main = 2)
+abline(v=c(0.198, mean(params[,2])), col = c(2, 1))
+abline(v=hpds[,2], lty = 2)
+abline(v=c(.158,.238), lty = 2, col = 2)
+plot(density(params[,3]), main = expression(xi), xlab = "", cex.main = 2)
+abline(v=c(-0.05, mean(params[,3])), col = c(2, 1))
+abline(v=hpds[,3], lty = 2)
+abline(v=c(-.242, .142), lty = 2, col = 2)
 
 par(mfrow = c(1,1))
 plot(density(y))
@@ -117,7 +139,8 @@ xx = seq(min(density(y)$x), max(density(y)$x), length = 1000)
 lines(xx, dgev(xx, mean(params[,1]), mean(params[,2]), mean(params[,3])), col = 'red')
 lines(xx, dgev(xx, median(params[,1]), median(params[,2]), median(params[,3])), col = 'blue')
 
-plot(density(y), ylim = c(0,1.4))
-for (i in seq(1, nmcmc, by = 100))
+plot(density(y), ylim = c(0,2.4))
+for (i in seq(1, nmcmc, by = 50))
     lines(xx, dgev(xx, params[i,1], params[i,2], params[i,3]), col = rgb(1,0,0,0.1))
 lines(density(y), lwd=2)
+
