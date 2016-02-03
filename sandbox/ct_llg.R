@@ -378,15 +378,20 @@ addxp=function(characters,addxp,table,status){
 
 ### Simulation
 
-# first 10000 levels
-endlevels=matrix(0,10000,8)
-for (i in 1:10000){
-    
-    }
+# first 10000 combos
+norders = 10000
+endlevels=matrix(0,norders,8)
 
-endlevels=matrix(0,upto,8)
+endlevels=matrix(0,norders,8)
 
-for (batnum in 1:upto){
+# up to how many battles used
+upto = length(battle)
+
+### keepers
+keep = list(double(length(battle)), double(8))
+
+# batnum = death combo number
+for (batnum in 1:norders){
     characters=list(c(1,0),c(1,0),c(2,0),c(5,0),c(10,0),c(18,0),c(37,0))
     if (batnum==1){
         #endlevels=matrix(0,1,8)
@@ -394,7 +399,6 @@ for (batnum in 1:upto){
         }
     if (batnum>1){
         order=com(batnum,battle)
-
         }
     for (i in 1:upto){
         characters=addxp(characters,battle[[i]][[1]],
@@ -404,27 +408,16 @@ for (batnum in 1:upto){
         endlevels[batnum,k]=characters[[k]][1]
         }
     endlevels[batnum,8]=sum(endlevels[batnum,1:7])
-    numbers=which(endlevels[,8]<=min(endlevels[,8])+mindiff)
-    subset=matrix(0,length(numbers),35)
-    for (i in 1:length(numbers)){
-        subset[i,]=com(numbers[i],battle)[1:35]
-        }
     }
-length(numbers)/order[36+upto]
 
+which.min(endlevels[,8])
+endlevels[1,]
 
-endlevels[endlevels[,8]<=min(endlevels[,8])+mindiff,]
-which(endlevels[,8]<=min(endlevels[,8])+mindiff)
-order[36+upto]
-endlevels
+com(4962300000000000000000000001, battle)
 
-range(endlevels[,1])
-range(endlevels[,2])
-range(endlevels[,3])
-range(endlevels[,4])
-range(endlevels[,5])
-range(endlevels[,6])
-range(endlevels[,7])
+nextcombo(com(4962300000000000000000000003, battle), battle)
 
-endlevels[endlevels[,8]==max(endlevels[,8]),]
-which(endlevels[,8]==max(endlevels[,8]))
+### Total number of battle combinations
+ugh = prod(unlist(lapply(battle, function(x) length(x)-1)))
+
+ugh / 60 / 60 / 24 / 365 / 1000000000000
