@@ -11,18 +11,14 @@ shinyServer(function(input, output, session){
 #               collapse = ","))
 #       })
 
+    observeEvent(input$rnormGo, {
+        updateTextInput(session, "x", value = "asdf")
+#       updateTextInput(session, "x", value = 
+#           paste(as.character(round(rnorm(input$rnormN, input$Xavg, input$Xsd), 3)),
+#               collapse = ","))
+        })
+
     output$scatter = renderPlot({
-
-        input$rnormGo
-
-        isolate({
-            updateTextInput(session, "x", value = 
-                paste(as.character(round(rnorm(input$rnormN, input$Xavg, input$Xsd), 3)),
-                    collapse = ","))
-#           updateTextInput(session, "y", value = 
-#               paste(as.character(round(rnorm(input$rnormN, input$Yavg, input$Ysd), 3)),
-#                   collapse = ","))
-            })
 
         ### Handle the input for x and y
         x = as.numeric(strsplit(gsub(" ", "", input$x), ",")[[1]])
