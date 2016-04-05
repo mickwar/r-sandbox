@@ -33,22 +33,36 @@ pgev = function(x, mu, sigma, ksi){
     return (y)
     }
 
+rgev = function(mu, sigma, ksi){
+    if (ksi == 0)   # Gumbel
+        return (mu + sigma*(-log(rexp(1))))
+    if (ksi > 0)    # Frechet
+        return (1/(mu + rweibull(1, ksi, sigma)))
+#       return (mu + sigma*(-log(runif(1)))^(-ksi))
+    if (ksi < 0)    # Reversed Weibull
+        return (mu + rweibull(1, -ksi, sigma))
+#       return (mu + sigma*(-log(runif(1)))^(ksi))
+    }
+
+weib = 1+2*(-log(runif(100000)))^(1/3)
+plot(density(weib))
+lines(density(1+rweibull(100000, 3, 2)), col = 'red')
+
+
 #set.seed(5)
-#n = 1000
-#size = 100
-#y = double(n)
-#for (i in 1:n)
-#    y[i] = max(rnorm(size, 0, 1))
+n = 1000
+size = 100
+y = apply(matrix(rnorm(n*size), n, size), 1, max)
 #
 #n = 200
 #y = rnorm(n)
 #
 #
 #plot(density(y))
-dat = read.table("~/files/data/coles_sea_level.txt", header = TRUE)
-plot(dat, pch = 20)
-
-y = dat$sea.level
+#dat = read.table("~/files/data/coles_sea_level.txt", header = TRUE)
+#plot(dat, pch = 20)
+#
+#y = dat$sea.level
 
 calc.post = function(param){
     # likelihood
@@ -143,4 +157,23 @@ plot(density(y), ylim = c(0,2.4))
 for (i in seq(1, nmcmc, by = 50))
     lines(xx, dgev(xx, params[i,1], params[i,2], params[i,3]), col = rgb(1,0,0,0.1))
 lines(density(y), lwd=2)
+
+pred.y = double(nmcmc)
+for (i in 1:nmcmc)
+    pred.y[i] = rgev(params[i,1], params[i,2], params[i,3])
+plot(density(y))
+lines(density(pred.y), col = 'red')
+
+xx = seq(-10, 10, length= 1000)
+mu = 0.8
+sigma = 2.7
+ksi = -0.3
+
+plot(xx, dgev(xx, mu, sigma, ksi), type='l')
+#curve(dweibull(4-x, 2.0, 4), add = TRUE, col = 'red')
+curve(dweibull(-sigma/ksi+mu-x, sigma, -sigma/ksi), add = TRUE, col = 'red')
+
+
+z = 0 + 1*(-log(runif(10000)))^(0.5)
+lines(density(z), col = 'red')
 
