@@ -33,12 +33,20 @@ pgev = function(x, mu, sigma, ksi){
     return (y)
     }
 
+rgev = function(n, mu, sigma, ksi){
+#   if (ksi == 0)
+#       return (mu - sigma*log(-log(runif(n)))) # Gumbel
+#   return (mu + sigma/ksi*((-log(runif(n)))^(-ksi) - 1))   # Frechet or Weibull
+    if (length(ksi) == 1)
+        ksi = rep(ksi, n)
+    return (ifelse(ksi == 0, mu - sigma*log(-log(runif(n))),
+        mu + sigma/ksi*((-log(runif(n)))^(-ksi) - 1)))
+    }
+
 #set.seed(5)
 #n = 1000
 #size = 100
-#y = double(n)
-#for (i in 1:n)
-#    y[i] = max(rnorm(size, 0, 1))
+#y = apply(matrix(rnorm(n*size), n, size), 1, max)
 #
 #n = 200
 #y = rnorm(n)
