@@ -33,28 +33,6 @@ pgev = function(x, mu, sigma, ksi){
     return (y)
     }
 
-<<<<<<< HEAD
-rgev = function(mu, sigma, ksi){
-    if (ksi == 0)   # Gumbel
-        return (mu + sigma*(-log(rexp(1))))
-    if (ksi > 0)    # Frechet
-        return (1/(mu + rweibull(1, ksi, sigma)))
-#       return (mu + sigma*(-log(runif(1)))^(-ksi))
-    if (ksi < 0)    # Reversed Weibull
-        return (mu + rweibull(1, -ksi, sigma))
-#       return (mu + sigma*(-log(runif(1)))^(ksi))
-    }
-
-weib = 1+2*(-log(runif(100000)))^(1/3)
-plot(density(weib))
-lines(density(1+rweibull(100000, 3, 2)), col = 'red')
-
-
-#set.seed(5)
-n = 1000
-size = 100
-y = apply(matrix(rnorm(n*size), n, size), 1, max)
-=======
 rgev = function(n, mu, sigma, ksi){
 #   if (ksi == 0)
 #       return (mu - sigma*log(-log(runif(n)))) # Gumbel
@@ -69,7 +47,6 @@ rgev = function(n, mu, sigma, ksi){
 #n = 1000
 #size = 100
 #y = apply(matrix(rnorm(n*size), n, size), 1, max)
->>>>>>> 717cf558fa89a66739d9e3bcb674d52fd4db7ce4
 #
 #n = 200
 #y = rnorm(n)
