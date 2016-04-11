@@ -43,10 +43,14 @@ rgev = function(n, mu, sigma, ksi){
         mu + sigma/ksi*((-log(runif(n)))^(-ksi) - 1)))
     }
 
-#set.seed(5)
-#n = 1000
-#size = 100
-#y = apply(matrix(rnorm(n*size), n, size), 1, max)
+set.seed(1)
+n = 1000
+size = 10000
+y = apply(matrix(rnorm(n*size), n, size), 1, max)
+#y = rnorm(n)
+#plot(density(y))
+#curve(dnorm(x, 0, 1), col = 'red', add = TRUE)
+#ks.test(y, pnorm)
 #
 #n = 200
 #y = rnorm(n)
@@ -57,6 +61,7 @@ rgev = function(n, mu, sigma, ksi){
 #plot(dat, pch = 20)
 #
 #y = dat$sea.level
+plot(density(y))
 
 calc.post = function(param){
     # likelihood
@@ -80,7 +85,7 @@ source("~/files/R/mcmc/bayes_functions.R")
 library(MASS)
 
 nburn = 50000
-nmcmc = 100000
+nmcmc = 200000
 
 nparam = 3
 params = matrix(0, nburn + nmcmc, nparam)
@@ -152,11 +157,16 @@ for (i in seq(1, nmcmc, by = 50))
     lines(xx, dgev(xx, params[i,1], params[i,2], params[i,3]), col = rgb(1,0,0,0.1))
 lines(density(y), lwd=2)
 
-pred.y = double(nmcmc)
-for (i in 1:nmcmc)
-    pred.y[i] = rgev(params[i,1], params[i,2], params[i,3])
-plot(density(y))
-lines(density(pred.y), col = 'red')
+pred.y = rgev(nmcmc, params[,1], params[,2], params[,3])
+plot(density(y), lwd = 2)
+lines(density(pred.y), col = 'red', lwd = 2)
+curve(dnorm(x, mean(y), sd(y)), col = 'blue', add = TRUE, lwd = 2)
+curve(dnorm(x, 0, 1), col = 'green', add = TRUE, lwd = 2)
+
+mean(pred.y >= 4.5) * n
+sum(rnorm(size*n) >= 4.5)
+
+ks.test(pred.y, pnorm)
 
 xx = seq(-10, 10, length= 1000)
 mu = 0.8
@@ -171,3 +181,6 @@ curve(dweibull(-sigma/ksi+mu-x, sigma, -sigma/ksi), add = TRUE, col = 'red')
 z = 0 + 1*(-log(runif(10000)))^(0.5)
 lines(density(z), col = 'red')
 
+zz = seq(0.0001, 10, length = 100000)
+plot(zz, exp(-1/zz), type='l', ylim = c(0,1))
+curve(pnorm(x), add = TRUE, col = 'red')
