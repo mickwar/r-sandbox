@@ -1,3 +1,5 @@
+### Annal Maximum Sea-levels at Port Pirie
+### 3.4.1 of Coles (p. 59-64)
 dgev = function(x, mu, sigma, ksi){
     supp = c(-Inf, Inf)
     if (ksi < 0)
@@ -33,6 +35,14 @@ pgev = function(x, mu, sigma, ksi){
     return (y)
     }
 
+qgev = function(p, mu, sigma, ksi){
+    if (ksi == 0){
+        return (mu - sigma*log(-log(1-p)))
+    } else {
+        return (mu - sigma/ksi*(1-(-log(1-p))^(-ksi)))
+        }
+    }
+
 rgev = function(n, mu, sigma, ksi){
 #   if (ksi == 0)
 #       return (mu - sigma*log(-log(runif(n)))) # Gumbel
@@ -43,24 +53,14 @@ rgev = function(n, mu, sigma, ksi){
         mu + sigma/ksi*((-log(runif(n)))^(-ksi) - 1)))
     }
 
-set.seed(1)
-n = 1000
-size = 10000
-y = apply(matrix(rnorm(n*size), n, size), 1, max)
-#y = rnorm(n)
-#plot(density(y))
-#curve(dnorm(x, 0, 1), col = 'red', add = TRUE)
-#ks.test(y, pnorm)
-#
-#n = 200
-#y = rnorm(n)
-#
-#
-#plot(density(y))
-#dat = read.table("~/files/data/coles_sea_level.txt", header = TRUE)
-#plot(dat, pch = 20)
-#
-#y = dat$sea.level
+
+
+
+dat = read.table("~/files/data/port_pirie.txt", header = TRUE)
+plot(dat, pch = 20)
+
+y = dat$sea.level
+n = length(y)
 plot(density(y))
 
 calc.post = function(param){
@@ -99,7 +99,7 @@ params[1,] = c(rnorm(1, prior.mu.a, prior.mu.b),
 
 lower = c(-Inf, 0, -Inf)
 upper = c(Inf, Inf, Inf)
-window = 100
+window = 200
 
 post = calc.post(params[1,])
 
@@ -125,62 +125,113 @@ for (i in 2:(nburn + nmcmc)){
 params = tail(params, nmcmc)
 accept = tail(accept, nmcmc)
 
+mean(accept)
+
+# Mean and covariances
 apply(params, 2, mean)
 cov(params)
 
-mean(accept)
+# Standard errors
+sqrt(diag(cov(params)))
 
+# Get hpds (might take a while)
 hpds = apply(params, 2, hpd.uni)
 
+
+# Marginal posteriors (black: my estimates / red: coles estimates)
 par(mfrow = c(3,1))
 plot(density(params[,1]), main = expression(mu), xlab = "", cex.main = 2)
 abline(v=c(3.87, mean(params[,1])), col = c(2, 1))
 abline(v=hpds[,1], lty = 2)
 abline(v=c(3.82, 3.93), lty = 2, col = 2)
+
 plot(density(params[,2]), main = expression(sigma), xlab = "", cex.main = 2)
 abline(v=c(0.198, mean(params[,2])), col = c(2, 1))
 abline(v=hpds[,2], lty = 2)
 abline(v=c(.158,.238), lty = 2, col = 2)
+
 plot(density(params[,3]), main = expression(xi), xlab = "", cex.main = 2)
 abline(v=c(-0.05, mean(params[,3])), col = c(2, 1))
 abline(v=hpds[,3], lty = 2)
 abline(v=c(-.242, .142), lty = 2, col = 2)
 
+# Density estimates based on the mean (red) and median (blue) of the posteriors
 par(mfrow = c(1,1))
 plot(density(y))
 xx = seq(min(density(y)$x), max(density(y)$x), length = 1000)
 lines(xx, dgev(xx, mean(params[,1]), mean(params[,2]), mean(params[,3])), col = 'red')
 lines(xx, dgev(xx, median(params[,1]), median(params[,2]), median(params[,3])), col = 'blue')
 
-plot(density(y), ylim = c(0,2.4))
-for (i in seq(1, nmcmc, by = 50))
-    lines(xx, dgev(xx, params[i,1], params[i,2], params[i,3]), col = rgb(1,0,0,0.1))
-lines(density(y), lwd=2)
+#plot(density(y), ylim = c(0,2.4))
+#for (i in seq(1, nmcmc, by = 50))
+#    lines(xx, dgev(xx, params[i,1], params[i,2], params[i,3]), col = rgb(1,0,0,0.1))
+#lines(density(y), lwd=2)
 
+### Predictive distribution
 pred.y = rgev(nmcmc, params[,1], params[,2], params[,3])
 plot(density(y), lwd = 2)
 lines(density(pred.y), col = 'red', lwd = 2)
-curve(dnorm(x, mean(y), sd(y)), col = 'blue', add = TRUE, lwd = 2)
-curve(dnorm(x, 0, 1), col = 'green', add = TRUE, lwd = 2)
-
-mean(pred.y >= 4.5) * n
-sum(rnorm(size*n) >= 4.5)
-
-ks.test(pred.y, pnorm)
-
-xx = seq(-10, 10, length= 1000)
-mu = 0.8
-sigma = 2.7
-ksi = -0.3
-
-plot(xx, dgev(xx, mu, sigma, ksi), type='l')
-#curve(dweibull(4-x, 2.0, 4), add = TRUE, col = 'red')
-curve(dweibull(-sigma/ksi+mu-x, sigma, -sigma/ksi), add = TRUE, col = 'red')
 
 
-z = 0 + 1*(-log(runif(10000)))^(0.5)
-lines(density(z), col = 'red')
+pplot = apply(params, 1, function(x) exp(-(1+x[3]*(sort(y) - x[1])/x[2])^(-1/x[3])))
+qplot = apply(params, 1, function(x) x[1] - x[2]/x[3]*(1-(-log((1:n)/(n+1)))^(-x[3])))
 
-zz = seq(0.0001, 10, length = 100000)
-plot(zz, exp(-1/zz), type='l', ylim = c(0,1))
-curve(pnorm(x), add = TRUE, col = 'red')
+lq1 = apply(pplot, 1, quantile, c(0.025, 0.975))
+lm1 = apply(pplot, 1, mean)
+
+lq2 = apply(qplot, 1, quantile, c(0.025, 0.975))
+lm2 = apply(qplot, 1, mean)
+
+
+par(mfrow=c(2,2))
+# Probability plot  (i/(n+1), squig(G)(z_(i)))
+plot((1:n)/(n+1), lm1, pch = 20, main = "Probability plot",
+    xlab = "Empirical", ylab = "Model")
+segments((1:n)/(n+1), y0 = lq1[1,], y1 = lq1[2,])
+abline(0, 1)
+
+# Quantile plot     (z_(i), hat(G)^(-1)(z_(i)))
+plot(sort(y), lm2, pch = 20, main = "Quantile plot",
+    xlab = "Empirical", ylab = "Model")
+segments(sort(y), y0 = lq2[1,], y1 = lq2[2,])
+abline(0, 1)
+
+
+
+###### FIX
+# Return level plot
+yy = seq(min(y), max(y), length = 100)
+plot(yy, pgev(yy, muhat, sighat, ksihat))
+
+xx = seq(-4, 4, length = 1000)
+
+
+pp = seq(0.1, 0.9999, length = 1000)
+logyp = log(-log(1-pp))
+zp = muhat - sighat/ksihat * (1 - (-log(1-pp))^(-ksihat))
+
+
+logyp = seq(-2, 7, length = 100)
+pp = 
+1-exp(-exp(logyp))
+zp = 0 - 1*log(-log(1-pp))
+
+zp = qgev(1-exp(-logyp), 0, 1, 0)
+
+plot(pp, zp)
+
+qgev(pp, muhat, sighat, ksihat)
+plot(pp, qgev(1-pp, 0, 1, 0))
+
+plot(log(1-pp), zp)
+plot(-log(1-pp), muhat-sighat/ksihat*(1-(-log(1-pp))^(-ksihat)), type='l')
+plot(muhat-sighat/ksihat*(1-(-log(1-pp))^(-ksihat)), log(1/pp), type='l')
+######
+
+
+
+# Density plot
+hist(y, col = 'gray', freq=  FALSE, breaks = 10)
+points(y, rep(0, length(y)), pch = 20)
+lines(density(pred.y), col = 'red', lwd = 2)
+
