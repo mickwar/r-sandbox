@@ -139,6 +139,19 @@ hpds = apply(params, 2, hpd.uni)
 
 
 # Marginal posteriors (black: my estimates / red: coles estimates)
+#par(mfrow = c(3,1))
+#par("mfg" = c(1,1,3,1))
+#plot.post(params[,1], density(params[,1]), hpds[,1],
+#    main = expression(mu), xlab = "", cex.main = 2)
+#par("mfg" = c(2,1,3,1))
+#plot.post(params[,2], density(params[,2]), hpds[,2],
+#    main = expression(sigma), xlab = "", cex.main = 2)
+#par("mfg" = c(3,1,3,1))
+#plot.post(params[,3], density(params[,3]), hpds[,3],
+#    main = expression(xi), xlab = "", cex.main = 2)
+#par("new" = TRUE)
+
+
 par(mfrow = c(3,1))
 plot(density(params[,1]), main = expression(mu), xlab = "", cex.main = 2)
 abline(v=c(3.87, mean(params[,1])), col = c(2, 1))
@@ -154,6 +167,7 @@ plot(density(params[,3]), main = expression(xi), xlab = "", cex.main = 2)
 abline(v=c(-0.05, mean(params[,3])), col = c(2, 1))
 abline(v=hpds[,3], lty = 2)
 abline(v=c(-.242, .142), lty = 2, col = 2)
+
 
 # Density estimates based on the mean (red) and median (blue) of the posteriors
 par(mfrow = c(1,1))
@@ -199,16 +213,35 @@ abline(0, 1)
 
 
 ###### FIX
+plot(0, type='n', axes = FALSE, xlab = "", ylab = "")
 # Return level plot
+muhat = mean(params[,1])
+sighat = mean(params[,2])
+ksihat = mean(params[,3])
 yy = seq(min(y), max(y), length = 100)
 plot(yy, pgev(yy, muhat, sighat, ksihat))
 
 xx = seq(-4, 4, length = 1000)
 
 
-pp = seq(0.1, 0.9999, length = 1000)
+pp = seq(0.001, 0.9999, length = 1000)
 logyp = log(-log(1-pp))
 zp = muhat - sighat/ksihat * (1 - (-log(1-pp))^(-ksihat))
+
+muhat - sighat/ksihat * (1 - (-log(1-0.01))^(-ksihat))
+
+plot(-logyp, zp, pch = 20)
+plot(exp(logyp), zp, pch = 20)
+plot(1/pp, zp, pch = 20)
+
+ZZ = apply(params, 1, function(x) x[1] - x[2]/x[3] * (1 - (-log(1-pp))^(-x[3])))
+dim(ZZ)
+
+Zm = apply(ZZ, 1, mean)
+Zq = apply(ZZ, 1, quantile, c(0.025, 0.975))
+ plot(log(1/pp, 10), Zm, ylim = range(Zq), type='l', xlim = c(0.2, 3))
+lines(log(1/pp, 10), Zq[1,], col = 'blue')
+lines(log(1/pp, 10), Zq[2,], col = 'blue')
 
 
 logyp = seq(-2, 7, length = 100)
