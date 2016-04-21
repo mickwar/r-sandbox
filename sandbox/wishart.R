@@ -42,71 +42,96 @@ dwishart(X, V, 1, TRUE)
 # get one random draw
 rwishart = function(V, df){
     p = nrow(V)
-    # function to randomize lower triangle of a matrix with independent N(0,1)s
-    lower.rand = function(x){
-        n = nrow(x)
-        z = sequence(n)
-        index = cbind(
-            row = unlist(lapply(2:n, function(x) x:n), use.names = FALSE),
-            col = rep(z[-length(z)], times = rev(tail(z, -1))-1))
-        x[index] = rnorm(nrow(index))
-        return (x)
-        }
     L = t(chol(V))
     A = diag(sqrt(rchisq(p, df-(1:p)+1)))
-    A = lower.rand(A)
+    A[lower.tri(A)] = rnorm(p*(p-1)/2)
     X = L %*% A
     return (X %*% t(X))
 #   return (L %*% A %*% t(A) %*% t(L))
     }
 
-rwish2 = function(V, df){
-    require(MASS)
+riwishart = function(V, df)
+    solve(rwishart(V, df))
+
+riwishart2 = function(V, df){
     p = nrow(V)
-    X = mvrnorm(df, rep(0, p), V)
-    t(X) %*% X
+    L = chol(V)
+    A = diag(sqrt(rchisq(p, df-(1:p)+1)))
+    A[upper.tri(A)] = rnorm(p*(p-1)/2)
+    A = solve(A)
+    L = solve(L)
+    X = L %*% A
+    return (X %*% t(X))
     }
 
-rwish3 = function(V, df, U = NULL){
-    if (is.null(U))
-        U = chol(V)
-    p = NROW(U)
-    X = matrix(rnorm(p*df, 0, 1), df, p) %*% U
-    t(X) %*% X
+riwishart3 = function(V, df){
+    p = nrow(V)
+    L = backsolve(chol(V), diag(p))
+    A = diag(sqrt(rchisq(p, df-(1:p)+1)))
+    A[upper.tri(A)] = rnorm(p*(p-1)/2)
+    A = backsolve(A, diag(p))
+    X = L %*% A
+    return (X %*% t(X))
     }
+
+
+# rwish2 = function(V, df){
+#     require(MASS)
+#     p = nrow(V)
+#     X = mvrnorm(df, rep(0, p), V)
+#     t(X) %*% X
+#     }
+# 
+# rwish3 = function(V, df, U = NULL){
+#     if (is.null(U))
+#         U = chol(V)
+#     p = NROW(U)
+#     X = matrix(rnorm(p*df, 0, 1), df, p) %*% U
+#     t(X) %*% X
+#     }
 
 rwishart(V, df)
 rwish2(V, df)
 rwish3(V, df)
-rwish3(V, df)
 
 
-p = 100
+
+p = 20
 V = matrix(0.5, p, p)
 diag(V) = 1
 df = p
 
+set.seed(1)
+X1 = riwishart(V, df)
+
+set.seed(1)
+X2 = riwishart2(V, df)
+
+set.seed(1)
+X3 = riwishart3(V, df)
 
 
 
-n = 1000
+
+
+n = 10000
 out = rep(list(matrix(0, p, p)), n)
 out2 = rep(list(matrix(0, p, p)), n)
 out3 = rep(list(matrix(0, p, p)), n)
 system.time(
     for (i in 1:n){
-        out[[i]] = rwishart(V, df)
+        out[[i]] = riwishart(V, df)
         }
     )
 system.time(
     for (i in 1:n){
-        out2[[i]] = rwish2(V, df)
+        out2[[i]] = riwishart2(V, df)
         }
     )
 system.time({
     U <- chol(V)
     for (i in 1:n){
-        out3[[i]] = rwish3(V, df, U)
+        out3[[i]] = riwishart3(V, df)
         }
     })
 mean.out = matrix(0, p, p)
@@ -117,6 +142,16 @@ for (i in 1:n){
     mean.out2 = mean.out2 + out2[[i]]
     mean.out3 = mean.out3 + out3[[i]]
     }
+
+#VAR1 = matrix(0, p, p)
+#VAR2 = matrix(0, p, p)
+#for (i in 1:p){
+#    for (j in 1:p){
+#        VAR1[i,j] = var(sapply(out, function(x) x[i,j]))
+#        VAR2[i,j] = var(sapply(out2, function(x) x[i,j]))
+#        }
+#    }
+
 
 mean.out = mean.out / n
 mean.out2 = mean.out2 / n
