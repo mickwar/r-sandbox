@@ -1,6 +1,6 @@
 ### Modeling the r Largest Order Statistics
 ### 3.5.3 of Coles (p. 69-72)
-dat = read.table("~/files/data/pirazzoli_venice.txt", header = TRUE)
+dat = read.table("~/files/data/coles/pirazzoli_venice.txt", header = TRUE)
 dat = tail(dat, 51)
 
 year = dat$year

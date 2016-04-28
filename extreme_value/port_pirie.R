@@ -56,7 +56,7 @@ rgev = function(n, mu, sigma, ksi){
 
 
 
-dat = read.table("~/files/data/port_pirie.txt", header = TRUE)
+dat = read.table("~/files/data/coles/port_pirie.txt", header = TRUE)
 plot(dat, pch = 20)
 
 y = dat$sea.level
@@ -85,7 +85,7 @@ source("~/files/R/mcmc/bayes_functions.R")
 library(MASS)
 
 nburn = 50000
-nmcmc = 200000
+nmcmc = 100000
 
 nparam = 3
 params = matrix(0, nburn + nmcmc, nparam)
@@ -135,7 +135,10 @@ cov(params)
 sqrt(diag(cov(params)))
 
 # Get hpds (might take a while)
-hpds = apply(params, 2, hpd.uni)
+#hpds = apply(params, 2, hpd.uni)
+
+# Equal-tailed 95%
+hpds = apply(params, 2, quantile, c(0.025, 0.975))
 
 
 # Marginal posteriors (black: my estimates / red: coles estimates)
@@ -170,11 +173,11 @@ abline(v=c(-.242, .142), lty = 2, col = 2)
 
 
 # Density estimates based on the mean (red) and median (blue) of the posteriors
-par(mfrow = c(1,1))
-plot(density(y))
-xx = seq(min(density(y)$x), max(density(y)$x), length = 1000)
-lines(xx, dgev(xx, mean(params[,1]), mean(params[,2]), mean(params[,3])), col = 'red')
-lines(xx, dgev(xx, median(params[,1]), median(params[,2]), median(params[,3])), col = 'blue')
+#par(mfrow = c(1,1))
+#plot(density(y))
+#xx = seq(min(density(y)$x), max(density(y)$x), length = 1000)
+#lines(xx, dgev(xx, mean(params[,1]), mean(params[,2]), mean(params[,3])), col = 'red')
+#lines(xx, dgev(xx, median(params[,1]), median(params[,2]), median(params[,3])), col = 'blue')
 
 #plot(density(y), ylim = c(0,2.4))
 #for (i in seq(1, nmcmc, by = 50))
@@ -183,88 +186,117 @@ lines(xx, dgev(xx, median(params[,1]), median(params[,2]), median(params[,3])), 
 
 ### Predictive distribution
 pred.y = rgev(nmcmc, params[,1], params[,2], params[,3])
-plot(density(y), lwd = 2)
-lines(density(pred.y), col = 'red', lwd = 2)
+#plot(density(y), lwd = 2)
+#lines(density(pred.y), col = 'red', lwd = 2)
 
-
+### Diagnostic Plots
+# Computations
 pplot = apply(params, 1, function(x) exp(-(1+x[3]*(sort(y) - x[1])/x[2])^(-1/x[3])))
 qplot = apply(params, 1, function(x) x[1] - x[2]/x[3]*(1-(-log((1:n)/(n+1)))^(-x[3])))
-
 lq1 = apply(pplot, 1, quantile, c(0.025, 0.975))
 lm1 = apply(pplot, 1, mean)
-
 lq2 = apply(qplot, 1, quantile, c(0.025, 0.975))
 lm2 = apply(qplot, 1, mean)
+
+pp = seq(0.001, 0.99, length = 100)
+ZZ = apply(params, 1, function(x) x[1] - x[2]/x[3] * (1 - (-log(1-pp))^(-x[3])))
+Zm = apply(ZZ, 1, mean)
+Zq = apply(ZZ, 1, quantile, c(0.025, 0.975))
 
 
 par(mfrow=c(2,2))
 # Probability plot  (i/(n+1), squig(G)(z_(i)))
 plot((1:n)/(n+1), lm1, pch = 20, main = "Probability plot",
     xlab = "Empirical", ylab = "Model")
-segments((1:n)/(n+1), y0 = lq1[1,], y1 = lq1[2,])
+segments((1:n)/(n+1), y0 = lq1[1,], y1 = lq1[2,], col = 'gray50')
 abline(0, 1)
 
 # Quantile plot     (z_(i), hat(G)^(-1)(z_(i)))
 plot(sort(y), lm2, pch = 20, main = "Quantile plot",
     xlab = "Empirical", ylab = "Model")
-segments(sort(y), y0 = lq2[1,], y1 = lq2[2,])
+segments(sort(y), y0 = lq2[1,], y1 = lq2[2,], col = 'gray50')
 abline(0, 1)
+
+# Return level plot
+plot(-log(-log(1-pp)), Zm, ylim = range(Zq), type='l', axes = FALSE,
+    xlim = c(log(0.1), log(1000)), xlab = "Return Period", ylab = "Return Level",
+    main = "Return Level Plot")
+points(-log(-log((1:n)/(n+1))), sort(y), pch = 20)
+axis(1, at = seq(log(0.1), log(1000), length = 5),
+    labels = round(exp(seq(log(0.1), log(1000), length = 5)), 1))
+axis(2)
+box()
+lines(-log(-log(1-pp)), Zq[1,], col = 'gray50')
+lines(-log(-log(1-pp)), Zq[2,], col = 'gray50')
+
+# Density plot
+hist(y, col = 'gray', freq=  FALSE, breaks = 10, main = "Density Plot")
+points(y, rep(0, length(y)), pch = 20)
+lines(density(pred.y), col = 'red', lwd = 2)
 
 
 
 ###### FIX
-plot(0, type='n', axes = FALSE, xlab = "", ylab = "")
-# Return level plot
-muhat = mean(params[,1])
-sighat = mean(params[,2])
-ksihat = mean(params[,3])
-yy = seq(min(y), max(y), length = 100)
-plot(yy, pgev(yy, muhat, sighat, ksihat))
+# plot(0, type='n', axes = FALSE, xlab = "", ylab = "")
+# # Return level plot
+# 
+# pp = seq(0.0005, 0.99, length = 1000)
+# zp
+# plot(-(log(1-pp)), qgev(1-pp, 0, 1, 0))
+# 
+# plot(-log(-log(1-pp)), qgev(pp, 0, 1, 0), type='l', ylim=c(-2, 15), axes = FALSE)
+# axis(1, at = seq(-2, 8, by = 1), labels = round(exp(seq(-2, 8, by = 1)), 1))
+# lines(-log(-log(1-pp)), qgev(pp, 0, 1, -0.2))
+# lines(-log(-log(1-pp)), qgev(pp, 0, 1, 0.2))
+# 
+# 
+# muhat = mean(params[,1])
+# sighat = mean(params[,2])
+# ksihat = mean(params[,3])
+# yy = seq(min(y), max(y), length = 100)
+# plot(yy, pgev(yy, muhat, sighat, ksihat))
+# plot(return.period, return.period, log='y')
+# 
+# xx = seq(-4, 4, length = 1000)
+# 
+# 
+# pp = seq(0.001, 0.99, length = 100)
+# logyp = log(-log(1-pp))
+# zp = muhat - sighat/ksihat * (1 - (-log(1-pp))^(-ksihat))
+# 
+# muhat - sighat/ksihat * (1 - (-log(1-0.01))^(-ksihat))
+# 
+# plot(-logyp, zp, pch = 20)
+# 
+# plot(exp(logyp), zp, pch = 20)
+# plot(1/pp, zp, pch = 20)
 
-xx = seq(-4, 4, length = 1000)
 
-
-pp = seq(0.001, 0.9999, length = 1000)
-logyp = log(-log(1-pp))
-zp = muhat - sighat/ksihat * (1 - (-log(1-pp))^(-ksihat))
-
-muhat - sighat/ksihat * (1 - (-log(1-0.01))^(-ksihat))
-
-plot(-logyp, zp, pch = 20)
-plot(exp(logyp), zp, pch = 20)
-plot(1/pp, zp, pch = 20)
-
-ZZ = apply(params, 1, function(x) x[1] - x[2]/x[3] * (1 - (-log(1-pp))^(-x[3])))
-dim(ZZ)
-
-Zm = apply(ZZ, 1, mean)
-Zq = apply(ZZ, 1, quantile, c(0.025, 0.975))
- plot(log(1/pp, 10), Zm, ylim = range(Zq), type='l', xlim = c(0.2, 3))
-lines(log(1/pp, 10), Zq[1,], col = 'blue')
-lines(log(1/pp, 10), Zq[2,], col = 'blue')
-
-
-logyp = seq(-2, 7, length = 100)
-pp = 
-1-exp(-exp(logyp))
-zp = 0 - 1*log(-log(1-pp))
-
-zp = qgev(1-exp(-logyp), 0, 1, 0)
-
-plot(pp, zp)
-
-qgev(pp, muhat, sighat, ksihat)
-plot(pp, qgev(1-pp, 0, 1, 0))
-
-plot(log(1-pp), zp)
-plot(-log(1-pp), muhat-sighat/ksihat*(1-(-log(1-pp))^(-ksihat)), type='l')
-plot(muhat-sighat/ksihat*(1-(-log(1-pp))^(-ksihat)), log(1/pp), type='l')
+# pp = seq(0.001, 0.99, length = 1000)
+# plot(-log(-log(1-pp)), qgev(pp, 3.87, 0.198, -0.05), ylim=c(3.5, 5), type='l', axes = FALSE,
+#     xlim = c(log(0.1), log(1000)))
+# axis(1, at = seq(log(0.1), log(1000), length = 5),
+#     labels = round(exp(seq(log(0.1), log(1000), length = 5)), 1))
+# axis(2)
+# box()
+# lines(-log(-log(1-pp)), qgev(pp, 3.82, 0.158, -0.21), col = 'blue')
+# lines(-log(-log(1-pp)), qgev(pp, 3.93, 0.238, 0.17), col = 'blue')
+# 
+# 
+# logyp = seq(-2, 7, length = 100)
+# pp = 
+# 1-exp(-exp(logyp))
+# zp = 0 - 1*log(-log(1-pp))
+# 
+# zp = qgev(1-exp(-logyp), 0, 1, 0)
+# 
+# plot(pp, zp)
+# 
+# qgev(pp, muhat, sighat, ksihat)
+# plot(pp, qgev(1-pp, 0, 1, 0))
+# 
+# plot(log(1-pp), zp)
+# plot(-log(1-pp), muhat-sighat/ksihat*(1-(-log(1-pp))^(-ksihat)), type='l')
+# plot(muhat-sighat/ksihat*(1-(-log(1-pp))^(-ksihat)), log(1/pp), type='l')
 ######
-
-
-
-# Density plot
-hist(y, col = 'gray', freq=  FALSE, breaks = 10)
-points(y, rep(0, length(y)), pch = 20)
-lines(density(pred.y), col = 'red', lwd = 2)
 
