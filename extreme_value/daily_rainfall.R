@@ -162,7 +162,6 @@ sum(dat > int[1])
 
 ### Diagnostics plots
 # Computations
-
 z = sort(y)
 pplot = apply(params, 1, function(x) 1-(1+x[2]*z/x[1])^(-1/x[2]))
 qplot = apply(params, 1, function(x) threshold+x[1]/x[2]*(((k:1)/(k+1))^(-x[2])-1))
@@ -171,10 +170,7 @@ lm1 = apply(pplot, 1, mean)
 lq2 = apply(qplot, 1, quantile, c(0.025, 0.975))
 lm2 = apply(qplot, 1, mean)
 
-#m = 365*seq(0.2, 1000, length = 100)
 m = 365*exp(seq(-2.0, 7, length = 100))
-#jj = seq(-1, 3.75+log10(365), by = 0.1)
-#m = c(1/mean(params[,3]), 10^jj)
 ZZ = apply(params, 1, function(x) threshold + x[1]/x[2] * ((m*x[3])^x[2] - 1))
 Zm = apply(ZZ, 1, mean)
 Zq = apply(ZZ, 1, quantile, c(0.025, 0.975))
@@ -197,9 +193,7 @@ abline(0, 1)
 plot(log(m/365), Zm, ylim = range(Zq), type='l', axes = FALSE,
     xlim = c(log(0.1), log(1000)), xlab = "Return Period", ylab = "Return Level",
     main = "Return Level Plot")
-sdat = sort(dat)
-points(log((1/(1 - (1:n)/(n+1)) / 365)[sdat > threshold]),
-    sdat[sdat > threshold], pch = 20)
+points(log(tail(1/((n:1)/(n+1)) / 365, k)), threshold + z, pch = 20)
 axis(1, at = seq(log(0.1), log(1000), length = 5),
     labels = round(exp(seq(log(0.1), log(1000), length = 5)), 1))
 axis(2)
