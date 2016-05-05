@@ -1,4 +1,4 @@
-### Annal Maximum Sea-levels at Port Pirie
+### Annual Maximum Sea-levels at Port Pirie
 ### 3.4.1 of Coles (p. 59-64)
 dgev = function(x, mu, sigma, ksi){
     supp = c(-Inf, Inf)
