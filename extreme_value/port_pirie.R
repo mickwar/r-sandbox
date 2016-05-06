@@ -1,4 +1,4 @@
-### Annal Maximum Sea-levels at Port Pirie
+### Annual Maximum Sea-levels at Port Pirie
 ### 3.4.1 of Coles (p. 59-64)
 dgev = function(x, mu, sigma, ksi){
     supp = c(-Inf, Inf)
@@ -198,7 +198,7 @@ lm1 = apply(pplot, 1, mean)
 lq2 = apply(qplot, 1, quantile, c(0.025, 0.975))
 lm2 = apply(qplot, 1, mean)
 
-pp = seq(0.001, 0.99, length = 100)
+pp = rev(seq(0.001, 0.99, length = 100))
 ZZ = apply(params, 1, function(x) x[1] - x[2]/x[3] * (1 - (-log(1-pp))^(-x[3])))
 Zm = apply(ZZ, 1, mean)
 Zq = apply(ZZ, 1, quantile, c(0.025, 0.975))
@@ -228,6 +228,15 @@ axis(2)
 box()
 lines(-log(-log(1-pp)), Zq[1,], col = 'gray50')
 lines(-log(-log(1-pp)), Zq[2,], col = 'gray50')
+
+#plot(1/pp, Zm, ylim = range(Zq), type='l', axes = TRUE,
+#    xlab = "Return Period", ylab = "Return Level",
+#lines(-log(-log(1-pp)), Zq[1,], col = 'gray50')
+#lines(-log(-log(1-pp)), Zq[2,], col = 'gray50')
+#    main = "Return Level Plot")
+#points(1/((n:1)/(n+1)), sort(y), pch = 20)
+#lines(1/pp, Zq[1,], col = 'gray50')
+#lines(1/pp, Zq[2,], col = 'gray50')
 
 # Density plot
 hist(y, col = 'gray', freq=  FALSE, breaks = 10, main = "Density Plot")
