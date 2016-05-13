@@ -309,7 +309,7 @@ hpd.mult = function(x, dens, prob = 0.95, klength = 5000){
 # for a_0 to a_K
 # returns the pvals
 # (the null is that the model fits)
-bayes.gof = function(data, params, cdf, K, a){
+bayes.gof = function(data, params, cdf, K, a, every = 100){
     y = as.matrix(data)
     n = nrow(y)
     M = nrow(params)
@@ -323,7 +323,8 @@ bayes.gof = function(data, params, cdf, K, a){
 
     m = matrix(0, M, K)
     for (j in 1:M){
-        cat("\rIteration:",j,"/",M)
+        if (floor(j/every) == j/every)
+            cat("\rIteration:",j,"/",M)
         z = cdf(data, params[j,])
         temp.m = rep(K, n)
         for (k in 2:K)
