@@ -158,8 +158,8 @@ lower = c(-Inf, -Inf, 0, -Inf, -Inf, 0, -Inf, 0)
 upper = c(Inf, Inf, Inf, Inf, Inf, Inf, Inf, 1)
 window = 200
 
-ind1 = 1:60
-ind2 = 1:60
+#ind1 = 1:60
+#ind2 = 1:60
 
 post = calc.post(params[1,])
 
