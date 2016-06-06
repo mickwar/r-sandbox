@@ -150,10 +150,12 @@ hpd.plot = function(dens, hpd, col1 = "dodgerblue", col2 = NULL,
     if (multiply)
         col2 = col.mult(col1, col2)
     plot(dens, type='n', ...)
-    polygon(dens, col=col1)
+    polygon(dens, col=col1, border = NA)
     for (i in 1:(length(hpd)/2))
         color.den(dens, hpd[2*i-1], hpd[2*i], col2)
-    lines(dens, col = border)
+    color.den(dens, -Inf, min(hpd), col1)
+    color.den(dens, max(hpd), Inf, col1)
+#   lines(dens, col = border)
     }
 
 # plot.post() original by Arthur Lui (github.com/luiarthur)
