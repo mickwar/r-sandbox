@@ -10,6 +10,12 @@ set.seed(3)
 z = runif(n*m)
 plot(xy, col = rgb(z, 0, 1-z, 2*abs(z-0.5)), pch = 15)
 
+plot(xy, col = rgb((1-z)^(1/1), (1-z)^(1/2), (z)^(3/2)), pch = 15, cex=1.9)
+plot(xy, col = rgb((1-z), (1-z), (z)), pch = 15, cex=1.9)
+
+
+
+
 # axb rectangles
 a = 6
 b = 7
@@ -40,4 +46,31 @@ border.points = c(1, a, a*b, 1+a*(b-1), 1)
 plot(xy, col = rgb(z, 0, 1-z, 2*abs(z-0.5)), pch = 15)
 lines(all.rect[[foot.print]][border.points,], lwd = 2)
 
+
+### Colors
+library(MASS)
+set.seed(1)
+u = runif(2000)
+x = rbind(mvrnorm(length(u), c(0, 0), matrix(c(1, 0.0, 0.0, 1),2,2))[which(u < 0.4),],
+    mvrnorm(length(u), c(4.5, -3.5), matrix(c(1, 0.6, 0.6, 1),2,2))[which(u >= 0.4 & u < 0.8),],
+    mvrnorm(length(u), c(3.0, 0.5), matrix(c(1, -0.7, -0.7, 1),2,2))[which(u >= 0.8),])
+plot(x, pch=20)
+
+kd = kde2d(x[,1], x[,2], n = 50)
+xy = expand.grid(kd$x, kd$y)
+z = c(kd$z)
+z = (z - min(z)) / diff(range(z))
+
+plot(xy, col = rgb(
+    ifelse(z < 1/3, 1, ifelse(z > 2/3, 0, 3*(2/3 - z))),
+    ifelse(z < 1/3, 0.5+z*3/2, 3/2*(1-z)),
+    ifelse(z < 1/2, 0, 2*z-1)
+    ), pch = 15, cex=1.9)
+
+# How the color components  are changing
+qq = seq(0, 1, length = 100)
+plot(qq, ifelse(qq < 1/3, 1, ifelse(qq > 2/3, 0, 3*(2/3 - qq))), type='l',
+    col = 'red')
+lines(qq, ifelse(qq < 1/3, 0.5+qq*3/2, 3/2*(1-qq)), col = 'green')
+lines(qq, ifelse(qq < 1/2, 0, 2*qq-1), col = 'blue')
 
