@@ -139,17 +139,26 @@ col.gray = function(rgb, method="yprime"){
 # multiply - logical, if true multiply col1 with col2 and set new
 #            color to col2, otherwise don't
 # border   - color of the density border
+# fade     - numeric in [0, 1], the degree of transparency to
+#            affect col1 and col2, ranging from 0 (totally
+#            transparent) to 1 (opaque), defaults to 1
+# add      - logical, should the plot be added to the current one
 # ...      - arguments to pass to plot()
 # requires color.den() and col.mult(), which requires int2rgb()
 # note: the use of the border argument could be improved (i don't think
 #       null would disable the border color if desired)
 hpd.plot = function(dens, hpd, col1 = "dodgerblue", col2 = NULL,
-    multiply = TRUE, border = "black", ...){
+    multiply = TRUE, border = "black", fade = 1, add = FALSE, ...){
     if (is.null(col2))
         col2 = "gray50"
     if (multiply)
         col2 = col.mult(col1, col2)
-    plot(dens, type='n', ...)
+    if (fade < 1){
+        col1 = fade(col1, fade)
+        col2 = fade(col2, fade)
+        }
+    if (!add)
+        plot(dens, type='n', ...)
     polygon(dens, col=col1, border = NA)
     for (i in 1:(length(hpd)/2))
         color.den(dens, hpd[2*i-1], hpd[2*i], col2)

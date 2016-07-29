@@ -19,8 +19,8 @@
 # k = window/50 seems to work generally well
 
 
-dat = read.csv("~/files/R/data/fgm.jazz.csv")
-dat = dat[-c(67,68),]
+dat = read.csv("~/files/data/fgm.jazz.csv")
+#dat = dat[-c(67,68),]
 
 datY = dat[,1]
 datX = cbind(1, dat[,2], 1*dat[,4])
@@ -81,3 +81,4 @@ for (i in 1:3){
     }
 apply(accept[(nburn+1):(nburn+nmcmc),], 2, mean)
 sigs
+
