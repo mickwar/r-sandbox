@@ -75,7 +75,7 @@ bound = function(x, dens, return.x=TRUE){
 color.den = function(dens, from, to, col1 = 1, col2 = NULL){
     if (is.null(col2))
         col2 = col1
-    index = which(dens$x > from & dens$x < to)
+    index = which(dens$x >= from & dens$x <= to)
     polygon(c(dens$x[index][1], dens$x[index],
         dens$x[index][length(index)]), c(0, dens$y[index], 0),
         col=col1, border=col2)
@@ -138,17 +138,14 @@ col.gray = function(rgb, method="yprime"){
 # col2     - the color of the shaded portion, defaults to gray50
 # multiply - logical, if true multiply col1 with col2 and set new
 #            color to col2, otherwise don't
-# border   - color of the density border
 # fade     - numeric in [0, 1], the degree of transparency to
 #            affect col1 and col2, ranging from 0 (totally
-#            transparent) to 1 (opaque), defaults to 1
+#=            transparent) to 1 (opaque), defaults to 1
 # add      - logical, should the plot be added to the current one
 # ...      - arguments to pass to plot()
 # requires color.den() and col.mult(), which requires int2rgb()
-# note: the use of the border argument could be improved (i don't think
-#       null would disable the border color if desired)
 hpd.plot = function(dens, hpd, col1 = "dodgerblue", col2 = NULL,
-    multiply = TRUE, border = "black", fade = 1, add = FALSE, ...){
+    multiply = TRUE, fade = 1, add = FALSE, ...){
     if (is.null(col2))
         col2 = "gray50"
     if (multiply)
@@ -159,12 +156,22 @@ hpd.plot = function(dens, hpd, col1 = "dodgerblue", col2 = NULL,
         }
     if (!add)
         plot(dens, type='n', ...)
-    polygon(dens, col=col1, border = NA)
-    for (i in 1:(length(hpd)/2))
-        color.den(dens, hpd[2*i-1], hpd[2*i], col2)
-    color.den(dens, -Inf, min(hpd), col1)
-    color.den(dens, max(hpd), Inf, col1)
-#   lines(dens, col = border)
+#   polygon(dens, col=col1, border = NA)
+#   for (i in 1:(length(hpd)/2))
+#       color.den(dens, hpd[2*i-1], hpd[2*i], col2)
+#   color.den(dens, -Inf, min(hpd), col1)
+#   color.den(dens, max(hpd), Inf, col1)
+#   polygon(dens, col=col1, border = NA)
+
+    # Get the points from hpd that are closest to those from dens$x
+    new.hpd = sapply(hpd, function(y) dens$x[which.min(abs(dens$x - y))])
+    mid = c(-Inf, new.hpd, Inf)
+    for (i in 1:(length(new.hpd)/2+1))
+        color.den(dens, mid[2*i-1], mid[2*i], col1, NA)
+    for (i in 1:(length(new.hpd)/2))
+        color.den(dens, new.hpd[2*i-1], new.hpd[2*i], col2, NA)
+#   color.den(dens, -Inf, min(hpd), col1)
+#   color.den(dens, max(hpd), Inf, col1)
     }
 
 # plot.post() original by Arthur Lui (github.com/luiarthur)

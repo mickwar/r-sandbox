@@ -1,26 +1,22 @@
-### Some color and plotting functions for nicer density plots.
-
-# get current list of objects in the console
-TEMP_LIST_O = ls()
-
-########## BEGIN
-
-
-
-### color.den()
-# (by Arthur Lui, editted by Mickey)
-# Colors a specified area under a density within an interval
-# This should be used in conjunction with plot(dens, ...)
-#
-# Params: dens   - a density object
-#         from   - numeric, the left endpoint of the area
-#         to     - numeric, the right endpoint of the area
-#         fill   - a color, the color that will fill in the area under the curve
-#         border - a color, the outline of the area receives this color
-color.den = function(dens, from, to, fill = 1, border = NULL){
+#' col.dens
+#'
+#' Original by Arthur Lui, adapted by Mickey
+#' Colors a specified area under a density within an interval by making
+#' a call to the polygon function
+#'
+#' @param dens      a density object
+#' @param xlim      numeric vector of length 2 specifying the interval
+#' @param fill      color, the color that will fill in the area under the curve, defaults to black
+#' @param border    color, the outline of the area receives this color, defaults to fill
+#' @examples
+#' x = rnorm(100)
+#' dens = density(x)
+#' plot(dens)
+#' col.dens(dens, c(0, 1), fill = "blue", border = NA)
+col.dens = function(dens, xlim, fill = "black", border = NULL){
     if (is.null(border))
         border = fill
-    index = which(dens$x >= from & dens$x <= to)
+    index = which(dens$x >= xlim[1] & dens$x <= xlim[2])
     x0 = dens$x[index][1]
     x1 = dens$x[index][length(index)]
     x = dens$x[index]
@@ -137,19 +133,3 @@ make.phantom = function(text, display, colors, sep = "", ...){
         }
     }
 
-
-
-########## END
-
-# compare TEMP_LIST with ls() which now has additional functions
-TEMP_LIST_N = ls()
-TEMP_LIST_N = TEMP_LIST_N[-which(TEMP_LIST_N == "TEMP_LIST_O")] # remove TEMP_LIST_O
-TEMP_LIST_N = TEMP_LIST_N[!(TEMP_LIST_N %in% TEMP_LIST_O)] # get only added functions
-
-# print the sourced functions
-if (length(TEMP_LIST_N) > 0){
-    cat("Sourced functions:\n    ")
-    cat(TEMP_LIST_N, sep="\n    ")
-    }
-
-rm(TEMP_LIST_O, TEMP_LIST_N) # remove temporary variables

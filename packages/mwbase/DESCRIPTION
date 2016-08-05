@@ -1,0 +1,10 @@
+Package: mwbase
+Title: Collection of functions frequently used by myself
+Version: 0.0.0.9000
+Authors@R: person("Mickey", "Warner", email = "mawarner@ucsc.edu", role = c("aut", "cre"))
+Description: Contains various MCMC-related functions, many related to plotting
+Depends:
+    R (>= 3.3.1)
+License: GNU GPLv2
+LazyData: true
+RoxygenNote: 5.0.1.9000
