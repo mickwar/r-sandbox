@@ -1,5 +1,6 @@
 ### Annual Maximum Sea-levels at Port Pirie
 ### 3.4.1 of Coles (p. 59-64)
+library(mwbase)
 dgev = function(x, mu, sigma, ksi){
     supp = c(-Inf, Inf)
     if (ksi < 0)
@@ -53,13 +54,19 @@ rgev = function(n, mu, sigma, ksi){
         mu + sigma/ksi*((-log(runif(n)))^(-ksi) - 1)))
     }
 
+bn = function(n) qnorm(1 - 1/n)
+an = function(n, ksi)
+    ifelse(ksi != 0, ksi*(bn(2*n) - bn(n)) / (2^ksi - 1), (bn(2*n) - bn(n)) / log(2))
+m = 100
+n = 2000
+x = apply(matrix(rnorm(m*n), m, n), 2, max)
+y = (x - bn(m)) / an(m, 0)
 
 
-
-dat = read.table("~/files/data/coles/port_pirie.txt", header = TRUE)
-plot(dat, pch = 20)
-
-y = dat$sea.level
+# dat = read.table("~/files/data/coles/port_pirie.txt", header = TRUE)
+# plot(dat, pch = 20)
+# 
+# y = dat$sea.level
 n = length(y)
 plot(density(y))
 
@@ -84,8 +91,8 @@ prior.ksi.b = 3
 source("~/files/R/mcmc/bayes_functions.R")
 library(MASS)
 
-nburn = 50000
-nmcmc = 100000
+nburn = 80000
+nmcmc = 40000
 
 nparam = 3
 params = matrix(0, nburn + nmcmc, nparam)
@@ -135,10 +142,10 @@ cov(params)
 sqrt(diag(cov(params)))
 
 # Get hpds (might take a while)
-#hpds = apply(params, 2, hpd.uni)
+hpds = apply(params, 2, hpd_mult)
 
 # Equal-tailed 95%
-hpds = apply(params, 2, quantile, c(0.025, 0.975))
+#hpds = apply(params, 2, quantile, c(0.025, 0.975))
 
 
 # Marginal posteriors (black: my estimates / red: coles estimates)
