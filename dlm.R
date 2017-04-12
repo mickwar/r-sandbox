@@ -49,6 +49,10 @@ obs.pred.dens = function(dat, params){
     df = c(params$n0, params$nt[-length(params$nt)])
     mu = params$ft
     sig2 = params$qt
+    if (any(is.na(sig2)))
+        return (-Inf)
+    if (any(sig2 <= 0))
+        return (-Inf)
     out = lgamma((df+1)/2) - lgamma(df/2) - 1/2*log(df*pi*sig2) -
         (df+1)/2*log(1+(y - mu)^2 / (df*sig2))
     return (sum(out))
