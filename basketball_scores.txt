@@ -1,0 +1,8 @@
+lai 16,michael 11
+lai michael 22,tony mickey 21
+lai michael 21,tony mickey 10
+tony 8,mickey 7
+lai 10,tony 8
+lai 12,michael 12
+michael 12,mickey 10
+tony 11,michael 5
