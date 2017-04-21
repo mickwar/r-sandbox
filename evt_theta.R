@@ -72,6 +72,7 @@ nice.S
 
 
 
+### Bootstrap
 theta.vec = double(20000)
 for (i in 1:length(theta.vec)){
 
