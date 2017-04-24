@@ -11,7 +11,6 @@ intervals.est = function(Tu){
     }
 
 
-
 ### Wooster data set
 #  library(ismev)
 #  data(wooster)
@@ -29,17 +28,18 @@ y = as.numeric(y)
 
 wooster = -y
 
+set.seed(2)
 ### Simulated example
-n = 900
-theta = 0.20
+n = 90*9*10
+#n = 810
+#n = 400
+theta = 0.99
 ww = -1/log(runif(n))
 y = double(n)
 y[1] = ww[1] / theta
 for (i in 2:n)
     y[i] = max((1-theta)*y[i-1], ww[i])
 wooster = y
-
-plot(tail(wooster, 2000), pch = 16)
 
 n = length(wooster)
 #uu = seq(0.5, 14.5, by = 1.0)
@@ -51,6 +51,11 @@ a.vec = double(length(uu))
 ints.hat = double(length(uu))
 ints.mm = double(length(uu))
 ints.vv = matrix(0, length(uu), 2)
+TC.vec = double(length(uu))
+
+plot(tail(wooster, 2000), pch = 16, type='l', bty = 'n')
+abline(h = uu, lty = 2)
+
 for (j in 1:length(uu)){
     u = uu[j]
     Tu = diff(which(wooster > u))
@@ -74,12 +79,12 @@ for (j in 1:length(uu)){
 #       (N - 1)*log(1-p^theta) + (N - 1)*log(theta) + theta*log(p)*sum(x - 1)
 
         # Priors
-#       out = out + dbeta(theta, 1/2, 1/2, log = TRUE)
+        out = out + dbeta(theta, 1/2, 1/2, log = TRUE)
 #       out = out + dbeta(theta, 1/2, 1/20, log = TRUE)
 #       out = out + dbeta(p, 1/2, 1/2, log = TRUE)
         return (out)
         }
-    out = mcmc_sampler(Tu, calc.post, 2, nburn = 50000, nmcmc = 30000, chain_init = c(0.5, 0.5))
+    out = mcmc_sampler(Tu, calc.post, 2, nburn = 30000, nmcmc = 20000, chain_init = c(0.5, 0.5))
     mm[j] = mean(out$param[,1])
     vv[j,] = quantile(out$param[,1], c(0.025, 0.975))
     a.vec[j] = mean(out$accept)
@@ -93,7 +98,7 @@ for (j in 1:length(uu)){
     C = min(C, N-1)
     tmp = sort(Tu, decreasing = TRUE)
     T_C = tmp[C]
-    while (!(tmp[C-1] > T_C)){
+    while (!(tmp[C-1] > T_C) && (C > 1)){
         C = C - 1
         T_C = tmp[C]
         }
@@ -134,6 +139,8 @@ for (j in 1:length(uu)){
     ints.mm[j] = mean(theta.vec)
     ints.vv[j,] = quantile(theta.vec, c(0.025, 0.975))
 
+    TC.vec[j] = T_C
+
     ux = seq(min(uu), max(uu), length = 7)
     N.vec = double(length(ux))
     for (i in 1:length(ux))
@@ -146,7 +153,12 @@ for (j in 1:length(uu)){
     points(uu[1:j], ints.mm[1:j], col = 'red', pch = 16, type='b')
     lines(uu[1:j], ints.vv[1:j,1], lty = 3, col = 'red')
     lines(uu[1:j], ints.vv[1:j,2], lty = 3, col = 'red')
-    axis(3,  at = ux, labels = N.vec)
+    axis(3,  at = ux, labels = 1-round(N.vec / n, 3))
+    axis(3,  at = ux, labels = N.vec, line = 0.75, lty = 0)
+    axis(3,  uu[1:j], labels = TC.vec[1:j], line = 1.5, lty = 0)
+    mtext("T_C", 3, line = 2.6, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
+    mtext("# >u", 3, line = 1.9, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
+    mtext("1-p", 3, line = 1.2, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
     if (exists("theta"))
         abline(h = theta, lty = 2, col = 'blue')
 
