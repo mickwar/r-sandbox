@@ -33,7 +33,7 @@ set.seed(2)
 n = 90*9*10
 #n = 810
 #n = 400
-theta = 0.99
+theta = 0.50
 ww = -1/log(runif(n))
 y = double(n)
 y[1] = ww[1] / theta
