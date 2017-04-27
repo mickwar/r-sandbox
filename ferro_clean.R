@@ -40,12 +40,12 @@ wooster = -y
 #     y[i] = max((1-theta)*y[i-1], ww[i])
 # wooster = y
 
-set.seed(3)
+set.seed(1)
 R = 10*9
 n = 90
 #n = 810
 #n = 400
-theta = 0.10
+theta = 0.15
 ww = matrix(-1/log(runif(n*R)), n, R)
 y = matrix(0, n, R)
 y[1,] = ww[1,] / theta
@@ -53,7 +53,7 @@ for (i in 2:n)
     y[i,] = apply(rbind((1-theta)*y[i-1,], ww[i,]), 2, max)
 wooster = y
 
-set.seed(5)
+set.seed(6)
 wooster = c(wooster[,sample(90, 90)])
 n = length(wooster)
 R = 1
@@ -132,7 +132,7 @@ for (j in 1:length(uu)){
  
 #       out = out + dbeta(p, 1/2, 1/2, log = TRUE)
 #       out = out + dbeta(p, up*2, (1-up)*2, log = TRUE)
-#       out = out + dbeta(p, up*100000, (1-up)*100000, log = TRUE)
+#       out = out + dbeta(p, up*100, (1-up)*100, log = TRUE)
         return (out)
         }
     out = mcmc_sampler(Tu, calc.post, 2, nburn = 30000, nmcmc = 20000, chain_init = c(0.5, 0.5))
@@ -144,56 +144,56 @@ for (j in 1:length(uu)){
     vv.p[j,] = quantile(out$param[,2], c(0.025, 0.975))
 
 
-#     ### Intervals estimator (bootstrapping)
-#     ex.time = which(wooster > u)
-# #   ints.hat[j] = min(1, (2*sum(Tu - 1)^2) / ((N-1)*sum((Tu - 1)*(Tu - 2))))
-#     ints.hat[j] = intervals.est(Tu)
-#     C = floor(ints.hat[j]*N)+1
-#     C = min(C, N-1)
-#     tmp = sort(Tu, decreasing = TRUE)
-#     T_C = tmp[C]
-#     while (!(tmp[C-1] > T_C) && (C > 1)){
-#         C = C - 1
-#         T_C = tmp[C]
-#         }
-# 
-#     inter.Clust = Tu[Tu > T_C]
-# 
-#     i_j = which(Tu > T_C)
-#     i_j = c(0, i_j, N)
-#     ind.seq = rep(list(NULL), C)
-#     intra.Clust = rep(list(NULL), C)
-#     nice.S = rep(list(NULL), C)
-#     nice.C = rep(list(NULL), C)
-# 
-#     for (k in 2:(C+1)){
-#         ind.seq[[k-1]] = seq(i_j[k-1]+1, i_j[k]-1)
-#         if (i_j[k-1]+1 == i_j[k]){
-#     #       nice.T[[j-1]] = NULL
-#         } else {
-#             intra.Clust[[k-1]] = Tu[seq(i_j[k-1]+1, i_j[k]-1)]
-#             }
-#         nice.S[[k-1]] = ex.time[seq(i_j[k-1]+1, i_j[k])]
-#         nice.C[[k-1]] = wooster[nice.S[[k-1]]]
-#         }
-# 
-# 
-#     ### Bootstrap
-#     theta.vec = double(10000)
-#     for (i in 1:length(theta.vec)){
-# 
-#         samp.inter = sample(C-1, replace = TRUE)
-#         samp.intra = sample(C, replace = TRUE)
-# 
-#         tmp = c(inter.Clust[samp.inter], unlist(intra.Clust[samp.intra]))
-# #       theta.vec[i] = min(1, (2*sum(tmp - 1)^2) / ((N-1)*sum((tmp - 1)*(tmp - 2))))
-#         theta.vec[i] = intervals.est(tmp)
-#         }
-# 
-#     ints.mm[j] = mean(theta.vec)
-#     ints.vv[j,] = quantile(theta.vec, c(0.025, 0.975))
-# 
-#     TC.vec[j] = T_C
+    ### Intervals estimator (bootstrapping)
+    ex.time = which(wooster > u)
+#   ints.hat[j] = min(1, (2*sum(Tu - 1)^2) / ((N-1)*sum((Tu - 1)*(Tu - 2))))
+    ints.hat[j] = intervals.est(Tu)
+    C = floor(ints.hat[j]*N)+1
+    C = min(C, N-1)
+    tmp = sort(Tu, decreasing = TRUE)
+    T_C = tmp[C]
+    while (!(tmp[C-1] > T_C) && (C > 1)){
+        C = C - 1
+        T_C = tmp[C]
+        }
+
+    inter.Clust = Tu[Tu > T_C]
+
+    i_j = which(Tu > T_C)
+    i_j = c(0, i_j, N)
+    ind.seq = rep(list(NULL), C)
+    intra.Clust = rep(list(NULL), C)
+    nice.S = rep(list(NULL), C)
+    nice.C = rep(list(NULL), C)
+
+    for (k in 2:(C+1)){
+        ind.seq[[k-1]] = seq(i_j[k-1]+1, i_j[k]-1)
+        if (i_j[k-1]+1 == i_j[k]){
+    #       nice.T[[j-1]] = NULL
+        } else {
+            intra.Clust[[k-1]] = Tu[seq(i_j[k-1]+1, i_j[k]-1)]
+            }
+        nice.S[[k-1]] = ex.time[seq(i_j[k-1]+1, i_j[k])]
+        nice.C[[k-1]] = wooster[nice.S[[k-1]]]
+        }
+
+
+    ### Bootstrap
+    theta.vec = double(10000)
+    for (i in 1:length(theta.vec)){
+
+        samp.inter = sample(C-1, replace = TRUE)
+        samp.intra = sample(C, replace = TRUE)
+
+        tmp = c(inter.Clust[samp.inter], unlist(intra.Clust[samp.intra]))
+#       theta.vec[i] = min(1, (2*sum(tmp - 1)^2) / ((N-1)*sum((tmp - 1)*(tmp - 2))))
+        theta.vec[i] = intervals.est(tmp)
+        }
+
+    ints.mm[j] = mean(theta.vec)
+    ints.vv[j,] = quantile(theta.vec, c(0.025, 0.975))
+
+    TC.vec[j] = T_C
 
     ux = seq(min(uu), max(uu), length = 7)
     N.vec = double(length(ux))
@@ -207,15 +207,15 @@ for (j in 1:length(uu)){
     points(uu[1:j], mm.p[1:j], type = 'b', pch = 16, col = 'green')
     lines(uu[1:j], vv.p[1:j,1], lty = 3, col = 'green')
     lines(uu[1:j], vv.p[1:j,2], lty = 3, col = 'green')
-#   points(uu[1:j], ints.hat[1:j], col = 'green')
-#   points(uu[1:j], ints.mm[1:j], col = 'red', pch = 16, type='b')
-#   lines(uu[1:j], ints.vv[1:j,1], lty = 3, col = 'red')
-#   lines(uu[1:j], ints.vv[1:j,2], lty = 3, col = 'red')
+    points(uu[1:j], ints.hat[1:j], col = 'green')
+    points(uu[1:j], ints.mm[1:j], col = 'red', pch = 16, type='b')
+    lines(uu[1:j], ints.vv[1:j,1], lty = 3, col = 'red')
+    lines(uu[1:j], ints.vv[1:j,2], lty = 3, col = 'red')
     axis(3,  at = ux, labels = 1-round(N.vec / (n*R), 3))
     axis(3,  at = ux, labels = N.vec, line = 0.75, lty = 0)
-#   axis(3,  uu[1:j], labels = TC.vec[1:j], line = 1.5, lty = 0)
+    axis(3,  uu[1:j], labels = TC.vec[1:j], line = 1.5, lty = 0)
     axis(3,  uu[1:j], labels = NM.vec[1:j], line = 1.5, lty = 0)
-#   mtext("T_C", 3, line = 2.6, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
+    mtext("T_C", 3, line = 2.6, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
     mtext("# >u", 3, line = 1.9, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
     mtext("1-p", 3, line = 1.2, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
     mtext("NM", 3, line = 2.6, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
