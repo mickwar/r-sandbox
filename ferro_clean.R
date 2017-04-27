@@ -71,7 +71,6 @@ ints.hat = double(length(uu))
 ints.mm = double(length(uu))
 ints.vv = matrix(0, length(uu), 2)
 TC.vec = double(length(uu))
-NM.vec = double(length(uu))
 u.vec = double(length(uu))
 
 plot(wooster, pch = 16, type='l', bty = 'n')
@@ -83,7 +82,6 @@ for (j in 1:length(uu)){
     Tu = diff(which(wooster > u))
     N = sum(wooster > u)
     m1 = sum(Tu == 1)
-    NM = 0
     up = mean(wooster <= u)
 
     m1 = m1 + (sum(which(wooster > u) %% 90 == 0) + sum(which(wooster > u) %% 90 == 1)) / 2
@@ -104,7 +102,6 @@ for (j in 1:length(uu)){
 #     NM = sum(sapply(exceedance, length) != 1)
 #     m1 = sum(Tu == 1)
 
-    NM.vec[j] = NM
     u.vec[j] = up
 
     calc.post = function(x, param){
@@ -116,7 +113,7 @@ for (j in 1:length(uu)){
             return (-Inf)
 
         # Likelihood (from Eq. 3)
-        out = m1 * log(1 - theta*p^theta) + (N - (0+1*NM) + 1 - m1)*(log(theta) + log(1-p^theta)) +
+        out = m1 * log(1 - theta*p^theta) + (N - 1 - m1)*(log(theta) + log(1-p^theta)) +
             theta*log(p)*sum(x - 1)
 
 #       m1 * log(1 - theta*p^theta) + (N - 1 - m1)*(log(theta) + log(1-p^theta)) +
@@ -214,11 +211,9 @@ for (j in 1:length(uu)){
     axis(3,  at = ux, labels = 1-round(N.vec / (n*R), 3))
     axis(3,  at = ux, labels = N.vec, line = 0.75, lty = 0)
     axis(3,  uu[1:j], labels = TC.vec[1:j], line = 1.5, lty = 0)
-    axis(3,  uu[1:j], labels = NM.vec[1:j], line = 1.5, lty = 0)
     mtext("T_C", 3, line = 2.6, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
     mtext("# >u", 3, line = 1.9, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
     mtext("1-p", 3, line = 1.2, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
-    mtext("NM", 3, line = 2.6, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
     points(uu[1:j], u.vec[1:j], col = 'blue', pch = 15)
     if (exists("theta"))
         abline(h = theta, lty = 2, col = 'blue')
@@ -226,3 +221,26 @@ for (j in 1:length(uu)){
     }
 
 
+pdf("~/theta_0.85.pdf", width = 9, height = 9)
+plot(uu[1:j], mm[1:j], bty = 'n', xlim = range(uu), ylim = c(0, 1), type = 'b', pch = 16)
+lines(uu[1:j], vv[1:j,1], lty = 3)
+lines(uu[1:j], vv[1:j,2], lty = 3)
+points(uu[1:j], mm.p[1:j], type = 'b', pch = 16, col = 'green')
+lines(uu[1:j], vv.p[1:j,1], lty = 3, col = 'green')
+lines(uu[1:j], vv.p[1:j,2], lty = 3, col = 'green')
+points(uu[1:j], ints.hat[1:j], col = 'green')
+points(uu[1:j], ints.mm[1:j], col = 'red', pch = 16, type='b')
+lines(uu[1:j], ints.vv[1:j,1], lty = 3, col = 'red')
+lines(uu[1:j], ints.vv[1:j,2], lty = 3, col = 'red')
+axis(3,  at = ux, labels = 1-round(N.vec / (n*R), 3))
+axis(3,  at = ux, labels = N.vec, line = 0.75, lty = 0)
+axis(3,  uu[1:j], labels = TC.vec[1:j], line = 1.5, lty = 0)
+mtext("T_C", 3, line = 2.6, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
+mtext("# >u", 3, line = 1.9, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
+mtext("1-p", 3, line = 1.2, at = uu[1] - (uu[2] - uu[1]), cex = 0.75)
+points(uu[1:j], u.vec[1:j], col = 'blue', pch = 15)
+if (exists("theta"))
+    abline(h = theta, lty = 2, col = 'blue')
+dev.off()
+
+lapply(nice.S, function(x) x %% 90)

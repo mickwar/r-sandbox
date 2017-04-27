@@ -1,3 +1,16 @@
+set.seed(1)
+n = 90
+R = 100
+x = matrix(0, n, R)
+x[1,] = rnorm(R)
+for (i in 2:n)
+    x[i,] = 0.95*x[i-1,] + rnorm(R)
+y = x
+matplot(x, type = 'l')
+nburn = 30000
+nmcmc = 20000
+chain_init = c(0.5, 0.5)
+
 function(x, u, ord, prior, nburn = 30000, nmcmc = 20000, chain_init = c(0.5, 0.5)){
     require(mwBASE)
 
@@ -65,14 +78,15 @@ function(x, u, ord, prior, nburn = 30000, nmcmc = 20000, chain_init = c(0.5, 0.5
         T_C = tmp[C]
         }
 
+    # The set of independent intercluster times
     inter.Clust = Tu[Tu > T_C]
 
     i_j = which(Tu > T_C)
     i_j = c(0, i_j, N)
     ind.seq = rep(list(NULL), C)
-    intra.Clust = rep(list(NULL), C)
-    nice.S = rep(list(NULL), C)
-    nice.C = rep(list(NULL), C)
+    intra.Clust = rep(list(NULL), C)    # The interexceedance times within each cluster
+    nice.S = rep(list(NULL), C)     # List of independent clusters, marking when exceedances occur
+    nice.C = rep(list(NULL), C)     # The observed value at the exceedance times
 
     for (k in 2:(C+1)){
         ind.seq[[k-1]] = seq(i_j[k-1]+1, i_j[k]-1)
@@ -84,6 +98,12 @@ function(x, u, ord, prior, nburn = 30000, nmcmc = 20000, chain_init = c(0.5, 0.5
         nice.S[[k-1]] = exceed[seq(i_j[k-1]+1, i_j[k])]
         nice.C[[k-1]] = x[nice.S[[k-1]]]
         }
+
+    nice.S[[1]] %% n
+
+    lapply(nice.S, function(x) x %% n)
+
+    which(1:190 %% n == 1)
 
 #   plot(x, bty = 'n', xlim = c(350, 650))
 #   abline(h = u, lty = 2, col = 'gray50')
