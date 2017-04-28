@@ -11,7 +11,7 @@ nburn = 30000
 nmcmc = 20000
 chain_init = c(0.5, 0.5)
 
-function(x, u, ord, prior, nburn = 30000, nmcmc = 20000, chain_init = c(0.5, 0.5)){
+uni_theta = function(x, u, ord, prior, nburn = 30000, nmcmc = 20000, chain_init = c(0.5, 0.5)){
     require(mwBASE)
 
     n = NROW(x)

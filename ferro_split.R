@@ -3,11 +3,11 @@ library(mwBASE)
 set.seed(2)
 ### Simulated example
 R = 10  # number of replicates
-S = 15  # number of seasons per replicate
-n = 500  # number of observations per season
+S = 9  # number of seasons per replicate
+n = 90  # number of observations per season
 #n = 810
 #n = 400
-theta = rnorm(R, 0.1, 0.05)
+theta = rnorm(R, 0.9, 0.05)
 y = NULL
 for (j in 1:R){
     ww = matrix(-1/log(runif(n*S)), n, S)
