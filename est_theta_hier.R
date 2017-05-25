@@ -32,74 +32,52 @@ library(mwEVT)
 
 ### For split up sequences
 set.seed(1)
-R = 10*9
-n = 90
+R = 10
+n = 500
 #n = 810
 #n = 400
-theta = 0.85
+theta = 0.10
 ww = matrix(-1/log(runif(n*R)), n, R)
 y = matrix(0, n, R)
 y[1,] = ww[1,] / theta
 for (i in 2:n)
     y[i,] = apply(rbind((1-theta)*y[i-1,], ww[i,]), 2, max)
-y = c(y)
 
 K = 16
 uu = seq(quantile(y, 0.85), quantile(y, 0.97), length = K)
 
-fc.m = double(K)
-fc.v = matrix(0, K, 2)
+fer.m = double(K)
+fer.v = matrix(0, K, 2)
 
-fb.m = double(K)
-fb.v = matrix(0, K, 2)
-
-sc.m = double(K)
-sc.v = matrix(0, K, 2)
-
-sb.m = double(K)
-sb.v = matrix(0, K, 2)
+suv.m = double(K)
+suv.v = matrix(0, K, 2)
 
 u.vec = double(length(uu))
 
-
-for (j in 1:K){
+for (j in 11:K){
     up = mean(y <= uu[j])
     u.vec[j] = up
     
-    ferro_cl = theta_uni(y, uu[j], likelihood = "ferro",
-        method = "classical")
-    fc.m[j] = ferro_cl$theta
-    fc.v[j,] = quantile(ferro_cl$bootstrap, c(0.025, 0.975))
 
-    ferro_ba = theta_uni(y, uu[j], likelihood = "ferro",
-        method = "bayesian", nburn = 40000, nmcmc = 20000)
-    fb.m[j] = mean(ferro_ba$mcmc)
-    fb.v[j,] = quantile(ferro_ba$mcmc, c(0.025, 0.975))
+    ferro = theta_hier(y, uu[j], likelihood = "ferro",
+        nburn = 40000, nmcmc = 20000)
+    fer.m[j] = mean(ferro$mcmc[,NCOL(ferro$mcmc)])
+    fer.v[j,] = quantile(ferro$mcmc[,NCOL(ferro$mcmc)], c(0.025, 0.975))
 
-    suveges_cl = theta_uni(y, uu[j], likelihood = "suveges",
-        method = "classical")
-    sc.m[j] = suveges_cl$theta
-    sc.v[j,] = quantile(suveges_cl$bootstrap, c(0.025, 0.975))
+    suveges = theta_hier(y, uu[j], likelihood = "suveges",
+        nburn = 40000, nmcmc = 20000)
+    suv.m[j] = mean(suveges$mcmc[,NCOL(suveges$mcmc)])
+    suv.v[j,] = quantile(suveges$mcmc[,NCOL(suveges$mcmc)], c(0.025, 0.975))
 
-    suveges_ba = theta_uni(y, uu[j], likelihood = "suveges",
-        method = "bayesian", nburn = 40000, nmcmc = 20000)
-    sb.m[j] = mean(suveges_ba$mcmc)
-    sb.v[j,] = quantile(suveges_ba$mcmc, c(0.025, 0.975))
+    plot(0, type = 'n', xlim = range(uu), ylim = c(0, 1), bty = 'n',
+        xlab = "Threshold", ylab = expression(theta))
+    points(uu[1:j], fer.m[1:j], type = 'b', pch = 16, col = 'blue')
+    points(uu[1:j], suv.m[1:j], type = 'b', pch = 16, col = 'orange')
 
-    plot(0, type = 'n', xlim = range(uu), ylim = c(0, 1), bty = 'n')
-    points(uu[1:j], fc.m[1:j], type = 'b', pch = 15, col = 'green')
-    points(uu[1:j], fb.m[1:j], type = 'b', pch = 16, col = 'blue')
-    points(uu[1:j], sc.m[1:j], type = 'b', pch = 15, col = 'red')
-    points(uu[1:j], sb.m[1:j], type = 'b', pch = 16, col = 'orange')
-
-    lines(uu[1:j], fc.v[1:j,1], col = 'lightgreen')
-    lines(uu[1:j], fc.v[1:j,2], col = 'lightgreen')
-    lines(uu[1:j], fb.v[1:j,1], col = 'lightblue')
-    lines(uu[1:j], fb.v[1:j,2], col = 'lightblue')
-    lines(uu[1:j], sc.v[1:j,1], col = 'pink')
-    lines(uu[1:j], sc.v[1:j,2], col = 'pink')
-    lines(uu[1:j], sb.v[1:j,1], col = 'yellow')
-    lines(uu[1:j], sb.v[1:j,2], col = 'yellow')
+    lines(uu[1:j], fer.v[1:j,1], col = 'lightblue')
+    lines(uu[1:j], fer.v[1:j,2], col = 'lightblue')
+    lines(uu[1:j], suv.v[1:j,1], col = 'yellow')
+    lines(uu[1:j], suv.v[1:j,2], col = 'yellow')
     if (exists("theta"))
         abline(h = theta, lty = 2)
     }
