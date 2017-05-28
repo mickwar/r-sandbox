@@ -16,7 +16,7 @@ B.score = as.numeric(sapply(team.B, function(x) tail(x, 1)))
 team.A = lapply(team.A, function(x) x[-length(x)])
 team.B = lapply(team.B, function(x) x[-length(x)])
 
-players = c("michael", "tony", "racer", "mickey", "trevor", "austen", "lai")
+players = c("michael", "tony", "racer", "mickey", "trevor", "austen", "lai", "victor")
 scores = matrix(0, n + 1, length(players))
 ngames = matrix(0, n + 1, length(players))
 scores[1,] = rep(800, length(players))

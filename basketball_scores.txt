@@ -6,3 +6,15 @@ lai 10,tony 8
 lai 12,michael 12
 michael 12,mickey 10
 tony 11,michael 5
+mickey austen 8,tony victor 8
+mickey austen 10,tony trevor 7
+austen trevor 4,tony victor 11
+mickey victory 12,tony trevor 3
+mickey trevor 4,austen victory 14
+mickey tony 7,austen victor 16
+austen tony 12,victor trevor 4
+michael 10,trevor 3
+michael 6,mickey 8
+mickey 13,trevor 0
+lai tony 6,mickey michael 2
+lai tony 10,mickey michael 5
