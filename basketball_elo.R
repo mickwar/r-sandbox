@@ -96,6 +96,8 @@ for (i in 1:n){
 # Official scores
 round(scores)
 
+tail(round(scores), 1)
+
 # The average score across all players over time (would like to see this increase)
 apply(scores, 1, mean)
 
