@@ -19,3 +19,9 @@ mickey 13,trevor 0
 lai tony 6,mickey michael 2
 lai tony 10,mickey michael 5
 michael racer 20,tony mickey 18
+mickey tony 14,racer trevor 4
+mickey racer 10,tony trevor 6
+mickey trevor 8, racer tony 12
+mickey tony 17,racer trevor 0
+mickey trevor 5, racer tony 12
+mickey racer 18,tony trevor 7
