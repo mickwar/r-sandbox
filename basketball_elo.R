@@ -164,50 +164,14 @@ apply(scores, 1, mean)
 # Change in player scores over time
 apply(scores[,-8], 2, diff)
 
-# For every 20 rank difference, a win by 1 point is considered a draw
-# 1 - (1 / (1 + exp(10 / 4.5)))  # obs
-# 1 - (1 / (1 + exp(200 / (5*20))))   # exp
-
-# 1 - (1 / (1 + exp(d / x)))  = p
-# 1-p = (1 / (1 + exp(d / x)))
-# 1 / (1-p) =  (1 + exp(d / x))
-# 1/(1-p) - 1 =  exp(d / x)
-# log(1/(1-p) - 1) = d / x
-# x = d / log(1/(1-p)-1)
-
-# plot(scores[c(1, which(diff(ngames[,1]) == 1) + 1), 1], type = 'l')
-# plot(scores[c(1, which(diff(ngames[,2]) == 1) + 1), 2], type = 'l')
-# plot(scores[c(1, which(diff(ngames[,3]) == 1) + 1), 3], type = 'l')
-# plot(scores[c(1, which(diff(ngames[,4]) == 1) + 1), 4], type = 'l')
-# plot(scores[c(1, which(diff(ngames[,5]) == 1) + 1), 5], type = 'l')
-# plot(scores[c(1, which(diff(ngames[,6]) == 1) + 1), 6], type = 'l')
-# plot(scores[c(1, which(diff(ngames[,7]) == 1) + 1), 7], type = 'l')
-# plot(scores[c(1, which(diff(ngames[,8]) == 1) + 1), 8], type = 'l')
-# 
-# plot(scores[,1], type = 'l')
-# plot(scores[,2], type = 'l')
-# plot(scores[,3], type = 'l')
-# plot(scores[,4], type = 'l')
-# plot(scores[,5], type = 'l')
-# plot(scores[,6], type = 'l')
-# plot(scores[,7], type = 'l')
-# plot(scores[,8], type = 'l')
-
+# Player scores over time
 matplot(apply(scores, 2, diff))
+
 matplot(scores)
+lines(apply(scores, 1, mean), lty = 2)  # Average of all players over time
 
-# d = 5
-# p = 0.7
-# sc = d / log(1/(1-p)-1)
-# ss = 0:20
-# yy = 1 - (1 / (1 + exp(ss / sc)))
-# plot(ss, yy, type = 'l')
-# abline(v = ss[which.max(diff(yy) < 0.10) + 1])
-# abline(v = ss[which.max(diff(yy) < 0.05) + 1])
-# abline(v = ss[which.max(diff(yy) < 0.01) + 1])
-# abline(h = seq(0.5, 0.9, by = 0.1), lty = 2)
-
-random.team = function(players, card){
+# Pick a random team based on scores
+random.team = function(players, card, lowest = FALSE){
     n = length(players)
     k = choose(n, n/2) / 2    # Number of possible teams
 
@@ -226,12 +190,13 @@ random.team = function(players, card){
     pp = 1 - (dd - min(dd)) / diff(range(dd)) + 0.5
     pp = pp / sum(pp)
 
-    pick = sample(k, 1, prob = pp)
+    pick = ifelse(lowest, which.max(pp), sample(k, 1, prob = pp))
 
     return (list("teamA"=players[teamA[pick,]], "ratingA" = round(scA[pick]),
         "teamB"=players[teamB[pick,]], "ratingB" = round(scB[pick]),
         "diff" = round(abs(scA[pick] - scB[pick]))))
     }
 
-five = c("mickey", "tony" ,"racer", "michael", "trevor")
-random.team(five[-2], card)
+five = c("mickey", "tony" ,"racer", "michael", "trevor", "austen")
+random.team(five, card, TRUE)
+random.team(five, card, FALSE)
