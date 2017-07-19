@@ -1,6 +1,7 @@
 dat = read.table("./basketball_scores.txt", sep = ",", header = FALSE)
 n = NROW(dat)
 
+
 # Need to standardize game length (7 (6) or 14 (12) minutes only)
 # Or just use the observed score as Score / Time (still need time)
 # Or consider something like percent of points won by: 10 to 11 is different than 100 to 101
@@ -57,6 +58,7 @@ ngames = matrix(0, n + 1, length(players))
 nwin = matrix(0, n + 1, length(players))
 nloss = matrix(0, n + 1, length(players))
 scores[1,] = rep(starting_rating, length(players))
+# scores[1,] = ending
 colnames(scores) = players
 
 for (i in 1:n){
@@ -140,6 +142,15 @@ for (i in 1:n){
 
     }
 
+# around = c("austen", "lai", "mickey", "racer", "tony", "trevor")
+# ending = tail(scores, 1)
+# ind = which(colnames(scores) %in% around)
+# ind = 1:8
+# scores = scores[,ind]
+# ngames = ngames[,ind]
+# nwin = nwin[,ind]
+# nloss = nloss[,ind]
+
 # Official scores
 round(scores)
 
@@ -162,13 +173,22 @@ card = data.frame(card)
 apply(scores, 1, mean)
 
 # Change in player scores over time
-apply(scores[,-8], 2, diff)
+apply(scores, 2, diff)
 
 # Player scores over time
 matplot(apply(scores, 2, diff))
 
+mm = apply(scores, 1, mean)
+dd = diff(apply(scores, 1, mean))
+cc = rep("black", n)
+cc[which(dd > 0)] = "green"
+cc[which(dd < 0)] = "red"
+
 matplot(scores)
-lines(apply(scores, 1, mean), lty = 2)  # Average of all players over time
+#lines(apply(scores, 1, mean))  # Average of all players over time
+segments(x0 = 1:n, x1 = 2:(n+1), y0 = mm[-(n+1)], y1 = mm[-1], col = cc)
+legend("bottomleft", legend = colnames(scores),
+    pch = as.character(1:ncol(scores)), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
 
 # Pick a random team based on scores
 random.team = function(players, card, lowest = FALSE){
@@ -197,6 +217,5 @@ random.team = function(players, card, lowest = FALSE){
         "diff" = round(abs(scA[pick] - scB[pick]))))
     }
 
-five = c("mickey", "tony" ,"racer", "michael", "trevor", "austen")
-random.team(five, card, TRUE)
-random.team(five, card, FALSE)
+team = c("mickey", "tony", "racer", "trevor")
+random.team(team, card, TRUE)

@@ -36,3 +36,9 @@ mickey michael 12,tony racer 8
 mickey austen 13,tony racer 9
 mickey tony 10,austen racer 12
 mickey racer 9,austen tony 10
+mickey racer 12,trevor tony 6
+mickey trevor 2,tony racer 19
+mickey tony 21,trevor racer 7
+mickey tony 20,trevor racer 0
+mickey trevor 4,tony racer 10
+mickey racer 13,trevor tony 11
