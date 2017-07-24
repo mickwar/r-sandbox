@@ -188,7 +188,7 @@ matplot(scores)
 #lines(apply(scores, 1, mean))  # Average of all players over time
 segments(x0 = 1:n, x1 = 2:(n+1), y0 = mm[-(n+1)], y1 = mm[-1], col = cc)
 legend("bottomleft", legend = colnames(scores),
-    pch = as.character(1:ncol(scores)), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
+    pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
 
 # Pick a random team based on scores
 random.team = function(players, card, lowest = FALSE){
