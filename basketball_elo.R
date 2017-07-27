@@ -1,6 +1,10 @@
 dat = read.table("./basketball_scores.txt", sep = ",", header = FALSE)
 n = NROW(dat)
 
+# Make a function that takes in team rating and number of games played
+# by each player and compute the new ratings. Use inside the loop.
+# Can also be used to calculate ratings for hypothetical games.
+
 
 # Need to standardize game length (7 (6) or 14 (12) minutes only)
 # Or just use the observed score as Score / Time (still need time)
@@ -23,7 +27,30 @@ point_diff = 40
 # K-factor groups
 K.group = c(600, 1000, 1400, 1800, 2200, 2600, Inf)
 K.val = c(120, 96, 72, 48, 24)*2
-K.game = c(50, 1/2) # After K.game[1] games played, reduce K.factor by K.game[2]
+K.val = c(120, 96, 72, 48, 24, 12)*2
+K.val = c(6, 5, 4, 3, 2, 1) * 40
+
+c(120, 96, 72, 48, 24)*2
+c(120, 96, 72, 48, 24, 12)*2
+c(6, 5, 4, 3, 2, 1) * 40
+
+# Multiply K.factor by K.game(ngames) --- First few games should have volatile
+# changes to ratin, but the impact grows less and elss over time
+K.game = function(n){
+    out = double(length(n))
+    for (i in 1:length(n)){
+        if (n[i] <= 10)
+            out[i] = 4
+        if (n[i] > 10 && n[i] <= 20)
+            out[i] = 2
+        if (n[i] > 20 && n[i] <= 30)
+            out[i] = 1
+        if (n[i] > 30)
+            out[i] = 1/2
+        }
+    return (out)
+    }
+
 
 # K.val represents the largest possible change, within a certain
 # tier, between two evenly matched opponents
@@ -75,7 +102,7 @@ for (i in 1:n){
     A.ind = which(players %in% team.A[[i]])
     B.ind = which(players %in% team.B[[i]])
 
-    # Use sum of player scores to determine team score
+    # Use mean of player scores to determine team score
     R_A = mean(scores[i, A.ind])
     R_B = mean(scores[i, B.ind])
 
@@ -87,7 +114,7 @@ for (i in 1:n){
     
     # K-factor (adjusted by number of players on the team)
     K.fac = double(length(players))
-    K.fac[c(A.ind, B.ind)] = 48
+#   K.fac[c(A.ind, B.ind)] = 48
     for (j in A.ind){
         for (k in 1:length(K.val))
             if (scores[i, j] >= K.group[k] & scores[i, j] < K.group[k+1])
@@ -103,9 +130,9 @@ for (i in 1:n){
     K.fac[A.ind] = K.fac[A.ind] * team_func(length(A.ind))
     K.fac[B.ind] = K.fac[B.ind] * team_func(length(B.ind))
 
-    # Divide a player's K-factor by 2 when that player has played more than 20 games
-    K.fac[A.ind] = K.fac[A.ind] * ifelse(ngames[i, A.ind] > K.game[1], K.game[2], 1)
-    K.fac[B.ind] = K.fac[B.ind] * ifelse(ngames[i, B.ind] > K.game[1], K.game[2], 1)
+    # Adjust K-factor by number of games played
+    K.fac[A.ind] = K.fac[A.ind] * K.game(ngames[i, A.ind])
+    K.fac[B.ind] = K.fac[B.ind] * K.game(ngames[i, B.ind])
 
     # Calculate observed as using the score difference (max 10 point diff)
 #   S_A = (min(win.score[i] - loss.score[i], 10) + 10) / 20
