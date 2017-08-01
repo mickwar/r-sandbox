@@ -26,8 +26,8 @@ point_diff = 40
 
 # K-factor groups
 K.group = c(600, 1000, 1400, 1800, 2200, 2600, Inf)
-K.val = c(120, 96, 72, 48, 24)*2
-K.val = c(120, 96, 72, 48, 24, 12)*2
+# K.val = c(120, 96, 72, 48, 24)*2
+# K.val = c(120, 96, 72, 48, 24, 12)*2
 K.val = c(6, 5, 4, 3, 2, 1) * 40
 
 c(120, 96, 72, 48, 24)*2
@@ -211,6 +211,7 @@ cc = rep("black", n)
 cc[which(dd > 0)] = "green"
 cc[which(dd < 0)] = "red"
 
+scores[scores == 1200] = NA
 matplot(scores)
 #lines(apply(scores, 1, mean))  # Average of all players over time
 segments(x0 = 1:n, x1 = 2:(n+1), y0 = mm[-(n+1)], y1 = mm[-1], col = cc)
@@ -244,5 +245,6 @@ random.team = function(players, card, lowest = FALSE){
         "diff" = round(abs(scA[pick] - scB[pick]))))
     }
 
-team = c("mickey", "tony", "racer", "trevor")
-random.team(team, card, TRUE)
+team = c("mickey", "tony", "racer", "trevor", "seth", "lai")
+random.team(team, card, FALSE)
+
