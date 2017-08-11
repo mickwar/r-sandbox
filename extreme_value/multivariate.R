@@ -1,6 +1,6 @@
 ### Multivariate extrems for Fremantle and Port Pirie annual maximum sea-levels
 ### 8.2.3 of Coles (p. 148-150)
-source("~/files/R/mcmc/bayes_functions.R")
+library(mwBASE)
 library(MASS)
 
 dgev = function(x, mu, sigma, ksi){
@@ -59,8 +59,8 @@ rgev = function(n, mu, sigma, ksi){
     }
 
 
-x = read.table("~/files/data/coles/fremantle.txt", header = TRUE)
-y = read.table("~/files/data/coles/port_pirie.txt", header = TRUE)
+x = read.table("~/files/repos/data/coles/fremantle.txt", header = TRUE)
+y = read.table("~/files/repos/data/coles/port_pirie.txt", header = TRUE)
 
 # Get data with matching years
 ind1 = which(x[,1] %in% y[,1])
@@ -205,6 +205,9 @@ sqrt(diag(cov(params)))
 apply(params, 2, quantile, c(0.025, 0.5, 0.975))
 
 
+
+
+
 #####
 V = function(x, y, alpha)
     (x^(-1/alpha)+y^(-1/alpha))^alpha
@@ -224,7 +227,7 @@ like = function(param){
 
 
 nburn = 50000
-nmcmc = 50000
+nmcmc = 500000
 
 nparam = 2
 params = matrix(0, nburn + nmcmc, nparam)
@@ -238,7 +241,7 @@ lower = c(0, 0)
 upper = c(Inf, Inf)
 window = 200
 
-alpha = 0.1
+alpha = 0.5
 post = like(params[1,])
 
 for (i in 2:(nburn + nmcmc)){
@@ -264,14 +267,118 @@ accept = tail(accept, nmcmc)
 
 mean(accept)
 
-plot(params, pch = 20, type='l')
+plot(params, type='l')
 segments(params[-nmcmc,1], params[-nmcmc,2], params[-1,1], params[-1,2],
     col = rgb(seq(0, 1, length = nmcmc - 1), 0, 0))
 
 plot(params[,1], type='l')
 plot(params[,2], type='l')
 
-params = params[sample(nmcmc, 60),]
-x = params[,1]
-y = params[,2]
+xy = params
+
+
+
+dat.ind = sample(nmcmc, 2000)
+x = as.numeric(xy[dat.ind,1])
+y = as.numeric(xy[dat.ind,2])
+
+
+
+# xy = mvrnorm(1000, 0, 1)
+
+
+#####
+V = function(x, y, alpha)
+    (x^(-1/alpha)+y^(-1/alpha))^alpha
+Vx = function(x, y, alpha)
+    -x^(-1-1/alpha)*(x^(-1/alpha) + y^(-1/alpha))^(alpha-1)
+Vy = function(x, y, alpha)
+    -y^(-1-1/alpha)*(x^(-1/alpha) + y^(-1/alpha))^(alpha-1)
+Vxy = function(x, y, alpha)
+    (alpha - 1) / alpha*(x*y)^(-1-1/alpha)*(x^(-1/alpha)+y^(-1/alpha))^(alpha-2)
+
+n = length(x)
+ux = rep(as.numeric(quantile(x, 0.90)), n)
+uy = rep(as.numeric(quantile(y, 0.90)), n)
+
+plot(x, y)
+abline(v = ux, lty = 2)
+abline(h = uy, lty = 2)
+
+R00 = which( (x < ux) & (y < uy) )
+R01 = which( (x < ux) & (y >= uy) )
+R10 = which( (x >= ux) & (y < uy) )
+R11 = which( (x >= ux) & (y >= uy) )
+
+calc.post = function(param){
+    alpha = param
+
+    # Likelihood
+#   vec00 = log(exp(-V(ux, uy, alpha)))
+#   vec01 = log(-Vy(ux, y, alpha)*exp(-V(ux, y, alpha)))
+#   vec10 = log(-Vx(x, uy, alpha)*exp(-V(x, uy, alpha)))
+#   vec11 = log((Vx(x, y, alpha) * Vy(x, y, alpha) - Vxy(x, y, alpha)) * exp(-V(x, y, alpha)))
+#   out = sum(vec00[R00], vec01[R01], vec10[R10], vec11[R11])
+
+    vec00 = log(exp(-V(ux[R00], uy[R00], alpha)))
+    vec01 = log(-Vy(ux[R01], y[R01], alpha)*exp(-V(ux[R01], y[R01], alpha)))
+    vec10 = log(-Vx(x[R10], uy[R10], alpha)*exp(-V(x[R10], uy[R10], alpha)))
+    vec11 = log((Vx(x[R11], y[R11], alpha) * Vy(x[R11], y[R11], alpha) -
+        Vxy(x[R11], y[R11], alpha)) * exp(-V(x[R11], y[R11], alpha)))
+    out = sum(vec00, vec01, vec10, vec11)
+
+    # Prior
+    out = out + dbeta(alpha, 1, 1, log = TRUE)
+    out = ifelse(is.na(out), -Inf, out)
+
+    return (out)
+    }
+
+
+nburn = 50000
+nmcmc = 50000
+
+nparam = 1
+params = matrix(0, nburn + nmcmc, nparam)
+accept = double(nburn + nmcmc)
+cand.sig = diag(0.1, nparam)
+
+set.seed(1)
+params[1,] = 0.5
+
+lower = 0
+upper = 1
+window = 200
+
+post = calc.post(params[1,])
+
+for (i in 2:(nburn + nmcmc)){
+    if (floor(i/window) == i/window)
+        cat("\r", i, "/", nburn+nmcmc)
+    params[i,] = params[i-1,]
+    cand = mvrnorm(1, params[i-1,], cand.sig)
+    if (all(cand > lower) && all(cand < upper)){
+        cand.post = calc.post(cand)
+        if (log(runif(1)) <= cand.post - post){
+            post = cand.post
+            params[i,] = cand
+            accept[i] = 1
+            }
+        }
+    if ((floor(i/window) == i/window) && (i <= nburn))
+        cand.sig = autotune(mean(accept[(i-window+1):i]), target = 0.234, k = window/50) *
+            (cand.sig + window * var(params[(i-window+1):i,]) / i)
+    }
+
+params = tail(params, nmcmc)
+accept = tail(accept, nmcmc)
+
+mean(accept)
+
+plot(params[,1], type='l')
+plot_hpd(params[,1])
+
+z = c(acf(params[,1])$acf)
+z = c(acf(xy[,1], lag.max = 10000)$acf)
+1 + 2*sum((1 - (1:(length(z)-1)) / (length(z)-1)) * z[-1])
 
