@@ -1,9 +1,34 @@
+bhatta.dist = function(x, y, ...){
+    # Bhattacharyya distance for two continuous random variables x and y
+    left = max(min(x), min(y))
+    right = min(max(x), max(y))
+
+    if (left > right)
+        return (Inf)
+
+    dx = density(x, from = left, to = right, ...)
+    dy = density(y, from = left, to = right, ...)
+
+    xx = dx$x
+    p = dx$y
+    q = dy$y
+
+    BC = sum(mean(diff(xx)) * sqrt(p*q))
+    BC = ifelse(BC < 0, 0, BC)
+    BC = ifelse(BC >= 1, 1, BC)
+
+    DB = -log(BC)
+    
+    return (DB)
+    }
+
+
 mu1 = 0
-sig1 = 1000
+sig1 = 5
 mu2 = 0
 sig2 = 1
 
-BC.true = sqrt(2/(sig1^2+sig2^2))*exp(-(sig1^2+sig2^2)/(4*sig1*sig2)*( (mu1^2*sig2^2+mu2^2*sig1^2)/(sig1^2+sig2^2) - ( (mu1*sig2^2+mu2*sig1^2)/(sig1^2+sig2^2) )^2))
+BC.true = sqrt(2*sig1*sig2/(sig1^2+sig2^2))*exp(-(sig1^2+sig2^2)/(4*sig1^2*sig2^2)*( (mu1^2*sig2^2+mu2^2*sig1^2)/(sig1^2+sig2^2) - ( (mu1*sig2^2+mu2*sig1^2)/(sig1^2+sig2^2) )^2))
 DB.true = -log(BC.true)
 
 m = 4096
@@ -12,11 +37,11 @@ n = 100000
 x = rnorm(n, mu1, sig1)
 y = rnorm(n, mu2, sig2)
 
-x = rt(n, sig1)
+ x = rt(n, sig1)
 #y = rt(n, sig2)
 
-x = (-log(runif(n)))^(-1/4)
-y = 1+(-log(runif(n)))^(-1/8)
+#x = (-log(runif(n)))^(-1/4)
+#y = 1+(-log(runif(n)))^(-1/8)
 
 dx = density(x, from = min(x, y), to = max(x, y), n = m)
 dy = density(y, from = min(x, y), to = max(x, y), n = m)
@@ -44,8 +69,8 @@ lines(xx, q, col = 'green')
 
 plot(xx, sqrt(p*q), type = 'l', col = 'orange', lwd= 3)
 
-BC2 =      sum(mean(diff(xx)) * sqrt(p*q))
-DB2 =  -log(sum(mean(diff(xx)) * sqrt(p*q)))
+DB2 = bhatta.dist(x, y, n = m)
+BC2 = exp(-DB2)
 
 
 ### Monte Carlo
