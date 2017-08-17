@@ -1,16 +1,24 @@
 dat = read.table("./basketball_scores.txt", sep = ",", header = FALSE)
 
 ### Bootstrap
-poi = "racer"
-# bsamp_size = 500
-bsamp_size = NROW(dat)+1
-bsamp = 500
-poi_boot = matrix(0, bsamp_size, bsamp)
 y = dat
+players = unique(c(unlist(lapply(strsplit(as.character(dat[,1]), " "), function(x) x[-length(x)])),
+    unlist(lapply(strsplit(as.character(dat[,2]), " "), function(x) x[-length(x)]))))
+players = sort(players)
+
+
+
+# bsamp_size = 100
+bsamp_size = NROW(dat)+1
+bsamp = 5000
+
+boot_all = array(0, c(bsamp_size, bsamp, length(players)))
 
 for (boot in 1:bsamp){
 
-samp = sample(NROW(y), bsamp_size-1, replace = TRUE)
+#samp = sample(NROW(y), bsamp_size-1, replace = TRUE)
+samp = sample(NROW(y), bsamp_size-1, replace = FALSE)
+#samp = 1:NROW(y)
 dat = y[samp,]
 
 n = NROW(dat)
@@ -88,9 +96,6 @@ team.B = lapply(team.B, function(x) x[-length(x)])
 
 
 # Get players
-players = unique(c(unlist(lapply(strsplit(as.character(dat[,1]), " "), function(x) x[-length(x)])),
-    unlist(lapply(strsplit(as.character(dat[,2]), " "), function(x) x[-length(x)]))))
-players = sort(players)
 
 
 
@@ -262,17 +267,33 @@ random.team = function(players, card, lowest = FALSE){
 # team = c("mickey", "tony", "racer", "trevor", "seth", "lai")
 # random.team(team, card, FALSE)
 
-poi_boot[,boot] = scores[,colnames(scores) == poi]
-scores[,colnames(scores) == poi]
+boot_all[,boot,] = scores
 }
 
-matplot(poi_boot, type = 'l', col = rgb(0.5,0.5,0.5,0.5))
-mmb = apply(poi_boot, 1, mean)
-qqb1 = apply(poi_boot, 1, quantile, 0.025)
-qqb2 = apply(poi_boot, 1, quantile, 0.975)
-lines(mmb, lwd = 3)
-lines(qqb1, lwd = 2, lty = 2)
-lines(qqb2, lwd = 2, lty = 2)
-text(NROW(dat)+2, tail(mmb, 1), round(tail(mmb, 1)))
-text(NROW(dat)+2, tail(qqb1, 1), round(tail(qqb1, 1)))
-text(NROW(dat)+2, tail(qqb2, 1), round(tail(qqb2, 1)))
+boot_mean = apply(boot_all, c(1,3), mean)
+boot_qq = apply(boot_all, c(1,3), quantile, c(0.025, 0.975))
+colnames(boot_mean) = players
+matplot(boot_mean, ylim = range(boot_qq))
+legend("bottomleft", legend = colnames(scores),
+    pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
+matplot(boot_qq[1,,], add = TRUE, lty = 2, type = 'l')
+matplot(boot_qq[2,,], add = TRUE, lty = 2, type = 'l')
+
+specific = c(1, 4, 8, 12)
+matplot(boot_mean[,specific], ylim = range(boot_qq))
+legend("bottomleft", legend = colnames(scores)[specific],
+    pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
+matplot(boot_qq[1,,specific], add = TRUE, lty = 2, type = 'l')
+matplot(boot_qq[2,,specific], add = TRUE, lty = 2, type = 'l')
+points(rep(50, length(specific)), real[specific])
+
+# matplot(poi_boot, type = 'l', col = rgb(0.5,0.5,0.5,0.5))
+# mmb = apply(poi_boot, 1, mean)
+# qqb1 = apply(poi_boot, 1, quantile, 0.025)
+# qqb2 = apply(poi_boot, 1, quantile, 0.975)
+# lines(mmb, lwd = 3)
+# lines(qqb1, lwd = 2, lty = 2)
+# lines(qqb2, lwd = 2, lty = 2)
+# text(NROW(dat)+2, tail(mmb, 1), round(tail(mmb, 1)))
+# text(NROW(dat)+2, tail(qqb1, 1), round(tail(qqb1, 1)))
+# text(NROW(dat)+2, tail(qqb2, 1), round(tail(qqb2, 1)))
