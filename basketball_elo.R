@@ -1,4 +1,18 @@
 dat = read.table("./basketball_scores.txt", sep = ",", header = FALSE)
+
+### Bootstrap
+poi = "racer"
+# bsamp_size = 500
+bsamp_size = NROW(dat)+1
+bsamp = 500
+poi_boot = matrix(0, bsamp_size, bsamp)
+y = dat
+
+for (boot in 1:bsamp){
+
+samp = sample(NROW(y), bsamp_size-1, replace = TRUE)
+dat = y[samp,]
+
 n = NROW(dat)
 
 # Make a function that takes in team rating and number of games played
@@ -197,26 +211,26 @@ rownames(card) = c("ELO", "GP", "W", "L")
 card = data.frame(card)
 
 # The average score across all players over time (would like to see this increase)
-apply(scores, 1, mean)
+# apply(scores, 1, mean)
 
 # Change in player scores over time
-apply(scores, 2, diff)
+# apply(scores, 2, diff)
 
 # Player scores over time
-matplot(apply(scores, 2, diff))
+# matplot(apply(scores, 2, diff))
 
-mm = apply(scores, 1, mean)
-dd = diff(apply(scores, 1, mean))
-cc = rep("black", n)
-cc[which(dd > 0)] = "green"
-cc[which(dd < 0)] = "red"
-
-scores[scores == 1200] = NA
-matplot(scores)
-#lines(apply(scores, 1, mean))  # Average of all players over time
-segments(x0 = 1:n, x1 = 2:(n+1), y0 = mm[-(n+1)], y1 = mm[-1], col = cc)
-legend("bottomleft", legend = colnames(scores),
-    pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
+# mm = apply(scores, 1, mean)
+# dd = diff(apply(scores, 1, mean))
+# cc = rep("black", n)
+# cc[which(dd > 0)] = "green"
+# cc[which(dd < 0)] = "red"
+# 
+# scores[scores == 1200] = NA
+# matplot(scores)
+# #lines(apply(scores, 1, mean))  # Average of all players over time
+# segments(x0 = 1:n, x1 = 2:(n+1), y0 = mm[-(n+1)], y1 = mm[-1], col = cc)
+# legend("bottomleft", legend = colnames(scores),
+#     pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
 
 # Pick a random team based on scores
 random.team = function(players, card, lowest = FALSE){
@@ -245,6 +259,20 @@ random.team = function(players, card, lowest = FALSE){
         "diff" = round(abs(scA[pick] - scB[pick]))))
     }
 
-team = c("mickey", "tony", "racer", "trevor", "seth", "lai")
-random.team(team, card, FALSE)
+# team = c("mickey", "tony", "racer", "trevor", "seth", "lai")
+# random.team(team, card, FALSE)
 
+poi_boot[,boot] = scores[,colnames(scores) == poi]
+scores[,colnames(scores) == poi]
+}
+
+matplot(poi_boot, type = 'l', col = rgb(0.5,0.5,0.5,0.5))
+mmb = apply(poi_boot, 1, mean)
+qqb1 = apply(poi_boot, 1, quantile, 0.025)
+qqb2 = apply(poi_boot, 1, quantile, 0.975)
+lines(mmb, lwd = 3)
+lines(qqb1, lwd = 2, lty = 2)
+lines(qqb2, lwd = 2, lty = 2)
+text(NROW(dat)+2, tail(mmb, 1), round(tail(mmb, 1)))
+text(NROW(dat)+2, tail(qqb1, 1), round(tail(qqb1, 1)))
+text(NROW(dat)+2, tail(qqb2, 1), round(tail(qqb2, 1)))
