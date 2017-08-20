@@ -10,7 +10,7 @@ players = sort(players)
 
 # bsamp_size = 100
 bsamp_size = NROW(dat)+1
-bsamp = 5000
+bsamp = 1000
 
 boot_all = array(0, c(bsamp_size, bsamp, length(players)))
 
@@ -279,13 +279,13 @@ legend("bottomleft", legend = colnames(scores),
 matplot(boot_qq[1,,], add = TRUE, lty = 2, type = 'l')
 matplot(boot_qq[2,,], add = TRUE, lty = 2, type = 'l')
 
-specific = c(1, 4, 8, 12)
+specific = c(1, 4, 8, 13)
 matplot(boot_mean[,specific], ylim = range(boot_qq))
 legend("bottomleft", legend = colnames(scores)[specific],
     pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
 matplot(boot_qq[1,,specific], add = TRUE, lty = 2, type = 'l')
 matplot(boot_qq[2,,specific], add = TRUE, lty = 2, type = 'l')
-points(rep(50, length(specific)), real[specific])
+# points(rep(50, length(specific)), real[specific])
 
 # matplot(poi_boot, type = 'l', col = rgb(0.5,0.5,0.5,0.5))
 # mmb = apply(poi_boot, 1, mean)
