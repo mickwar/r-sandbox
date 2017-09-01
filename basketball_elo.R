@@ -1,25 +1,25 @@
 dat = read.table("./basketball_scores.txt", sep = ",", header = FALSE)
 
 ### Bootstrap
-y = dat
-players = unique(c(unlist(lapply(strsplit(as.character(dat[,1]), " "), function(x) x[-length(x)])),
-    unlist(lapply(strsplit(as.character(dat[,2]), " "), function(x) x[-length(x)]))))
-players = sort(players)
-
-
-
-# bsamp_size = 100
-bsamp_size = NROW(dat)+1
-bsamp = 1000
-
-boot_all = array(0, c(bsamp_size, bsamp, length(players)))
-
-for (boot in 1:bsamp){
+# y = dat
+# players = unique(c(unlist(lapply(strsplit(as.character(dat[,1]), " "), function(x) x[-length(x)])),
+#     unlist(lapply(strsplit(as.character(dat[,2]), " "), function(x) x[-length(x)]))))
+# players = sort(players)
+# 
+# 
+# 
+# # bsamp_size = 100
+# bsamp_size = NROW(dat)+1
+# bsamp = 1000
+# 
+# boot_all = array(0, c(bsamp_size, bsamp, length(players)))
+# 
+# for (boot in 1:bsamp){
 
 #samp = sample(NROW(y), bsamp_size-1, replace = TRUE)
-samp = sample(NROW(y), bsamp_size-1, replace = FALSE)
-#samp = 1:NROW(y)
-dat = y[samp,]
+# samp = sample(NROW(y), bsamp_size-1, replace = FALSE)
+# #samp = 1:NROW(y)
+# dat = y[samp,]
 
 n = NROW(dat)
 
@@ -222,20 +222,20 @@ card = data.frame(card)
 # apply(scores, 2, diff)
 
 # Player scores over time
-# matplot(apply(scores, 2, diff))
+matplot(apply(scores, 2, diff))
 
-# mm = apply(scores, 1, mean)
-# dd = diff(apply(scores, 1, mean))
-# cc = rep("black", n)
-# cc[which(dd > 0)] = "green"
-# cc[which(dd < 0)] = "red"
-# 
-# scores[scores == 1200] = NA
-# matplot(scores)
-# #lines(apply(scores, 1, mean))  # Average of all players over time
-# segments(x0 = 1:n, x1 = 2:(n+1), y0 = mm[-(n+1)], y1 = mm[-1], col = cc)
-# legend("bottomleft", legend = colnames(scores),
-#     pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
+mm = apply(scores, 1, mean)
+dd = diff(apply(scores, 1, mean))
+cc = rep("black", n)
+cc[which(dd > 0)] = "green"
+cc[which(dd < 0)] = "red"
+
+scores[scores == 1200] = NA
+matplot(scores)
+#lines(apply(scores, 1, mean))  # Average of all players over time
+segments(x0 = 1:n, x1 = 2:(n+1), y0 = mm[-(n+1)], y1 = mm[-1], col = cc)
+legend("bottomleft", legend = colnames(scores),
+    pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
 
 # Pick a random team based on scores
 random.team = function(players, card, lowest = FALSE){
@@ -267,24 +267,24 @@ random.team = function(players, card, lowest = FALSE){
 # team = c("mickey", "tony", "racer", "trevor", "seth", "lai")
 # random.team(team, card, FALSE)
 
-boot_all[,boot,] = scores
-}
-
-boot_mean = apply(boot_all, c(1,3), mean)
-boot_qq = apply(boot_all, c(1,3), quantile, c(0.025, 0.975))
-colnames(boot_mean) = players
-matplot(boot_mean, ylim = range(boot_qq))
-legend("bottomleft", legend = colnames(scores),
-    pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
-matplot(boot_qq[1,,], add = TRUE, lty = 2, type = 'l')
-matplot(boot_qq[2,,], add = TRUE, lty = 2, type = 'l')
-
-specific = c(1, 4, 8, 13)
-matplot(boot_mean[,specific], ylim = range(boot_qq))
-legend("bottomleft", legend = colnames(scores)[specific],
-    pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
-matplot(boot_qq[1,,specific], add = TRUE, lty = 2, type = 'l')
-matplot(boot_qq[2,,specific], add = TRUE, lty = 2, type = 'l')
+# boot_all[,boot,] = scores
+# }
+# 
+# boot_mean = apply(boot_all, c(1,3), mean)
+# boot_qq = apply(boot_all, c(1,3), quantile, c(0.025, 0.975))
+# colnames(boot_mean) = players
+# matplot(boot_mean, ylim = range(boot_qq))
+# legend("bottomleft", legend = colnames(scores),
+#     pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
+# matplot(boot_qq[1,,], add = TRUE, lty = 2, type = 'l')
+# matplot(boot_qq[2,,], add = TRUE, lty = 2, type = 'l')
+# 
+# specific = c(1, 4, 8, 13)
+# matplot(boot_mean[,specific], ylim = range(boot_qq))
+# legend("bottomleft", legend = colnames(scores)[specific],
+#     pch = c(as.character(c(1:9, 0)), letters, LETTERS), bty = 'n', col = (1:ncol(scores)-1) %% 6 + 1)
+# matplot(boot_qq[1,,specific], add = TRUE, lty = 2, type = 'l')
+# matplot(boot_qq[2,,specific], add = TRUE, lty = 2, type = 'l')
 # points(rep(50, length(specific)), real[specific])
 
 # matplot(poi_boot, type = 'l', col = rgb(0.5,0.5,0.5,0.5))
