@@ -3,7 +3,8 @@ pass_gen = function(n, n_numb, n_lower, n_upper, n_spec,
     str_lower = letters,
     str_upper = LETTERS,
     str_spec = c("!", "@", "#", "$", "%", "^", "&",
-        "*", "(", ")","-", "_", "=", "+")){
+        "*", "(", ")","-", "_", "=", "+", "<", ">",
+        "[", "]", "{", "}", "`", "~")){
 
     if (missing(n))
         stop("The length n must be specified.")
