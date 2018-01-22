@@ -4,10 +4,10 @@ library(glmnet)
 ### Randomize a data set
 set.seed(1)
 n = 50
-p = 100
+p = 200
 X = matrix(rnorm(n*p), n, p)
-beta = c(rep(3, round(p/4)), rep(1, round(p/4)),
-    rep(-1, round(p/4)), rep(0, round(p/4)))
+beta = c(rnorm(20, 3, 0.1), rnorm(20, -1, 0.1),
+    rep(0, 160))
 y = X %*% beta + rnorm(n)
 
 ### Get lambda via cross-validation (10-fold)
@@ -24,5 +24,6 @@ abline(0, 1)
 
 ### Compare beta.hat to truth
 plot(beta.hat, pch = 16)
-points(beta, col = 'dodgerblue', pch = 15)
+points(beta.hat, type = 'h')
+points(c(0, beta), col = 'dodgerblue', pch = 15)
 
