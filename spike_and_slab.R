@@ -44,8 +44,8 @@ spike_slab = function(dat, nmcmc, nburn){
 #   b.w = rep(1, p+1)
     a.w = rep(1, p)
     b.w = rep(1, p)
-    a.sig = 0.01
-    b.sig = 0.01
+    a.sig = 1
+    b.sig = 1
 #   a.w = dat$a.w
 #   b.w = dat$b.w
 #   a.sig = dat$a.sig
@@ -146,12 +146,12 @@ ilogit = function(x)
 
 # set factors
 n = 5000
-p = 100
+p = 20
 rho = 0.0
-sig2 = 1
+sig2 = 10
 
 sigma = make.sigma(p, rho) * sig2
-beta = c(sig2, rep(8, 5), rep(-4, 5),
+beta = c(rep(8, 5), rep(-4, 5),
     rep(2.5, 5), rep(0, p-15))
 # if (i1 == 1){
 #     beta = c(rep(3, 5), rep(0, p-5))   
@@ -163,8 +163,13 @@ beta = c(sig2, rep(8, 5), rep(-4, 5),
 
 # simulate data
 set.seed(1)
-X = cbind(1, mvrnorm(n, rep(0, p), sigma))
-y = rbinom(n, size = 1, prob = ilogit(X %*% beta))
+X = mvrnorm(n, rep(0, p), sigma)
+
+X = cbind(1, matrix(rnorm(n*2), n, 2))
+beta = c(sig2, 2, 0)
+probs = ilogit(X %*% beta)
+y = rbinom(n, size = 1, prob = probs)
+
 
 dat = list("y" = y, "X" = X, "g.vec" = rep(10, p+1), "tau.vec" = rep(0.1, p+1))
 
@@ -181,6 +186,22 @@ plot(mcmc$beta[,1], type = 'l')
 plot(mcmc$w[,1], type = 'l')
 # plot(mcmc$sig2, type = 'l')
 
-# mod = glm(y ~ 0 + X[,ind], family = "binomial")
+mod = glm(y ~ 0+X, family = binomial(link = "logit"))
 # 
-# summary(mod)
+summary(mod)
+preds = predict(mod)
+plot(probs, ilogit(preds))
+abline(0, 1)
+
+plot(X[,2], y)
+points(X[,2], probs, col = 'red')
+points(X[,2], ilogit(preds), col = 'blue')
+points(X[,1], (ilogit(X %*% beta) >= 0.5) * 1, col = 'blue')
+
+points(X[,1], y, col = 'green')
+
+length(y[which(probs <= 0.10)]) / n
+mean(y[which(probs <= 0.20)]
+mean(y[which(probs <= 0.50)])
+
+cbind(y, probs)
