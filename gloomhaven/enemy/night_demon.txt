@@ -1,0 +1,8 @@
+init 04;move +1, attack -1, create darkness
+init 07;move +1, attack -1, expend darkness invisible self
+init 15:move +0, attack -1, all adjacent enemies and allies suffer 1 damage, color wheel darkness
+init 22;move +0, attack +0, create darkness
+init 26;attack -2, range 3, target 3, expend darkness muddle
+init 35;attack -1, attack -1 (pierce 2), expend (orange?) curse self
+init 41:move -1, attack +1, create darkness;shuffle
+init 46;move -1, attack +1, expend darkness +2 attack;shuffle

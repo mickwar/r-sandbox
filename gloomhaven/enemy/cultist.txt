@@ -1,0 +1,8 @@
+init 10;move -1, attack -1, on death attack +2 on all adjacent tiles
+init 10;move -1, attack -1, on death attack +2 on all adjacent tiles
+init 27;move +0, attack +0
+init 27;move +0, attack +0
+init 31;move -1, heal 3, range 3
+init 39;move -1, attack +0, heal 1 self
+init 63;summon normal living bones, cultist suffers 2 damage;shuffle
+init 63;summon normal living bones, cultist suffers 2 damage;shuffle

@@ -1,0 +1,8 @@
+init 03;(move +1), (attack -1), (create fire)
+init 08;(move -1), (create a 4 damage trap in an adjacent empty hex closest to an enemy), (color wheel: fire)
+init 24;(move +0), (attack +0), (create fire)
+init 30;(use fire: all adjacent enemies suffer 2 damage), (move +0), (attack -2, wound, target 2);shuffle
+init 46;(attack +0), (use fire: [all hexes in blast radius 1]);shuffle
+init 49;(attack +0, [skewer 2 range]), (use fire: +1 attack, wound)
+init 67;(move -1), (attack +1, range -1), (create fire)
+init 77;(attack +1, target all adjacent enemies), (use ice: flame demon suffers 1 damage)

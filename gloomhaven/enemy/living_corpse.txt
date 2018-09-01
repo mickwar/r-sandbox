@@ -1,0 +1,8 @@
+init 21;move +1, muddle and immobolize, target one adjacent enemy
+init 32;attack +2, push 1, living corpse suffers 1 damage
+init 47;move +1, attack -1
+init 66;move +0, attack +0;shuffle
+init 66;move +0, attack +0;shuffle
+init 71;move +0, attack +1, poison, target all adjacent enemies
+init 82;move -1, attack +1
+init 91;move +1, living corpse suffers 1 damage
