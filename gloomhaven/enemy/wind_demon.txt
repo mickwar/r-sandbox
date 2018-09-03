@@ -1,0 +1,8 @@
+init 02;(shield 1), (move -1), (attack -1), (color wheel: wind)
+init 09;(attack -1), (heal 1, self), (use wind: invisible, self)
+init 21;(move +0), (attack +0, pull 1), (create wind);shuffle
+init 21;(move +0), (attack +0, pull 1), (create wind);shuffle
+init 29;(move +0), (attack -1, target 2), (use wind: push 2)
+init 37;(move +0), (attack +0, [3 hex diamond]), (use wind: +1 attack [outward honeycomb])
+init 43;(move -1), (attack +1), (use wind: target 2)
+init 43;(push 1, target all adjacent enemies), (attack +0, use earth: -2 range)

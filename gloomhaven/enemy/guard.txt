@@ -1,0 +1,8 @@
+init 15;shield 1, retaliate 2;shuffle
+init 15;shield 1, attack +0, poison;shuffle
+init 30;move +1, attack -1
+init 35;move -1, attack +0, range 2
+init 50;move +0, attack +0
+init 50;move +0, attack +0
+init 55;move -1, attack +0, strengthen self
+init 70;move -1, attack +1

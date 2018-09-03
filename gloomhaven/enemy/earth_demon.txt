@@ -1,0 +1,8 @@
+init 40;(heal 3, self), (use earth: immobolize, target all enemies within range 3);shuffle
+init 42;(move +1), (attack -1);shuffle
+init 62;(move +0), (attack +0), (create earth)
+init 72;(attack +0, range 4), (use earth: target 2)
+init 79;(move +1), (attack -1, use wind: -2 attack)
+init 83;(move -1), (attack +1), (create earth)
+init 87;(move +0), (attack -1, 3 hex diamond), (color wheal: earth)
+init 93;(move -1), (attack -1, target all adjacent enemies), (use earth: push 1)
