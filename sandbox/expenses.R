@@ -24,7 +24,10 @@ paychecks =
     3192.93,    # 20 nov
     2945.80,    # 5 dec
     3223.23,    # 20 dec
-    2945.80)    # 4 jan 2019
+    2945.80,    # 4 jan 2019
+    5028.88,    # 18 jan 2019
+    2975.26,    # 5 feb 2019
+    3224.26)    # 20 feb 2019
 
 tithing =
     c(895,  # 2012
@@ -48,7 +51,10 @@ tithing =
     300,
     310,
     300,
-    620)    # 2019
+    620,    # 2019
+    500,
+    300,
+    320)
 
 # Don't think this is accurate
 offerings =
@@ -59,9 +65,10 @@ offerings =
     390,        # 2016
     20, 40, 20, 20, 10, 10, 10, 20, 20, 10, 10, 10, # 2017
     10, 10, 15, 20, 20, 20, 15, 15, 20, 10, 10, 20, # 2018
-    15) # 2019
+    15, 10) # 2019
 
 print(sum(paychecks)/10 - sum(tithing))
 # Negative means how much I overpaid
 # Positive means how much I need to pay
 
+2169.45 - 320 - 1700
