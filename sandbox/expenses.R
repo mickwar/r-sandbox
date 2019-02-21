@@ -71,4 +71,3 @@ print(sum(paychecks)/10 - sum(tithing))
 # Negative means how much I overpaid
 # Positive means how much I need to pay
 
-2169.45 - 320 - 1700
